@@ -408,8 +408,9 @@ $$\beta(t) = \min\!\left(1,\; \frac{t}{T_{\text{warmup}}}\right) \qquad \text{�
 ```
 CMDL/
 │
-├── README.md                        项目说明
-├── requirements.md                  依赖
+├── README.md                        项目说明（本文档）
+├── requirements.md                  依赖清单与安装命令
+├── plan.md                          开发步骤、文献阅读节点与甘特图
 │
 ├── config/
 │   └── cmdl_config.py               CMDLConfig 数据类，含 synthetic / energy / economics 三个预设
@@ -496,27 +497,30 @@ CMDL/
 
 ## 八、快速启动
 
+> 完整的分步开发指南（含每步产出物、使用的库、文献阅读节点）见 **[plan.md](plan.md)**。
+> 依赖安装命令见 **[requirements.md](requirements.md)**。
+
 ```bash
-# 1. 安装依赖（Core 精简集）
-pip install torch pandas numpy scikit-learn mlflow
-pip install pytorch-forecasting linearmodels
+# 1. 安装依赖（见 requirements.md）
+pip install torch pandas numpy scikit-learn scipy matplotlib seaborn mlflow jupyter
+pip install pytorch-forecasting linearmodels wbgapi
 
 # 2. 下载数据
 python scripts/download_owid.py      # OWID 能源 + CO₂
 python scripts/download_pwt.py       # Penn World Table（一个 CSV）
 
-# === Phase 1：Core 实验（3-4 个月完成） ===
+# === Phase 1：Core 实验（对应 plan.md Step 1–10） ===
 
-# 3. 合成数据验证（Day 1，最重要）
+# 3. 合成数据验证（plan.md Step 1–4）
 python experiments/run_synthetic.py
 
-# 4. 能源域主实验
+# 4. 能源域主实验（plan.md Step 5–7）
 python experiments/run_energy.py
 
-# 5. 经济域跨域验证
+# 5. 经济域跨域验证（plan.md Step 7）
 python experiments/run_economics.py
 
-# 6. 消融实验
+# 6. 消融实验（plan.md Step 8）
 python experiments/run_ablation.py
 
 # 7. 生成论文图表
@@ -524,7 +528,7 @@ jupyter notebook notebooks/01_synthetic_verify.ipynb
 jupyter notebook notebooks/02_real_data_results.ipynb
 
 # === 🔮 Phase 2+：Expansion（博士入学后） ===
-# pip install pythae causalnex econml shap captum wbgapi
+# pip install pythae causalnex econml shap captum
 # python experiments/E5_education.py
 # python experiments/E6_oecd_it.py
 ```
@@ -532,6 +536,8 @@ jupyter notebook notebooks/02_real_data_results.ipynb
 ---
 
 ## 九、论文实验规划（分阶段）
+
+> 每个实验的详细实施步骤、所需库与文献阅读节点见 **[plan.md](plan.md)**。
 
 ### Phase 1：Core 实验（支撑 Workshop 投稿 + 博士申请，3-4 个月）
 
@@ -597,12 +603,14 @@ jupyter notebook notebooks/02_real_data_results.ipynb
 
 ### 时间线总览
 
-| 月份 | 里程碑 | 交付物 |
-|---|---|---|
-| **第 1 月** | 合成数据 + 核心模型实现 | `generate.py` + `cmdl_model.py` 跑通，$k^*$ MAE < 1.0 |
-| **第 2 月** | 双域真实数据实验 + baseline | E2 + E3 完成，双域均优于 3 个 baseline |
-| **第 3 月** | 消融实验 + 论文初稿 | 3 消融表 + Workshop 论文 8 页 |
-| **第 4 月（弹性）** | 论文修改 + 投稿 + 申博材料 | 投 KDD MiLeTS 或 AAAI Workshop |
+> 按周拆解的甘特图见 [plan.md 附录 B](plan.md#附录-b甘特图总览)。
+
+| 月份 | 里程碑 | 交付物 | 对应 plan.md |
+|---|---|---|---|
+| **第 1 月** | 合成数据 + 核心模型实现 | `generate.py` + `cmdl_model.py` 跑通，$k^*$ MAE < 1.0 | Step 1–4 |
+| **第 2 月** | 双域真实数据实验 + baseline | E2 + E3 完成，双域均优于 3 个 baseline | Step 5–7 |
+| **第 3 月** | 消融实验 + 论文初稿 | 3 消融表 + Workshop 论文 8 页 | Step 8–9 |
+| **第 4 月（弹性）** | 论文修改 + 投稿 + 申博材料 | 投 KDD MiLeTS 或 AAAI Workshop | Step 10 |
 
 ---
 
@@ -679,4 +687,4 @@ jupyter notebook notebooks/02_real_data_results.ipynb
 
 ---
 
-*文档版本：2026-04 v3，重构为 Core / Expansion 双层结构。Core 聚焦申博最小可发表集合（合成 + 能源 + 经济双域验证），Expansion 保留原有完整计划供博士入学后扩展。*
+*文档版本：2026-04 v4。Core / Expansion 双层结构。开发步骤与文献阅读节点已迁移至 [plan.md](plan.md)，依赖清单见 [requirements.md](requirements.md)。*
