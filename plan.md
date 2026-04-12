@@ -6,6 +6,24 @@
 
 ---
 
+## 开源项目可复用代码总览
+
+> 下表汇总各阶段可直接复制/修改/调用的开源项目代码，按复用深度排序。
+> 每个 Step 的详细修改指南见对应章节的「🔧 可复用开源代码」小节。
+
+| 开源项目 | 核心可复用内容 | 复用深度 | 涉及 Step |
+|---|---|---|---|
+| **tft-torch** ([PlaytikaOSS](https://github.com/PlaytikaOSS/tft-torch)) | `GatedLinearUnit`（直接复制 ~15 行）、`GatedResidualNetwork`（复制后改造为 LagGate）、`GateAddNorm`（直接复制 ~20 行）、`InputChannelEmbedding`（参考设计模式）、LSTM 初始化模式 | ⭐⭐⭐ 复制+改造 | **Step 2, 3** |
+| **pytorch-forecasting** ([sktime](https://github.com/sktime/pytorch-forecasting)) | `TimeSeriesDataSet`（直接实例化，面板数据组织）、`TemporalFusionTransformer`（直接调用作为 TFT baseline） | ⭐⭐⭐ 直接使用 | **Step 5, 6** |
+| **pythae** ([clementchadebec](https://github.com/clementchadebec/benchmark_VAE)) | `VAE._sample_gauss` 重参数化（2 行）、KL 散度计算（1 行）、mu/logvar 双头结构、loss 三元组返回模式 | ⭐⭐ 片段复制 | **Step 3, 8** |
+| **linearmodels** ([bashtage](https://github.com/bashtage/linearmodels)) | `PanelOLS`（直接调用 ~10 行，Panel OLS baseline） | ⭐⭐ 直接调用 | **Step 6** |
+| **neuralforecast** ([Nixtla](https://github.com/Nixtla/neuralforecast)) | `models.TFT`（备选 TFT baseline ~5 行）、`models.LSTM`（备选 LSTM baseline），DataFrame 格式参考 | ⭐ 备选调用 | **Step 5, 6** |
+| **mlflow** ([mlflow](https://github.com/mlflow/mlflow)) | `log_metric()` / `log_params()`（直接 API 调用，实验记录） | ⭐ API 调用 | **Step 4–8** |
+| **OWID energy-data / co2-data** | CSV URL 直接 `pd.read_csv()` | ⭐ 数据下载 | **Step 1, 5** |
+| **wbgapi** | `wb.data.DataFrame()` 一行拉取 WDI 指标 | ⭐ API 调用 | **Step 5** |
+
+---
+
 ## 一、Step 1 — 环境搭建 + 合成数据生成器（第 1 周）
 
 ### 产出物
@@ -28,7 +46,16 @@
 ### 使用的库
 - `torch`, `numpy`, `matplotlib`（仅基础依赖）
 
-### 📖 文献阅读（开始前读）
+### � 可复用开源代码
+
+> 本阶段以自写为主，无需借用外部模型代码。
+
+| 来源 | 文件 / 类 | 复用方式 | 用于 |
+|---|---|---|---|
+| **OWID energy-data** | 仓库 README 中的 CSV URL | 直接写入 `download_owid.py` 的下载地址 | 确认数据列名和格式 |
+| **Penn World Table** | 官网 CSV 链接 | 直接写入 `download_pwt.py` 的下载地址 | 确认 PWT 列名 |
+
+### �📖 文献阅读（开始前读）
 
 > **此时必读**——理解问题定位和现有方法的边界
 
@@ -72,7 +99,33 @@
 ### 使用的库
 - `torch`（`nn.Module`, `nn.Linear`, `F.softmax`）
 
-### 📖 文献阅读（编码时读）
+### � 可复用开源代码
+
+> ⚡ **本阶段是核心代码借鉴窗口**——AC-Gate 的门控设计直接参考 TFT 的 GRN。
+
+| 来源 | 文件 / 类 | 复用方式 | 用于 |
+|---|---|---|---|
+| **tft-torch** | [`tft_torch/tft.py → GatedLinearUnit`](https://github.com/PlaytikaOSS/tft-torch/blob/main/tft_torch/tft.py) | **直接复制并精简**。双 `nn.Linear` + sigmoid 门控，代码仅 ~15 行。作为 `ScaleInvariantLagGate` 内部的 GLU 组件 | `model/lag_gate.py` |
+| **tft-torch** | [`tft_torch/tft.py → GatedResidualNetwork`](https://github.com/PlaytikaOSS/tft-torch/blob/main/tft_torch/tft.py) | **复制后大幅修改**。保留「input projection → ELU → output projection → GLU → LayerNorm → skip connection」骨架；**去掉** `TimeDistributed` 包装和 `context_dim`；**替换** output_dim 为 `K`（滞后窗口）；**增加**温度缩放 softmax + 相对位置偏置 | `model/lag_gate.py` |
+| **tft-torch** | [`tft_torch/base_blocks.py → TimeDistributed`](https://github.com/PlaytikaOSS/tft-torch/blob/main/tft_torch/base_blocks.py) | **可选复制**。若 backbone 需要在时间维度上共享 Linear 层可用；否则用 `einsum` 替代 | `model/backbone.py`（可选） |
+
+**具体修改指南——从 GRN 到 LagGate：**
+```python
+# tft-torch GRN 原版骨架（约 40 行）：
+# fc1(input_dim → hidden_dim) → [+ context_projection] → ELU
+# → fc2(hidden_dim → output_dim) → Dropout → GLU → skip → LayerNorm
+
+# 你的 ScaleInvariantLagGate 改动：
+# 1. input_dim = 1   (z_i 是标量)
+# 2. output_dim = K  (滞后窗口长度，如 10)
+# 3. 去掉 context_projection（z_i 本身就是 context）
+# 4. 在 fc2 输出后、GLU 前，加入：
+#    logits = logits - λ * rel_pos   # rel_pos = arange(K)/K
+#    omega = F.softmax(logits / tau, dim=-1)  # 温度缩放
+# 5. 输出 omega [B, K] 而非 GRN 的 hidden state
+```
+
+### �📖 文献阅读（编码时读）
 
 | # | 文献 | 读什么 | 为什么现在读 |
 |---|---|---|---|
@@ -110,7 +163,16 @@
 ### 使用的库
 - `torch`（`nn.LSTM`, `nn.Embedding`）
 
-### 📖 文献阅读（组装时参考）
+### � 可复用开源代码
+
+| 来源 | 文件 / 类 | 复用方式 | 用于 |
+|---|---|---|---|
+| **tft-torch** | [`tft.py → past_lstm` 初始化](https://github.com/PlaytikaOSS/tft-torch/blob/main/tft_torch/tft.py) | **参考 LSTM 初始化模式**：`nn.LSTM(input_size, hidden_size, num_layers, dropout, batch_first=True)`。TFT 用两段 LSTM（past+future），你只需单段 | `model/backbone.py` |
+| **tft-torch** | [`tft.py → GateAddNorm`](https://github.com/PlaytikaOSS/tft-torch/blob/main/tft_torch/tft.py) | **直接复制**（~20 行）。Dropout → GLU → Residual → LayerNorm 组合。用于 LSTM 输出后的 post-gating | `model/backbone.py` |
+| **tft-torch** | [`tft.py → InputChannelEmbedding`](https://github.com/PlaytikaOSS/tft-torch/blob/main/tft_torch/tft.py) + `NumericInputTransformation` | **参考设计模式**：每个 numeric 输入用独立 `nn.Linear(1, state_size)` 投影后拼接。你可简化为 `nn.Linear(d_input, d_model)` + LayerNorm + GELU | `model/cmdl_model.py`（输入适配层） |
+| **pythae** | [`vae_model.py → VAE.loss_function`](https://github.com/clementchadebec/benchmark_VAE/blob/main/src/pythae/models/vae/vae_model.py) | **参考 loss 返回结构**。返回 `(total, recon_loss, reg_loss)` 三元组——方便 MLflow 分项记录 | `model/loss.py` |
+
+### �📖 文献阅读（组装时参考）
 
 | # | 文献 | 读什么 | 为什么现在读 |
 |---|---|---|---|
@@ -148,7 +210,16 @@
 - `torch`, `mlflow`, `scipy.stats.spearmanr`, `sklearn.metrics.r2_score`
 - `matplotlib`, `seaborn`
 
-### 📖 文献阅读（跑实验时读）
+### � 可复用开源代码
+
+> 本阶段以 **使用库 API** 为主，无需修改开源项目源码。
+
+| 来源 | 文件 / 类 | 复用方式 | 用于 |
+|---|---|---|---|
+| **mlflow** | `mlflow.log_metric()` / `mlflow.log_params()` | **直接 API 调用**。每轮 log loss / k* MAE / proxy recon R² | `experiments/run_synthetic.py` |
+| **seaborn** | `sns.heatmap()` | **直接调用**。ω 热力图：x=lag k, y=实体按 z 排序 | `visualization/omega_heatmap.py` |
+
+### �📖 文献阅读（跑实验时读）
 
 | # | 文献 | 读什么 | 为什么现在读 |
 |---|---|---|---|
@@ -214,7 +285,36 @@
 - `pandas`, `numpy`, `wbgapi`, `sklearn.preprocessing.StandardScaler`
 - `pytorch-forecasting`（`TimeSeriesDataSet`，可选）
 
-### 📖 文献阅读（数据处理时读）
+### � 可复用开源代码
+
+| 来源 | 文件 / 类 | 复用方式 | 用于 |
+|---|---|---|---|
+| **pytorch-forecasting** | [`TimeSeriesDataSet`](https://github.com/sktime/pytorch-forecasting) | **直接实例化使用**（首选）。自动处理 static/time-varying 分离、滑动窗口、entity 分组、时间索引对齐 | `data/preprocessing.py` |
+| **pytorch-forecasting** | `TimeSeriesDataSet.from_dataset()` | **直接调用**。从训练集自动生成验证集（共享 normalization） | `data/preprocessing.py` |
+| **neuralforecast** | [`neuralforecast/`](https://github.com/Nixtla/neuralforecast) 的 DataFrame 格式 | **参考数据格式**（备选）。要求列名 `unique_id`/`ds`/`y`，如后续想用其 TFT baseline需兼容 | `data/preprocessing.py`（可选） |
+| **OWID energy-data** | [GitHub CSV](https://github.com/owid/energy-data) | **直接 `pd.read_csv(url)`**。无需 clone，列名文档见仓库 README | `scripts/download_owid.py` |
+| **OWID co2-data** | [GitHub CSV](https://github.com/owid/co2-data) | **直接 `pd.read_csv(url)`** | `scripts/download_owid.py` |
+| **wbgapi** | `wb.data.DataFrame()` | **直接 API 调用**，一行拉取 World Bank 指标 | `scripts/download_owid.py`（AC proxy） |
+
+**关键代码片段——pytorch-forecasting 面板构造：**
+```python
+from pytorch_forecasting import TimeSeriesDataSet
+
+training = TimeSeriesDataSet(
+    df_train,
+    time_idx="year",
+    target="co2_per_gdp",                # Y
+    group_ids=["country"],                 # 实体标识
+    max_encoder_length=10,                 # K=10 滞后窗口
+    max_prediction_length=1,               # 单步预测
+    static_reals=["hc", "rnd_gdp"],        # AC proxy 作为 static
+    time_varying_unknown_reals=["renewables_share"],  # treatment X_t
+    add_relative_time_idx=True,
+    add_encoder_length=True,
+)
+```
+
+### �📖 文献阅读（数据处理时读）
 
 | # | 文献 | 读什么 | 为什么现在读 |
 |---|---|---|---|
@@ -260,7 +360,29 @@
 - `pytorch-forecasting`（TemporalFusionTransformer）或 `neuralforecast`
 - `statsmodels`（ADF 检验、滞后选择 AIC/BIC）
 
-### 📖 文献阅读（实现 baseline 时读）
+### � 可复用开源代码
+
+> ⚡ **本阶段是库“拿来即用”密度最高的步骤**—3 个 baseline 均可大幅借用现有实现。
+
+| 来源 | 文件 / 类 | 复用方式 | 用于 |
+|---|---|---|---|
+| **linearmodels** | [`PanelOLS`](https://github.com/bashtage/linearmodels/blob/main/linearmodels/panel/model.py) | **直接调用**（~10 行）。设 `entity_effects=True`，构造 `lag1_X … lagK_X` 列即可 | `baselines/panel_ols.py` |
+| **pytorch-forecasting** | [`TemporalFusionTransformer`](https://github.com/sktime/pytorch-forecasting) | **直接调用 `.from_dataset()`**（首选）。proxy 作为 `static_reals`，训练用 PyTorch Lightning `Trainer` | `baselines/tft_baseline.py` |
+| **neuralforecast** | [`models.TFT`](https://github.com/Nixtla/neuralforecast/blob/main/neuralforecast/models/tft.py) | **备选**（~5 行）。接口极简但 static covariates 支持不如 pytorch-forecasting | `baselines/tft_baseline.py`（备选） |
+| **neuralforecast** | [`models.LSTM`](https://github.com/Nixtla/neuralforecast/blob/main/neuralforecast/models/lstm.py) | **直接调用**。作为“标准 LSTM（无 Gate）”baseline，可替代自写 | `baselines/lstm_baseline.py`（可选） |
+| **statsmodels** | `adfuller` | **直接调用**。ADF 单位根检验 | `baselines/grouped_ardl.py` 前置 |
+
+**pytorch-forecasting vs neuralforecast 对比：**
+
+| | pytorch-forecasting TFT | neuralforecast TFT |
+|---|---|---|
+| 静态协变量 | ✅ `static_reals` / `static_categoricals` | ⚠️ 有限支持 |
+| 训练框架 | PyTorch Lightning | 自封装 |
+| 代码量 | ~30 行 | ~5 行 |
+| 可解释性输出 | ✅ attention weights、variable importance | ⚠️ 较少 |
+| **推荐** | ✅ **首选**（与论文需求匹配） | 备选 |
+
+### �📖 文献阅读（实现 baseline 时读）
 
 | # | 文献 | 读什么 | 为什么现在读 |
 |---|---|---|---|
@@ -301,7 +423,11 @@
 ### 使用的库
 - 同 Step 4 + Step 6 的全部库
 
-### 📖 文献阅读（分析结果时读）
+### � 可复用开源代码
+
+> 本阶段无新增代码借用；复用 Step 4 的训练循环和 Step 6 的 baseline 实现。
+
+### �📖 文献阅读（分析结果时读）
 
 | # | 文献 | 读什么 | 为什么现在读 |
 |---|---|---|---|
@@ -339,7 +465,29 @@
 - 同 Step 4
 - `scipy.stats.wilcoxon`
 
-### 📖 文献阅读
+### � 可复用开源代码
+
+| 来源 | 文件 / 类 | 复用方式 | 用于 |
+|---|---|---|---|
+| **pythae** | [`vae_model.py → VAE`](https://github.com/clementchadebec/benchmark_VAE/blob/main/src/pythae/models/vae/vae_model.py) | **复制核心片段并改造**。用于消融变体“VAE AC Encoder”：(1) `_sample_gauss(mu, std)` 重参数化（2 行）；(2) KL 散度 `KLD = -0.5 * sum(1 + logvar - mu^2 - exp(logvar))`（1 行）；(3) mu/logvar 双头结构 | `model/ac_encoder.py`（VAE 变体分支） |
+| **pythae** | [`vae_config.py → VAEConfig`](https://github.com/clementchadebec/benchmark_VAE/blob/main/src/pythae/models/vae/vae_config.py) | **参考 config 结构**。`latent_dim`、`reconstruction_loss` 枚举等可借鉴到 `CMDLConfig` | `config/cmdl_config.py`（可选） |
+
+**从 pythae VAE → AC Encoder VAE 变体的改造指南：**
+```python
+# pythae VAE 原版：编码图像 → mu, log_var → z [B, latent_dim]
+# 你的 VAE AC Encoder 改造：
+# 1. 输入 = p_i [B, n_proxies]（而非图像）
+# 2. latent_dim = 1（z_i 是标量 AC 得分）
+# 3. 网络: Linear(n_proxies, 32) → GELU → Linear(32, 16)
+#    → mu_head: Linear(16, 1)
+#    → logvar_head: Linear(16, 1)
+# 4. 重参数化：z_i = mu + std * eps（复制 pythae._sample_gauss）
+# 5. 额外 KL 项加入 loss：
+#    L = L_task + λ_r * L_recon + β(t) * λ_kl * KLD
+#    β(t) = min(1, t/T_warmup)  ← KL annealing
+```
+
+### �📖 文献阅读
 
 > 此时无新增必读文献，专注实验执行。如消融结果异常，回看 L4 (门控机制) 和 L7 (面板DNN固定效应)。
 
@@ -482,14 +630,52 @@ Step10                                     ████████
 
 ---
 
-## 附录 C：开源项目参考（不安装，仅阅读源码）
+## 附录 C：开源项目可复用文件索引
 
-| 项目 | 链接 | 参考内容 |
-|---|---|---|
-| **tft-torch** | https://github.com/PlaytikaOSS/tft-torch | `GatedResidualNetwork` 结构——AC-Gate 的门控设计参考 |
-| **pythae** | https://github.com/clementchadebec/benchmark_VAE | VAE 变体实现——消融实验中 VAE 编码器参考 |
-| **neuralforecast** | https://github.com/Nixtla/neuralforecast | NHITS/TFT/LSTM baseline 的统一接口（可选替代自写） |
+> 本附录将各阶段提及的可复用代码精确到**源文件和类名**，方便直接定位。
+
+### C.1 tft-torch（⭐ 核心参考，Step 2–3）
+
+| 源文件 | 类/函数 | 代码量 | 你的用法 | 目标文件 |
+|---|---|---|---|---|
+| `tft_torch/tft.py` | `GatedLinearUnit` | ~15 行 | **直接复制**。双 Linear + sigmoid 门控 | `model/lag_gate.py` |
+| `tft_torch/tft.py` | `GatedResidualNetwork` | ~40 行 | **复制 + 改造**。替换 output_dim→K，加温度 softmax + 位置偏置 | `model/lag_gate.py` |
+| `tft_torch/tft.py` | `GateAddNorm` | ~20 行 | **直接复制**。Dropout→GLU→Residual→LayerNorm | `model/backbone.py` |
+| `tft_torch/tft.py` | `InputChannelEmbedding` | ~50 行 | **参考设计**。每变量独立 Linear(1, d) 后拼接 | `model/cmdl_model.py` |
+| `tft_torch/tft.py` | `NumericInputTransformation` | ~20 行 | **参考设计**。可简化为单个 Linear | `model/cmdl_model.py` |
+| `tft_torch/tft.py` | `TemporalFusionTransformer.__init__` 中 `past_lstm` | ~5 行 | **参考初始化**。nn.LSTM 参数配置 | `model/backbone.py` |
+| `tft_torch/base_blocks.py` | `TimeDistributed` | ~25 行 | **可选复制**。batch+time 维度合并后共享 Linear | `model/backbone.py` |
+
+### C.2 pythae（Step 3 参考 / Step 8 消融用）
+
+| 源文件 | 类/函数 | 代码量 | 你的用法 | 目标文件 |
+|---|---|---|---|---|
+| `src/pythae/models/vae/vae_model.py` | `VAE.forward` | ~15 行 | **参考流程**。encoder → mu/logvar → reparameterize → decode → loss | `model/ac_encoder.py`（VAE 变体） |
+| 同上 | `VAE._sample_gauss` | 2 行 | **直接复制**。`mu + eps * std` | `model/ac_encoder.py` |
+| 同上 | `VAE.loss_function` | ~10 行 | **复制 KL 项**。`KLD = -0.5 * sum(1 + log_var - mu² - exp(log_var))`；**参考返回模式** `(total, recon, reg)` | `model/loss.py` |
+| `src/pythae/models/vae/vae_config.py` | `VAEConfig` | ~20 行 | **参考 config 字段**。`latent_dim`, `reconstruction_loss` | `config/cmdl_config.py` |
+
+### C.3 pytorch-forecasting（Step 5–6 直接使用）
+
+| 模块 | 类 | 你的用法 | 目标文件 |
+|---|---|---|---|
+| `pytorch_forecasting` | `TimeSeriesDataSet` | **直接实例化**。面板数据→DataLoader，自动处理窗口和归一化 | `data/preprocessing.py` |
+| 同上 | `TimeSeriesDataSet.from_dataset()` | **直接调用**。验证集构造 | `data/preprocessing.py` |
+| 同上 | `TemporalFusionTransformer` | **直接调用 `.from_dataset()`**。TFT baseline | `baselines/tft_baseline.py` |
+
+### C.4 linearmodels（Step 6 直接使用）
+
+| 模块 | 类 | 你的用法 | 目标文件 |
+|---|---|---|---|
+| `linearmodels.panel` | `PanelOLS` | **直接调用**。Panel OLS + entity effects baseline | `baselines/panel_ols.py` |
+
+### C.5 neuralforecast（Step 6 备选）
+
+| 模块 | 类 | 你的用法 | 目标文件 |
+|---|---|---|---|
+| `neuralforecast.models` | `TFT` | 备选 TFT baseline（接口极简，~5 行） | `baselines/tft_baseline.py` |
+| `neuralforecast.models` | `LSTM` | 备选 LSTM baseline（替代自写） | `baselines/lstm_baseline.py` |
 
 ---
 
-*文档版本：2026-04-12 v1。与 readme.md v4 Core/Expansion 结构对齐。*
+*文档版本：2026-04-12 v2。新增各 Step「🔧 可复用开源代码」小节与附录 C 文件级索引。与 readme.md v4 Core/Expansion 结构对齐。*
