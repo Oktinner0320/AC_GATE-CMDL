@@ -411,6 +411,7 @@ CMDL/
 ├── README.md                        项目说明（本文档）
 ├── requirements.md                  依赖清单与安装命令
 ├── plan.md                          开发步骤、文献阅读节点与甘特图
+├── worklog.md                       我的工作日志
 │
 ├── config/
 │   └── cmdl_config.py               CMDLConfig 数据类，含 synthetic / energy / economics 三个预设
@@ -687,4 +688,4 @@ jupyter notebook notebooks/02_real_data_results.ipynb
 
 ---
 
-*文档版本：2026-04 v4。Core / Expansion 双层结构。开发步骤与文献阅读节点已迁移至 [plan.md](plan.md)，依赖清单见 [requirements.md](requirements.md)。*
+*文档版本：2026-04 v4.1。添加工作日志markdown。Core / Expansion 双层结构。开发步骤与文献阅读节点已迁移至 [plan.md](plan.md)，依赖清单见 [requirements.md](requirements.md)。*
