@@ -22,6 +22,7 @@ class CMDLConfig:
 	n_proxies: int = 3                      # AC 代理变量数量 | Number of AC proxy variables.
 	lambda_r: float = 0.1                   # 代理重构损失权重 | Weight of proxy reconstruction loss.
 	temperature: float = 1.0                # 门控 softmax 温度 | Softmax temperature for lag gate.
+	lag_bias_strength: float = 1.0          # 相对位置偏置强度 | Strength of relative position bias in lag gate.
 	n_entities: int = 200                   # 实体数量 | Number of entities in a panel.
 	seq_length: int = 30                    # 时间序列长度 | Sequence length per entity.
 	seq_features: int = 1                   # 时序输入特征数 | Number of sequential input features.
@@ -62,6 +63,8 @@ class CMDLConfig:
 			raise ValueError("lambda_r must be non-negative")
 		if self.temperature <= 0.0:
 			raise ValueError("temperature must be positive")
+		if self.lag_bias_strength < 0.0:
+			raise ValueError("lag_bias_strength must be non-negative")
 		if self.noise_std < 0.0:
 			raise ValueError("noise_std must be non-negative")
 
@@ -80,6 +83,7 @@ class CMDLConfig:
 				"n_proxies": 3,
 				"lambda_r": 0.1,
 				"temperature": 1.0,
+				"lag_bias_strength": 1.0,
 				"n_entities": 200,
 				"seq_length": 30,
 				"seq_features": 1,
@@ -96,6 +100,7 @@ class CMDLConfig:
 				"n_proxies": 3,
 				"lambda_r": 0.1,
 				"temperature": 1.0,
+				"lag_bias_strength": 1.0,
 				"n_entities": 180,
 				"seq_length": 35,
 				"seq_features": 1,
@@ -111,6 +116,7 @@ class CMDLConfig:
 				"n_proxies": 1,
 				"lambda_r": 0.1,
 				"temperature": 1.0,
+				"lag_bias_strength": 1.0,
 				"n_entities": 150,
 				"seq_length": 40,
 				"seq_features": 1,
