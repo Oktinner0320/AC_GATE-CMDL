@@ -11,7 +11,7 @@
 > **核心策略**：先跑通最小可发表集合（Phase 1），再按需扩展至主会投稿。
 
 本文档采用 **Core / Expansion 双层结构**：
-- **Core（Phase 1）**：合成数据 + 能源域 + 经济域（PWT 全集），支撑 Workshop 投稿与博士申请
+- **Core（Phase 1）**：合成数据 + 影子经济域（主验证）+ 能源域 + 经济域（泛化验证），支撑 Workshop 投稿与博士申请
 - **Expansion（Phase 2+）**：教育域、IT 专项数据、高级模型变体，供博士入学后延续
 
 标记说明：
@@ -22,31 +22,36 @@
 
 ## 一、项目目标
 
-### 核心研究目标
+### 核心研究问题
 
-提出并验证 **AC-Gate**（Absorptive Capacity Gated Lag Network）——一种以实体级调节变量为条件、自适应学习滞后权重分布的神经网络机制，解决面板时序数据中**条件调节型分布式滞后预测（CMDL）**问题。
+**How can temporal delays between formal and informal economic processes be modeled?**
+
+正规经济政策与指标（如税收负担、监管强度、GDP 增长）对非正规经济（影子经济）规模的影响存在显著时滞，且不同国家因制度环境差异，时滞长度呈现系统性异质性。本项目提出 **AC-Gate**（Adaptive Conditioning Gated Lag Network）——一种以实体级调节变量为条件、自适应学习滞后权重分布的神经网络机制，解决面板时序数据中**条件调节型分布式滞后预测（CMDL）**问题。
 
 ### 方法论目标
 
-- 形式化定义 CMDL 任务：在实体级调节变量 $Z_i$ 存在的条件下，联合学习 AC 表示、条件滞后权重分布 $\omega(k|z_i)$ 和下游结果预测，端到端优化
+- 形式化定义 CMDL 任务：在实体级调节变量 $Z_i$ 存在的条件下，联合学习调节表示、条件滞后权重分布 $\omega(k|z_i)$ 和下游结果预测，端到端优化
 - 展示现有模型（ARDL、TFT、Panel-LSTM）的结构性局限：假设同质滞后，无法捕捉实体间异质性
 - 提供可解释副产品：最优滞后期 $k^* = \sum_k k \cdot \omega_k$，无需直接监督
 - 通过代理重构和合成数据 ground truth 比对，验证 $z_i$ 的语义可解释性
 
 ### 应用目标
 
-在两个真实域上验证：**投入（资本/可再生能源）的产出回报存在显著时滞，且滞后期长度与实体转化能力指标呈系统性关联**。预期高 AC 实体的 $k^*$ 显著短于低 AC 实体。
+**主验证域（影子经济）**：正规经济指标（税负、监管）向非正规经济规模的传导存在显著时滞，且时滞长度与国家制度质量（治理水平、执法效率、金融包容度）呈系统性关联。预期高制度质量国家的 $k^*$ 显著短于低制度质量国家。
+
+**泛化验证域**：在能源转型（可再生投资 → CO₂ 强度）和经济增长（资本深化 → TFP）两个独立域上验证模型的跨领域泛化能力。
 
 > **重要声明**：本项目聚焦于发现和量化 **预测性异质滞后模式（predictive heterogeneous lag pattern）**，而非严格因果推断。因果语义的讨论作为论文 Discussion 部分的开放问题处理。
 
 ### 发表目标
 
-以方法论贡献为主，跨域应用验证为支撑（能源 + 经济双域 case study）。
+以领域问题（正规—非正规经济时滞建模）为驱动，方法论贡献为核心，跨域泛化验证为加分项。
 
 | 投稿策略 | 目标 Venue | 说明 | 阶段 |
 |---|---|---|---|
 | **一稳** | KDD Workshop (MiLeTS) / AAAI Workshop | Phase 1 核心实验即可支撑 | Core |
 | 一冲 | KDD Applied Data Science Track | 强调跨域应用价值 | Core + 补充实验 |
+| 跨界 | AAAI AI for Social Impact / ICAIF | 影子经济 + AI 交叉领域 | Core |
 | 🔮 跨界 | ICML CML Workshop / NeurIPS CML Workshop | 因果机器学习社区 | Expansion |
 
 ---
@@ -64,15 +69,16 @@
 
 ### Core 验证域（Phase 1 必须完成）
 
-| 域 | 数据集 | 实体 | 时间跨度 | 规模 | 核心问题 |
-|---|---|---|---|---|---|
-| **合成数据** | 代码生成 | 200 实体 | 30 期 | 6,000 | 有 ground truth，机制验证 |
-| **能源转型** | OWID energy + CO₂ | 180+ 国家 | 1965–2024（~60 年） | ~10,800 | 可再生投资 → CO₂强度下降滞后 |
-| **经济增长** | Penn World Table 10 | 150+ 国家 | 1950–2019（~70 年） | ~10,500 | 资本深化 → TFP 增长滞后 |
+| 域 | 角色 | 数据集 | 实体 | 时间跨度 | 规模 | 核心问题 |
+|---|---|---|---|---|---|---|
+| **合成数据** | 机制验证 | 代码生成 | 200 实体 | 30 期 | 6,000 | 有 ground truth，机制验证 |
+| **影子经济** | 🔴 主验证域 | Medina & Schneider + WGI | 158 国家 | 1991–2015（~25 年） | ~3,950 | 正规经济指标 → 影子经济规模滞后 |
+| **能源转型** | 🟢 泛化域 1 | OWID energy + CO₂ | 180+ 国家 | 1965–2024（~60 年） | ~10,800 | 可再生投资 → CO₂强度下降滞后 |
+| **经济增长** | 🟢 泛化域 2 | Penn World Table 10 | 150+ 国家 | 1950–2019（~70 年） | ~10,500 | 资本深化 → TFP 增长滞后 |
 
-> **为什么选 PWT 全集而非 OECD 38 国**：PWT 覆盖 183 国且含预计算 TFP（`ctfp`）和人力资本指数（`hc`），无需额外拼表。treatment 变量用资本深化（`ck`/`rgdpna` 比率）替代 IT 专项投资，避开 OECD 专属数据的获取瓶颈。38 国 IT 专项分析降级为 Expansion。
+> **主验证域选择理由**：影子经济域直接回应核心 RQ——“如何建模正规与非正规经济过程之间的时间延迟”。Medina & Schneider (2018, IMF WP/18/17) 提供 158 国 MIMIC 法估计的影子经济 GDP 占比，单 CSV 即可加载。治理质量指标（WGI）作为 $Z_i$ 代理，反映制度环境对时滞传导速度的调节作用。
 >
-> **跨域对比价值**：能源域与经济域的实体重合度高（均为国家级面板），但 treatment/outcome 完全不同。若 AC-Gate 在两个独立的 input→outcome 关系上均能学到异质滞后模式，则泛化性成立。
+> **跨域泛化策略**：能源域与经济域的实体重合度高（均为国家级面板），但 treatment/outcome 完全不同。若 AC-Gate 在三个独立的 input→outcome 关系上均能学到异质滞后模式，则泛化性强于仅用双域验证。
 
 ### 🔮 Expansion 验证域（Phase 2+）
 
@@ -86,7 +92,7 @@
 
 ## 三、变量体系
 
-> 以下为泛化指标定义，括号内为经济域的具体实例
+> 以下为泛化指标定义，括号内为各域的具体实例
 
 ---
 
@@ -96,13 +102,13 @@
 
 > **术语说明**：本项目使用 "treatment" 指代感兴趣的输入变量，不隐含因果声明。在观测数据设置中，$X_t$ 与 $Y_{t+k}$ 的关系为预测性关联，而非因果关系。
 
-| 泛化指标 | 类型 | 经济域示例 | 能源域示例 |
-|---|---|---|---|
-| 主输入强度 | 连续 / 比率 | IT 资本支出占 GDP 比 | 可再生能源份额 |
-| 输入分类1 | 连续 | 软件投资额 | 太阳能装机容量 |
-| 输入分类2 | 连续 | 硬件投资额 | 风能装机容量 |
-| 历史输入积累 | 连续（滚动和） | 5年 IT 存量 | 历史累计投资 |
-| 输入增长率 | 连续（差分） | IT 投资同比增长 | 可再生增速 |
+| 泛化指标 | 类型 | 影子经济域示例 | 经济域示例 | 能源域示例 |
+|---|---|---|---|---|
+| 主输入强度 | 连续 / 比率 | 税收负担率（税收/GDP） | IT 资本支出占 GDP 比 | 可再生能源份额 |
+| 输入分类1 | 连续 | 监管强度指数 | 软件投资额 | 太阳能装机容量 |
+| 输入分类2 | 连续 | 劳动市场管制指数 | 硬件投资额 | 风能装机容量 |
+| 历史输入积累 | 连续（滚动和） | 5年平均税负 | 5年 IT 存量 | 历史累计投资 |
+| 输入增长率 | 连续（差分） | 税负同比变化 | IT 投资同比增长 | 可再生增速 |
 
 ---
 
@@ -110,13 +116,13 @@
 
 **类型**：连续型静态或缓变变量，反映实体的"转化能力"，用于编码潜在 $Z_i$
 
-| 泛化指标 | 类型 | 经济域示例 | 能源域示例 |
-|---|---|---|---|
-| 知识积累能力 | 连续 / 比率 | R&D 支出占 GDP 比 | 绿色 R&D 投入 |
-| 人力资本质量 | 连续（指数） | STEM 毕业生比例 / 人力资本指数 | 工程师密度 |
-| 组织学习强度 | 连续 | 企业培训投入强度 | 能源管理体系普及率 |
-| 历史技术积累 | 连续 | 历史 IT 存量（5年均值） | 历史电网覆盖率 |
-| 制度质量 | 有序 / 连续 | WB 治理指数 | 监管质量指数 |
+| 泛化指标 | 类型 | 影子经济域示例 | 经济域示例 | 能源域示例 |
+|---|---|---|---|---|
+| 知识积累能力 | 连续 / 比率 | 执法效率指数 | R&D 支出占 GDP 比 | 绿色 R&D 投入 |
+| 人力资本质量 | 连续（指数） | 受教育年限 | STEM 毕业生比例 / 人力资本指数 | 工程师密度 |
+| 组织学习强度 | 连续 | 金融包容度指数 | 企业培训投入强度 | 能源管理体系普及率 |
+| 历史技术积累 | 连续 | 制度历史稳定性 | 历史 IT 存量（5年均值） | 历史电网覆盖率 |
+| 制度质量 | 有序 / 连续 | WGI 治理指数（核心 proxy） | WB 治理指数 | 监管质量指数 |
 
 > **注**：代理指标数量 $M$ 由 `CMDLConfig.n_proxies` 配置，模型自适应处理 $M \in [2, 8]$
 
@@ -154,7 +160,7 @@
 
 | 输出头类型 | 适用结果 | 示例 | 损失函数 | 阶段 |
 |---|---|---|---|---|
-| `RegressionHead` | 连续值 | TFP 增长率 / CO₂强度 | MSE | **Core** |
+| `RegressionHead` | 连续值 | 影子经济占比 / TFP 增长率 / CO₂强度 | MSE | **Core** |
 | 🔮 `BinaryHead` | 二元 | 是否达标 | BCE | Expansion |
 | 🔮 `SurvivalHead` | 时间到事件 | ICU 时长 | Cox 偏似然 | Expansion |
 | 🔮 `CountHead` | 计数（零膨胀） | 专利数 | ZIP 负对数似然 | Expansion |
@@ -246,7 +252,19 @@
 
 ---
 
-### 5.2 能源转型面板（Core，主验证域 1）
+### 5.2 影子经济面板（Core，主验证域）
+
+| 名称 | 链接 | 覆盖 | CMDL 映射 |
+|---|---|---|---|
+| **Medina & Schneider (2018)** | IMF Working Paper 18/17 | 158国 × 1991-2015 | $X_t$: 税收负担率、监管强度；$Y$: 影子经济占 GDP 比 |
+| **World Bank WGI** | https://info.worldbank.org/governance/wgi/ | 200国 × 1996-2024 | $Z_i$ 代理来源（治理质量、执法效率、监管质量）|
+| **Elgin et al. (2021)** | DGE-based 估计 | 161国 × 1950-2018 | 备选影子经济度量（更长时间跨度） |
+
+> **影子经济数据说明**：Medina & Schneider (2018) 使用 MIMIC (Multiple Indicators Multiple Causes) 方法估计影子经济规模，是该领域最广泛引用的数据源。WGI 治理指数包含 6 个维度（言论自由、政治稳定、政府效能、监管质量、法治、腐败控制），可用作 $Z_i$ 的多维代理指标。
+
+---
+
+### 5.3 能源转型面板（Core，泛化验证域 1）
 
 | 名称 | 链接 | 覆盖 | CMDL 映射 |
 |---|---|---|---|
@@ -265,13 +283,13 @@ df = wb.data.DataFrame(['EG.ELC.RNEW.ZS', 'EN.ATM.CO2E.PC', 'NY.GDP.PCAP.PP.KD']
 
 ---
 
-### 5.3 经济增长面板（Core，主验证域 2）
+### 5.4 经济增长面板（Core，泛化验证域 2）
 
 | 名称 | 链接 | 覆盖 | CMDL 映射 |
 |---|---|---|---|
 | **Penn World Table 10** | https://www.rug.nl/ggdc/docs/pwt1001.csv | 183国 × 1950-2019 | $X_t$: 资本深化（`ck`/`rgdpna`）；$Y$: TFP（`ctfp`）；$Z_i$: 人力资本（`hc`） |
 
-> **PWT 的优势**：一个 CSV 文件同时包含 treatment ($X$)、outcome ($Y$) 和 AC proxy ($Z$)，无需拼表。这是成本最低的第二验证域。
+> **PWT 的优势**：一个 CSV 文件同时包含 treatment ($X$)、outcome ($Y$) 和 AC proxy ($Z$)，无需拼表。这是成本最低的泛化验证域。
 
 ```python
 # PWT 一行加载
@@ -281,7 +299,7 @@ df = pd.read_csv("https://www.rug.nl/ggdc/docs/pwt1001.csv", encoding='utf-8')
 
 ---
 
-### 🔮 5.4 Expansion 数据集（Phase 2+）
+### 🔮 5.5 Expansion 数据集（Phase 2+）
 
 | 名称 | 链接 | 覆盖 | CMDL 映射 | 额外成本 |
 |---|---|---|---|---|
@@ -300,7 +318,7 @@ df = pd.read_csv("https://www.rug.nl/ggdc/docs/pwt1001.csv", encoding='utf-8')
 
 ```python
 # Core: 两行启动
-cfg = CMDLConfig.from_domain("energy")  # 或 "economics" / "synthetic"
+cfg = CMDLConfig.from_domain("shadow")  # 或 "energy" / "economics" / "synthetic"
 model = CMDLModel(cfg)
 
 # 🔮 Expansion: 多域切换
@@ -414,11 +432,12 @@ CMDL/
 ├── worklog.md                       我的工作日志
 │
 ├── config/
-│   └── cmdl_config.py               CMDLConfig 数据类，含 synthetic / energy / economics 三个预设
+│   └── cmdl_config.py               CMDLConfig 数据类，含 synthetic / shadow / energy / economics 四个预设
 │
 ├── data/
 │   ├── synthetic/
 │   │   └── generate.py              合成数据生成（线性 k* 函数）
+│   ├── shadow_loader.py             Medina & Schneider 影子经济 + WGI 加载
 │   ├── energy_loader.py             OWID energy + CO₂ 加载
 │   ├── economics_loader.py          PWT 加载（一个 CSV）
 │   └── preprocessing.py             标准化 + 面板构建（合并为一个文件）
@@ -437,9 +456,10 @@ CMDL/
 │
 ├── experiments/
 │   ├── run_synthetic.py             E1: 合成数据验证
-│   ├── run_energy.py                E2: OWID 能源面板
-│   ├── run_economics.py             E3: PWT 经济增长面板
-│   └── run_ablation.py              E4: 消融实验（3 变体）
+│   ├── run_shadow.py                E2: 影子经济面板（主验证）
+│   ├── run_energy.py                E3: OWID 能源面板（泛化）
+│   ├── run_economics.py             E4: PWT 经济增长面板（泛化）
+│   └── run_ablation.py              E5: 消融实验（3 变体）
 │
 ├── evaluation/
 │   ├── metrics.py                   MSE / MAE / R² / Spearman
@@ -450,6 +470,7 @@ CMDL/
 │   └── kstar_distribution.py        k* 跨实体分布图
 │
 ├── scripts/
+│   ├── download_shadow.py           下载影子经济 + WGI 数据
 │   ├── download_owid.py             一键下载 OWID 数据集
 │   └── download_pwt.py              下载 Penn World Table
 │
@@ -458,7 +479,7 @@ CMDL/
     └── 02_real_data_results.ipynb   真实数据结果 + 论文图表
 ```
 
-> Core 文件数：**~20 个**
+> Core 文件数：**~23 个**
 
 ### 🔮 Expansion 扩展文件（Phase 2+ 按需添加）
 
@@ -507,21 +528,25 @@ pip install torch pandas numpy scikit-learn scipy matplotlib seaborn mlflow jupy
 pip install pytorch-forecasting linearmodels wbgapi
 
 # 2. 下载数据
-python scripts/download_owid.py      # OWID 能源 + CO₂
-python scripts/download_pwt.py       # Penn World Table（一个 CSV）
+python scripts/download_shadow.py     # 影子经济 + WGI 治理指数
+python scripts/download_owid.py       # OWID 能源 + CO₂
+python scripts/download_pwt.py        # Penn World Table（一个 CSV）
 
 # === Phase 1：Core 实验（对应 plan.md Step 1–10） ===
 
 # 3. 合成数据验证（plan.md Step 1–4）
 python experiments/run_synthetic.py
 
-# 4. 能源域主实验（plan.md Step 5–7）
+# 4. 影子经济主实验（plan.md Step 5–7）
+python experiments/run_shadow.py
+
+# 5. 能源域泛化验证（plan.md Step 7）
 python experiments/run_energy.py
 
-# 5. 经济域跨域验证（plan.md Step 7）
+# 6. 经济域泛化验证（plan.md Step 7）
 python experiments/run_economics.py
 
-# 6. 消融实验（plan.md Step 8）
+# 7. 消融实验（plan.md Step 8）
 python experiments/run_ablation.py
 
 # 7. 生成论文图表
@@ -546,9 +571,10 @@ jupyter notebook notebooks/02_real_data_results.ipynb
 |---|---|---|---|---|
 | **E1a** | 合成（线性 $k^*$） | 验证 AC-Gate 机制正确性，有 ground truth | §4.1 | 第 1 月 |
 | **E1b** | 合成（$z_i$ 识别性） | 验证 proxy 重构 $R^2$、Spearman 达标 | §4.1 | 第 1 月 |
-| **E2** | OWID 能源面板 | 主验证域 1（大样本，180 国 × 60 年） | §4.2 | 第 2 月 |
-| **E3** | PWT 经济增长面板 | 主验证域 2（183 国 × 70 年，跨域泛化） | §4.3 | 第 2 月 |
-| **E4** | 消融实验（3 核心变体） | 各组件贡献量化 | §4.4 | 第 3 月 |
+| **E2** | 影子经济面板 | 主验证域（158 国 × 25 年，回应核心 RQ） | §4.2 | 第 2 月 |
+| **E3** | OWID 能源面板 | 泛化验证域 1（180 国 × 60 年） | §4.3 | 第 2 月 |
+| **E4** | PWT 经济增长面板 | 泛化验证域 2（183 国 × 70 年） | §4.3 | 第 2 月 |
+| **E5** | 消融实验（3 核心变体） | 各组件贡献量化 | §4.4 | 第 3 月 |
 | — | 论文撰写 + 投稿 | Workshop 8 页论文 | 全文 | 第 3-4 月 |
 
 **Core 消融变体（3 个）：**
@@ -568,10 +594,10 @@ jupyter notebook notebooks/02_real_data_results.ipynb
 
 | 实验 | 数据集 | 目的 | 优先级 |
 |---|---|---|---|
-| 🔮 E5 | OECD 38 国 IT 专项 | Solow 悖论原始假设验证（小样本，轻量配置） | P1 |
-| 🔮 E6 | PISA 教育面板 | 跨域泛化（异构时间粒度） | P2 |
-| 🔮 E7 | 企业级面板（Compustat） | 大 N 场景，VAE 编码器主场 | P2 |
-| 🔮 E8 | 扩展消融（5 变体 × 全数据集） | +两阶段训练 / +无KL annealing | P1 |
+| 🔮 E6 | OECD 38 国 IT 专项 | Solow 悖论原始假设验证（小样本，轻量化配置） | P1 |
+| 🔮 E7 | PISA 教育面板 | 跨域泛化（异构时间粒度） | P2 |
+| 🔮 E8 | 企业级面板（Compustat） | 大 N 场景，VAE 编码器主场 | P2 |
+| 🔮 E9 | 扩展消融（5 变体 × 全数据集） | +两阶段训练 / +无KL annealing | P1 |
 
 **🔮 Expansion 消融增量（在 Core 3 变体基础上）：**
 4. 两阶段训练（先 VAE 后 Gate，对比端到端）
@@ -590,13 +616,13 @@ jupyter notebook notebooks/02_real_data_results.ipynb
 ### Core 论文结构（Workshop 8 页）
 
 ```
-1. Introduction              (1 页)    异质滞后问题 + 动机
-2. Related Work               (0.75 页)  ARDL/DLM, 面板DL模型, 实体异质性
+1. Introduction              (1 页)    正规—非正规经济时滞问题 + 动机
+2. Related Work               (0.75 页)  延迟建模方法、经济时滞理论、影子经济实证、实体异质性
 3. Method: AC-Gate            (2 页)    问题定义 + 模型 + 损失函数
 4. Experiments                (3 页)
    4.1 合成数据验证            k* 恢复 MAE + ω 热力图
-   4.2 能源面板                预测精度 + k* 跨国分布
-   4.3 经济增长面板            跨域泛化 + k* 对比
+   4.2 影子经济面板          预测精度 + k* 与制度质量的关联
+   4.3 泛化验证（能源 + 经济） 双域均有效 → 方法通用性
    4.4 消融实验                3 变体对比表
 5. Discussion & Future Work   (0.75 页)  局限性 + 因果扩展
 6. Conclusion                 (0.5 页)
@@ -609,7 +635,7 @@ jupyter notebook notebooks/02_real_data_results.ipynb
 | 月份 | 里程碑 | 交付物 | 对应 plan.md |
 |---|---|---|---|
 | **第 1 月** | 合成数据 + 核心模型实现 | `generate.py` + `cmdl_model.py` 跑通，$k^*$ MAE < 1.0 | Step 1–4 |
-| **第 2 月** | 双域真实数据实验 + baseline | E2 + E3 完成，双域均优于 3 个 baseline | Step 5–7 |
+| **第 2 月** | 三域真实数据实验 + baseline | E2（影子经济）+ E3（能源）+ E4（经济）完成，均优于 3 个 baseline | Step 5–7 |
 | **第 3 月** | 消融实验 + 论文初稿 | 3 消融表 + Workshop 论文 8 页 | Step 8–9 |
 | **第 4 月（弹性）** | 论文修改 + 投稿 + 申博材料 | 投 KDD MiLeTS 或 AAAI Workshop | Step 10 |
 
@@ -654,9 +680,9 @@ jupyter notebook notebooks/02_real_data_results.ipynb
 **风险**：仅一个真实域可能被认为泛化性不足。
 
 **Core 缓解措施**：
-1. **双域验证**：能源（可再生投资 → CO₂）+ 经济（资本深化 → TFP），treatment/outcome 完全不同
-2. PWT 经济域的边际实现成本极低（同一个 CSV 文件包含全部所需变量）
-3. 两个域的实体集重合但机制不同，若 AC-Gate 均有效则泛化性成立
+1. **三域验证**：影子经济（正规指标 → 影子经济规模）+ 能源（可再生投资 → CO₂）+ 经济（资本深化 → TFP），treatment/outcome 完全不同
+2. 三个域的实体集重合但机制不同，若 AC-Gate 均有效则泛化性强于双域验证
+3. PWT 经济域的边际实现成本极低（同一个 CSV 文件包含全部所需变量）
 
 ### 10.5 与传统方法的公平比较
 
@@ -672,10 +698,11 @@ jupyter notebook notebooks/02_real_data_results.ipynb
 **风险**：工作量超出申博时间预算。
 
 **Core 缓解措施（已大幅压缩）**：
-1. Core 实验矩阵：**4 实验 × 3 baseline × 2 真实域** = 可控规模
-2. 代码文件 ~20 个（原 ~35 个）
+1. Core 实验矩阵：**5 实验 × 3 baseline × 3 真实域** = 可控规模
+2. 代码文件 ~23 个（原 ~20 个）
 3. PWT 经济域无需拼表（一个 CSV 即用）
-4. 所有 Expansion 内容已标记 🔮，不影响 Phase 1 交付
+4. 影子经济域同样仅需单 CSV + WGI API
+5. 所有 Expansion 内容已标记 🔮，不影响 Phase 1 交付
 
 ### 🔮 10.7 理论深度不足（Expansion 风险）
 
@@ -688,4 +715,4 @@ jupyter notebook notebooks/02_real_data_results.ipynb
 
 ---
 
-*文档版本：2026-04 v4.1。添加工作日志markdown。Core / Expansion 双层结构。开发步骤与文献阅读节点已迁移至 [plan.md](plan.md)，依赖清单见 [requirements.md](requirements.md)。*
+*文档版本：2026-04 v5.0。调整核心 RQ 为正规—非正规经济时滞建模；新增影子经济主验证域；能源+经济域降为泛化验证。Core / Expansion 双层结构。开发步骤与文献阅读节点已迁移至 [plan.md](plan.md)，依赖清单见 [requirements.md](requirements.md)。*

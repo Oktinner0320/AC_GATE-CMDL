@@ -35,7 +35,7 @@
 
 1. **初始化项目结构**（按 readme.md §七 的 Core 文件树创建空文件）
 2. **编写 `CMDLConfig` 数据类**
-   - 三个预设：`synthetic` / `energy` / `economics`
+   - 四个预设：`synthetic` / `shadow` / `energy` / `economics`
    - 核心参数：`max_lag=10`, `d_model=64`, `n_proxies`, `lambda_r=0.1`
 3. **编写合成数据生成器** `generate.py`
    - 线性 ground truth: $k^*(z) = \text{round}(3 + 7(1-z))$, $z \sim U[0,1]$
@@ -231,16 +231,25 @@
 ## 五、Step 5 — 数据下载 + 预处理管线（第 5–6 周）
 
 ### 产出物
+- `scripts/download_shadow.py`
 - `scripts/download_owid.py`
 - `scripts/download_pwt.py`
+- `data/shadow_loader.py`
 - `data/energy_loader.py`
 - `data/economics_loader.py`
 - `data/preprocessing.py`
-- 两个域的清洗后 DataFrame，存为 parquet
+- 三个域的清洗后 DataFrame，存为 parquet
 
 ### 工作内容
 
-1. **OWID 能源数据下载与清洗**
+1. **影子经济数据下载与清洗**（主验证域）
+   - 数据源: Medina & Schneider (2018, IMF WP/18/17)，158 国 × 1991–2015
+   - 核心变量: 影子经济占 GDP 比 ($Y$)
+   - Treatment $X_t$: 税收负担率、监管强度指数（来自 WDI / WGI）
+   - AC Proxy $Z_i$: WGI 治理指数（法治、监管质量、腐败控制等 6 维），取时间均值作为实体级静态 proxy
+   - 处理缺失值：国家级缺失率 >30% 的列/行删除，其余线性插值
+
+2. **OWID 能源数据下载与清洗**（泛化域 1）
    ```python
    # 一行下载
    df = pd.read_csv("https://raw.githubusercontent.com/owid/energy-data/master/owid-energy-data.csv")
@@ -250,13 +259,13 @@
    - 处理缺失值：国家级缺失率 >30% 的列/行删除，其余线性插值
    - 时间窗口：1990–2024（可再生份额在 1990 前大部分国家为 0）
 
-2. **OWID CO₂ 数据合并**
+2. **OWID 能源数据下载与清洗**（泛化域 1）
    ```python
    co2 = pd.read_csv("https://raw.githubusercontent.com/owid/co2-data/master/owid-co2-data.csv")
    ```
    - 提取 `co2_per_gdp`（CO₂强度，作为 $Y$）
 
-3. **World Bank WDI 拉取 AC Proxy**
+3. **OWID CO₂ 数据合并**
    ```python
    import wbgapi as wb
    # 治理指数 + 人力资本相关
@@ -266,7 +275,7 @@
    ```
    - 取时间均值作为实体级静态 AC proxy
 
-4. **PWT 经济数据下载与清洗**
+4. **World Bank WDI/WGI 拉取 AC Proxy**（影子经济域 + 能源域共用）
    ```python
    pwt = pd.read_csv("https://www.rug.nl/ggdc/docs/pwt1001.csv", encoding='utf-8')
    ```
@@ -275,9 +284,9 @@
    - AC proxy: `hc`（人力资本指数，PWT 内置）
    - 增加 `rtfpna` 做稳健性检查
 
-5. **统一面板构建** `preprocessing.py`
+5. **PWT 经济数据下载与清洗**（泛化域 2）
+6. **统一面板构建** `preprocessing.py`
    - 标准化：时序变量实体内 z-score，proxy 变量跨实体 z-score
-   - 构造滑动窗口：`(X_{t-K:t}, p_i, s_i) → Y_{t+1}`
    - 输出 `TimeSeriesDataSet` 兼容格式（或自定义 `torch.utils.data.Dataset`）
    - 训练/验证/测试按时间切分（70/15/15），**不按实体切分**
 
@@ -330,7 +339,7 @@ training = TimeSeriesDataSet(
 - `baselines/panel_ols.py`
 - `baselines/tft_baseline.py`
 - `baselines/grouped_ardl.py`（新增强 baseline）
-- 三个 baseline 在能源域上的初步结果
+- 三个 baseline 在影子经济域上的初步结果
 
 ### 工作内容
 
@@ -391,33 +400,39 @@ training = TimeSeriesDataSet(
 
 ---
 
-## 七、Step 7 — 真实数据实验 E2 + E3（第 7–9 周）
+## 七、Step 7 — 真实数据实验 E2 + E3 + E4（第 7–9 周）
 
 ### 产出物
+- `experiments/run_shadow.py`
 - `experiments/run_energy.py`
 - `experiments/run_economics.py`
-- E2/E3 结果表 + 核心图表
+- E2/E3/E4 结果表 + 核心图表
 
 ### 工作内容
 
-1. **E2: OWID 能源面板实验**
+1. **E2: 影子经济面板实验**（主验证域，回应核心 RQ）
    - 训练 AC-Gate 模型 + 3 个 baseline
+   - Treatment = 税收负担率/监管强度，Outcome = 影子经济占比
+   - AC proxy = WGI 治理指数（法治、监管质量、腐败控制）
    - 超参搜索：仅调 `lambda_r` ∈ {0.01, 0.05, 0.1, 0.2}，其余锁死
-   - 评估指标: MSE / MAE / R² (主指标) + k* 分布分析 (副产品)
    - 关键图表:
      - ω 热力图（按 z_i 分位数分 4 组）
      - k* 跨国分布箱型图
-     - z_i 与已知 proxy 的 Spearman 相关
+     - k* 与治理质量指数的 Spearman 相关
+   - 预期结果：高治理质量国家的正规经济政策向影子经济传导更快（k* 更短）
 
-2. **E3: PWT 经济增长面板实验**
-   - 同 E2 流程，treatment = 资本深化，outcome = TFP (ctfp)
+2. **E3: OWID 能源面板实验**（泛化域 1）
+   - 同 E2 流程，treatment = 可再生份额，outcome = CO₂ 强度
+   - 评估指标: MSE / MAE / R² (主指标) + k* 分布分析 (副产品)
+
+3. **E4: PWT 经济增长面板实验**（泛化域 2）
+   - treatment = 资本深化，outcome = TFP (ctfp)
    - AC proxy = 人力资本指数 (hc)
    - 额外: 用 `rtfpna` 替代 `ctfp` 做稳健性检查
-   - 关键对比: E2 与 E3 的 k* 分布模式是否一致（高 AC 实体滞后更短）
 
-3. **跨域对比分析**
-   - 合并 E2/E3 的 k* 结果，按国家匹配
-   - 散点图: 能源域 k* vs 经济域 k*（预期正相关但非完美线性）
+4. **跨域对比分析**
+   - 合并 E2/E3/E4 的 k* 结果，按国家匹配
+   - 三域 k* 分布对比：影子经济 vs 能源 vs 经济增长
    - 这是论文跨域泛化性的核心证据
 
 ### 使用的库
@@ -431,13 +446,15 @@ training = TimeSeriesDataSet(
 
 | # | 文献 | 读什么 | 为什么现在读 |
 |---|---|---|---|
-| **L15** | Appiah-Otoo et al. (2023) "Modelling the impact of renewable energy investment on global CO₂ emissions" *Energy Reports* (被引10) | §3-4 能源投资→CO₂的实证设计 | 对标你的能源域实验设计；确认变量构造和预期方向一致 |
-| **L16** | Sheng (2025) "Technological change, capital deepening, and agricultural TFP growth: Cross-country comparison" *AEPP* (被引3) | §2-4 资本深化→TFP 的异质效应 | 最新的 capital deepening→TFP 异质性文献；Direct support for your hypothesis |
-| **L17** | Fuentes & Mies (2021) "Technological Absorptive Capacity and Development Stage" *Macroeconomic Dynamics* (被引12) | §3-4 AC与TFP的跨国面板分析 | 你的经济域实验假说的直接理论支撑 |
+| **L15** | Schneider & Enste (2000) "Shadow Economies: Size, Causes, and Consequences" *JEL* (经典) | §2-3 影子经济的定义、成因与度量方法 | 影子经济领域的基础文献，确保你的变量定义与领域共识一致 |
+| **L16** | Medina & Schneider (2018) "Shadow Economies Around the World" *IMF WP/18/17* (被引 500+) | §2 MIMIC 方法 + §4 国家级估计结果 | 你的主数据源，理解估计方法的假设与局限性 |
+| **L17** | Elgin et al. (2021) "Understanding informality" *SEPS* (被引 160+) | §3 DGE 法与 MIMIC 法的比较 | 备选数据源，理解不同估计方法的差异 |
+| **L18** | Appiah-Otoo et al. (2023) "Modelling the impact of renewable energy investment on global CO₂ emissions" *Energy Reports* (被引 10) | §3-4 能源投资→CO₂的实证设计 | 对标能源域实验设计；确认变量构造和预期方向一致 |
+| **L19** | Sheng (2025) "Technological change, capital deepening, and agricultural TFP growth" *AEPP* (被引 3) | §2-4 资本深化→TFP 的异质效应 | 经济域实验假说的直接支撑 |
 
 ---
 
-## 八、Step 8 — 消融实验 E4（第 9–10 周）
+## 八、Step 8 — 消融实验 E5（第 9–10 周）
 
 ### 产出物
 - `experiments/run_ablation.py`
@@ -512,12 +529,13 @@ training = TimeSeriesDataSet(
    ```
 
 2. **第 10 周: Introduction + Related Work**
-   - 问题动机: 异质滞后 + Solow 悖论 + 吸收能力
-   - Related Work 三条线:
-     - 经典 DLM/ARDL 与面板扩展（L13）
-     - 深度学习面板时序模型 TFT/Panel-LSTM（L1, L5, L7）
-     - 实体异质性建模：元学习、条件化模型（L9, L8）
-   - **必须讨论的竞品**: Babii et al. (2020), 黄 (2023), Zhou et al. (2025)
+   - 问题动机: 正规—非正规经济时滞 + 制度异质性导致不同传导速度
+   - Related Work 四条线（回应老师邮件要求）:
+     - 含滞后的计算模型: DLM/ARDL, delay DE, LSTM, Granger causality (L1, L13)
+     - 经济过程间时滞的经济理论: 政策传导滞后、制度质量与调整速度 (L15, L17)
+     - 社会经济过程中特定时滞的实证研究 (L16, L18, L19)
+     - 非正规经济规模与社会经济过程的关系 (L15, L16, L17)
+   - **必须讨论的竞品**: Babii et al. (2020), Zhou et al. (2025)
 
 3. **第 11 周: Method 章节**
    - 形式化 CMDL 任务定义
@@ -594,12 +612,14 @@ training = TimeSeriesDataSet(
 | | L12 | Feenstra et al. 2015 (PWT Guide) | PWT使用指南 |
 | **Step 6 (Baseline)** | L13 | Pesaran & Smith 1995 (PMG) | 理论基础 |
 | | L14 | pytorch-forecasting TFT Tutorial | 代码教程 |
-| **Step 7 (真实实验)** | L15 | Appiah-Otoo 2023 (RE Investment CO₂) | 能源域对标 |
-| | L16 | Sheng 2025 (Capital Deepening TFP) | 经济域对标 |
-| | L17 | Fuentes & Mies 2021 (AC & TFP) | 理论支撑 |
-| **Step 9 (写作)** | L18 | Zhou et al. 2025 (CoDEAL) | 竞品定位 |
-| | L19 | Cerqua et al. 2025 (ML Panel Pitfalls) | 方法论警示 |
-| | L20 | Thayasivam et al. 2025 (Panel DL Survey) | 最新综述 |
+| **Step 7 (真实实验)** | L15 | Schneider & Enste 2000 (影子经济综述) | 影子经济基础 |
+| | L16 | Medina & Schneider 2018 (IMF WP) | 主数据源 |
+| | L17 | Elgin et al. 2021 (DGE法) | 备选数据源 |
+| | L18 | Appiah-Otoo 2023 (RE Investment CO₂) | 能源域对标 |
+| | L19 | Sheng 2025 (Capital Deepening TFP) | 经济域对标 |
+| **Step 9 (写作)** | L20 | Zhou et al. 2025 (CoDEAL) | 竞品定位 |
+| | L21 | Cerqua et al. 2025 (ML Panel Pitfalls) | 方法论警示 |
+| | L22 | Thayasivam et al. 2025 (Panel DL Survey) | 最新综述 |
 
 ---
 
@@ -678,4 +698,4 @@ Step10                                     ████████
 
 ---
 
-*文档版本：2026-04-12 v2。新增各 Step「🔧 可复用开源代码」小节与附录 C 文件级索引。与 readme.md v4 Core/Expansion 结构对齐。*
+*文档版本：2026-04-17 v3。新增影子经济主验证域（E2），实验编号重排；Step 5 新增影子经济数据任务；Step 7 新增 run_shadow.py；文献索引新增 L15-L17 影子经济方向。与 readme.md v5.0 Core/Expansion 结构对齐。*

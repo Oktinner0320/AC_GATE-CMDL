@@ -6,7 +6,7 @@ from dataclasses import asdict, dataclass
 from typing import Any, Literal
 
 
-DomainLiteral = Literal["synthetic", "energy", "economics"]
+DomainLiteral = Literal["synthetic", "shadow", "energy", "economics"]
 ScenarioLiteral = Literal["linear", "nonlinear"]
 
 
@@ -39,7 +39,7 @@ class CMDLConfig:
 		Validate configuration constraints before later modules consume them.
 		"""
 
-		valid_domains = {"synthetic", "energy", "economics"}
+		valid_domains = {"synthetic", "shadow", "energy", "economics"}
 		valid_scenarios = {"linear", "nonlinear"}
 
 		if self.domain not in valid_domains:
@@ -92,7 +92,25 @@ class CMDLConfig:
 				"seed": 42,
 				"scenario": "linear",
 			},
-			# energy 与 economics 先保留 Core 阶段的占位规模与共享超参数。
+			# shadow 对齐 Medina & Schneider (2018) 影子经济面板。
+			# 158 国 × 1991-2015 (25 年)，proxy: 治理质量 / 金融包容度 / 执法效率。
+			"shadow": {
+				"domain": "shadow",
+				"max_lag": 10,
+				"d_model": 64,
+				"n_proxies": 3,
+				"lambda_r": 0.1,
+				"temperature": 1.0,
+				"lag_bias_strength": 1.0,
+				"n_entities": 158,
+				"seq_length": 25,
+				"seq_features": 1,
+				"static_dim": 2,
+				"noise_std": 0.10,
+				"seed": 42,
+				"scenario": "linear",
+			},
+			# energy 与 economics 作为泛化验证域。
 			"energy": {
 				"domain": "energy",
 				"max_lag": 10,
