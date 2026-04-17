@@ -16,7 +16,9 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-from model.backbone import TimeDistributed
+# 复用 backbone 中的共享 GLU，避免 Step 2 / Step 3 的门控实现分叉。
+# Reuse the shared GLU from the backbone to keep Step 2 / Step 3 gating behavior consistent.
+from model.backbone import GatedLinearUnit, TimeDistributed
 
 
 
@@ -28,29 +30,6 @@ class LagGateOutput:
     lag_context: Optional[torch.Tensor]     # 加权后的历史上下文 / Weighted historical context，形状 [B, d_model] / shape [B, d_model]，当提供 lagged_sequence 时非 None / non-None when lagged_sequence is provided
     logits: torch.Tensor                     # 原始 logits / Raw logits，形状 [B, K] / shape [B, K]，未经过 softmax 的滞后打分 / unnormalized lag scores before softmax
 
-
-class GatedLinearUnit(nn.Module):
-    """保持输入输出维度一致的 GLU。
-    Dimension-preserving GLU used by both GRN variants.
-
-    它把同一输入拆成 gate 路径和 value 路径，再做逐元素相乘。
-    It splits the same input into a gate path and a value path, then multiplies them elementwise.
-    """
-
-    def __init__(self, input_dim:int) -> None:
-        super().__init__()
-        self.gate_projection = nn.Linear(input_dim, input_dim)
-        self.value_projection = nn.Linear(input_dim, input_dim)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """根据 gate 强度筛选 value 信号。
-        Filter the value signal according to the learned gate strength.
-        """
-
-        gate = torch.sigmoid(self.gate_projection(x))
-        value = self.value_projection(x)
-        return gate * value
-    
 
 class GatedResidualNetwork(nn.Module):
     """面向时序张量的 TFT 风格 GRN。

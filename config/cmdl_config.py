@@ -27,6 +27,8 @@ class CMDLConfig:
 	seq_length: int = 30                    # 时间序列长度 | Sequence length per entity.
 	seq_features: int = 1                   # 时序输入特征数 | Number of sequential input features.
 	static_dim: int = 2                     # 静态特征维度 | Number of static entity features.
+	lstm_layers: int = 2                    # LSTM 层数 | Number of LSTM layers in the backbone.
+	dropout: float = 0.05                  # 通用 dropout 比例 | Shared dropout rate for Step 3 blocks.
 	noise_std: float = 0.15                 # 合成数据噪声强度 | Noise level used in synthetic generation.
 	seed: int = 42                          # 随机种子 | Random seed for reproducibility.
 	scenario: ScenarioLiteral = "linear"    # 合成场景类型 | Synthetic scenario type.
@@ -59,8 +61,14 @@ class CMDLConfig:
 			raise ValueError("n_proxies must be at least 1")
 		if self.n_entities < 1:
 			raise ValueError("n_entities must be at least 1")
+		# Step 3 新增的 backbone 超参数也在配置层统一校验。
+		# Step 3 backbone hyperparameters are validated centrally in the config layer.
+		if self.lstm_layers < 1:
+			raise ValueError("lstm_layers must be at least 1")
 		if self.lambda_r < 0.0:
 			raise ValueError("lambda_r must be non-negative")
+		if not 0.0 <= self.dropout < 1.0:
+			raise ValueError("dropout must be in [0, 1)")
 		if self.temperature <= 0.0:
 			raise ValueError("temperature must be positive")
 		if self.lag_bias_strength < 0.0:
@@ -88,6 +96,8 @@ class CMDLConfig:
 				"seq_length": 30,
 				"seq_features": 1,
 				"static_dim": 2,
+				"lstm_layers": 2,
+				"dropout": 0.05,
 				"noise_std": 0.15,
 				"seed": 42,
 				"scenario": "linear",
@@ -106,6 +116,8 @@ class CMDLConfig:
 				"seq_length": 25,
 				"seq_features": 1,
 				"static_dim": 2,
+				"lstm_layers": 2,
+				"dropout": 0.05,
 				"noise_std": 0.10,
 				"seed": 42,
 				"scenario": "linear",
@@ -123,6 +135,8 @@ class CMDLConfig:
 				"seq_length": 35,
 				"seq_features": 1,
 				"static_dim": 2,
+				"lstm_layers": 2,
+				"dropout": 0.05,
 				"noise_std": 0.10,
 				"seed": 42,
 				"scenario": "linear",
@@ -139,6 +153,8 @@ class CMDLConfig:
 				"seq_length": 40,
 				"seq_features": 1,
 				"static_dim": 2,
+				"lstm_layers": 2,
+				"dropout": 0.05,
 				"noise_std": 0.10,
 				"seed": 42,
 				"scenario": "linear",
