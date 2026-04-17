@@ -4,7 +4,7 @@
   "lr": 0.001,
   "lambda_r": 0.1,
   "temperature": 1.0,
-  "lag_bias_strength": 1.0,
+  "lag_bias_strength": 0.0,
   "grad_clip": 1.0,
   "val_fraction": 0.2,
   "device": "auto",

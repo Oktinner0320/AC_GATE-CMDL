@@ -534,6 +534,7 @@ def run_experiment(
     history: list[dict[str, float]] = []
     best_epoch = 0
     best_val_task_loss = float("inf")
+    best_val_score = float("inf")
     best_state = copy.deepcopy(setup.model.state_dict())
     patience_counter = 0
 
@@ -563,7 +564,11 @@ def run_experiment(
                     f"val_proxy_r2={val_metrics['proxy_recon_r2']:.4f}"
                 )
 
-            if val_metrics["task_loss"] < best_val_task_loss - 1e-8:
+            # 使用复合指标做模型选择，避免只优化 task_loss 而忽略 k* 恢复质量。
+            # Use a composite score for model selection so k* recovery is not ignored.
+            val_score = val_metrics["task_loss"] + val_metrics["kstar_mae"]
+            if val_score < best_val_score - 1e-8:
+                best_val_score = float(val_score)
                 best_val_task_loss = float(val_metrics["task_loss"])
                 best_epoch = epoch
                 patience_counter = 0

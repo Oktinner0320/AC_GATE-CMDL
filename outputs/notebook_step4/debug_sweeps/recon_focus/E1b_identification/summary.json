@@ -3,8 +3,8 @@
   "scenario": "linear",
   "source_run": "E1a_linear",
   "metrics": {
-    "z_spearman_rho": -0.9496932423310583,
-    "z_spearman_p": 8.768164930964663e-102,
-    "proxy_recon_r2": -17.23413119671669
+    "z_spearman_rho": 0.9887647191179779,
+    "z_spearman_p": 2.115842412589986e-165,
+    "proxy_recon_r2": -28.313720537882972
   }
 }

@@ -73,9 +73,9 @@ class AdaptiveACEncoder(nn.Module):
 		# hidden aggregates proxy information; z_i becomes the entity-level conditioning signal for the lag gate.
 		hidden = self.encoder(proxies)
 		z_i = self.latent_head(hidden)
-		# p_hat_i 用于后续 reconstruction loss，约束 z_i 保留 proxy 语义。
-		# p_hat_i is used by the later reconstruction loss to keep z_i semantically tied to the proxies.
-		p_hat_i = self.proxy_reconstructor(z_i)
+		# p_hat_i 用于后续 reconstruction loss；detach 防止 recon 梯度干扰 encoder 表示学习。
+		# p_hat_i feeds reconstruction loss; detach prevents recon gradients from disturbing encoder representations.
+		p_hat_i = self.proxy_reconstructor(z_i.detach())
 		return ACEncoderOutput(z_i=z_i, p_hat_i=p_hat_i)
 
 

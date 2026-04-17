@@ -129,10 +129,11 @@ class UniversalPanelBackbone(nn.Module):
         self.static_projection = nn.Linear(static_dim, d_model)
         self.z_projection = nn.Linear(1, d_model)
         self.control_projection = nn.Linear(1, d_model)
-        # 输入融合层把 5 路 d_model 特征压回单一路径，避免直接把大拼接喂给 LSTM。
-        # The fusion layer compresses five d_model streams back to one before the LSTM.
+        # 输入融合层把 4 路 d_model 特征压回单一路径，避免直接把大拼接喂给 LSTM。
+        # The fusion layer compresses four d_model streams back to one before the LSTM.
+        # NOTE: current_sequence is excluded to prevent the backbone from bypassing lag_context.
         self.input_fusion = nn.Sequential(
-            nn.Linear(5 * d_model, d_model),
+            nn.Linear(4 * d_model, d_model),
             nn.LayerNorm(d_model),
             nn.GELU(),
         )
@@ -198,10 +199,10 @@ class UniversalPanelBackbone(nn.Module):
             macro_summary = macro_controls.mean(dim=-1, keepdim=True)
             macro_context = self.control_projection(macro_summary)
 
-        # 将当前时点输入、滞后上下文和实体侧信息统一压缩为 LSTM 的单路输入。
-        # Compress current inputs, lag context, and entity-side information into a single LSTM input stream.
+        # 将滞后上下文和实体侧信息统一压缩为 LSTM 的单路输入（不含 current_sequence 以消除捷径路径）。
+        # Compress lag context and entity-side information into a single LSTM input stream (current_sequence excluded to remove shortcut).
         fused_inputs = torch.cat(
-            [current_sequence, lag_context_sequence, entity_context, static_context, macro_context],
+            [lag_context_sequence, entity_context, static_context, macro_context],
             dim=-1,
         )
         fused_inputs = self.input_fusion(fused_inputs)
