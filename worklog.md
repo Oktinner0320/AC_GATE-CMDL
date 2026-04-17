@@ -123,3 +123,200 @@
 #### 模块依赖
 - 服务于所有后续 Python 测试文件，不局限于 Step 2。
 - 与 `tests/test_step2_modules.py` 的路径修正逻辑配合，提升“直接点击运行测试”的稳定性。
+
+---
+
+## 2026-04-16
+
+### model/backbone.py
+
+#### 完成清单
+- 实现 `TimeDistributed`，为 Step 2 / Step 3 共享的时序包装层提供统一入口。
+- 实现共享 `GatedLinearUnit` 与 `GateAddNorm`，把 TFT 风格的门控残差块沉淀为可复用基础组件。
+- 实现 `BackboneOutput` 数据结构，统一封装序列输出与最终状态。
+- 实现 `UniversalPanelBackbone`，支持融合当前时点输入、lag context、实体嵌入、静态特征、`z_i` 和可选宏观控制变量。
+- 在 LSTM 前增加输入融合层，在循环初态中显式注入 entity/static/`z_i` 条件信号，并在 LSTM 后增加 GateAddNorm 稳定输出。
+- 增补中英文模块、类、方法和关键逻辑注释，明确各上下文分支的角色和 shape 契约。
+
+#### 质量验证
+- 当前静态错误检查通过，`model/backbone.py` 无报错。
+- `tests/test_step3_model.py` 中的 `test_backbone_returns_expected_shapes` 通过，已验证 backbone 输出序列形状为 `[B, T, d_model]`，最终状态形状为 `[B, d_model]`。
+- backbone 已成功被 `CMDLModel` 和 Step 4 训练脚本复用，说明接口在 Step 3 和 Step 4 场景下保持稳定。
+
+#### 模块依赖
+- 被 `model/lag_gate.py` 复用 `TimeDistributed` 与 `GatedLinearUnit`。
+- 被 `model/cmdl_model.py` 直接调用，作为实体级条件与时序信号融合后的主干网络。
+
+### model/loss.py
+
+#### 完成清单
+- 实现 `DomainAgnosticLossOutput`，统一封装 `total_loss`、`task_loss` 与 `recon_loss`。
+- 实现 `DomainAgnosticLoss`，支持在 warm-up 裁剪后的有效时间段上计算任务 MSE，并与 proxy 重构 MSE 做线性组合。
+- 增加 `warmup_steps` 对齐逻辑，使 `y_true` 既支持完整长度输入，也支持已裁剪输入。
+- 增补中英文注释，明确 loss 的 shape 假设、对齐规则和 Step 3 定义来源。
+
+#### 质量验证
+- 当前静态错误检查通过，`model/loss.py` 无报错。
+- `tests/test_step3_model.py` 中的 `test_loss_aligns_with_warmup_steps` 通过，已验证 warm-up 对齐与标量 loss 输出行为正确。
+- Step 4 训练脚本已直接复用该损失模块，说明 Step 3 的 loss 接口满足后续实验工程接入需求。
+
+#### 模块依赖
+- 被 `model/cmdl_model.py` 的集成测试直接消费。
+- 被 `experiments/run_synthetic.py` 直接复用，作为 Step 4 训练和评估时的统一损失定义。
+
+### model/cmdl_model.py
+
+#### 完成清单
+- 实现 `CMDLModelOutput`，统一封装 `y_pred`、`omega`、`z_i`、`p_hat_i`、`k_star`、`lag_context_sequence` 与 `backbone_sequence`。
+- 实现 `CMDLModel`，完成 AC Encoder、输入适配层、实体嵌入、Lag Gate、Backbone、回归头的端到端组装。
+- 实现 `_build_lagged_windows`，将序列输入展开为 `[lag1, ..., lagK]` 顺序的 rolling 历史窗口，并在 forward 中对齐 `omega` 语义。
+- 在 forward 中显式处理 warm-up 阶段，确保只在 `t >= max_lag` 的有效时间段输出预测。
+- 增补中英文注释，明确 entity-level omega 的共享方式、lag context 聚合逻辑和模块数据流顺序。
+
+#### 质量验证
+- 当前静态错误检查通过，`model/cmdl_model.py` 无报错。
+- `tests/test_step3_model.py` 中的 `test_model_forward_returns_expected_shapes` 通过，已验证输出 shape、`omega` 归一化和 `k_star` 张量结构符合预期。
+- `tests/test_step3_model.py` 中的 `test_end_to_end_optimization_reduces_loss` 通过，已验证端到端计算图可以正常反传并出现短程 loss 下降。
+- Step 4 的 `experiments/run_synthetic.py` 与 notebook 已复用该模型成功执行合成实验，说明 Step 3 交付物已具备实验级可调用性。
+
+#### 模块依赖
+- 依赖 `model/ac_encoder.py`、`model/lag_gate.py`、`model/backbone.py` 和 `config/cmdl_config.py`。
+- 被 `tests/test_step3_model.py` 与 `experiments/run_synthetic.py` 直接消费。
+
+### tests/test_step3_model.py
+
+#### 完成清单
+- 新建 Step 3 测试脚本，覆盖 backbone shape 契约、整模前向输出、loss warm-up 对齐和短程优化收敛 4 项测试。
+- 在测试脚本中补充工作区路径修正和 `KMP_DUPLICATE_LIB_OK` 环境变量设置，提升 Windows + PyTorch 环境下的稳定性。
+- 使用小规模 synthetic batch 构造回归测试数据，降低测试成本并保持接口覆盖。
+- 增补中英文模块、测试类、测试函数与关键断言注释，明确每一项测试的覆盖目的。
+
+#### 质量验证
+- 当前 `tests/test_step3_model.py` 静态错误检查通过，无报错。
+- 本次验证已执行该文件，结果为 4 项测试全部通过。
+- 测试覆盖了 backbone、整模、loss 和一次最小训练闭环，是 Step 3 当前的质量门槛。
+
+#### 模块依赖
+- 依赖 `config/cmdl_config.py`、`data/synthetic/generate.py`、`model/backbone.py`、`model/cmdl_model.py`、`model/loss.py`。
+- 为 Step 4 实验脚本接入 Step 3 模型提供回归保护。
+
+---
+
+## 2026-04-17
+
+### evaluation/metrics.py
+
+#### 完成清单
+- 实现 `_to_numpy` 与 `_prepare_pair`，统一兼容 numpy array 与 torch.Tensor 输入。
+- 实现 `compute_mse`、`compute_mae`、`compute_r2`、`compute_spearman` 四个基础评估指标。
+- 在 `compute_r2` 和 `compute_spearman` 中加入退化输入与数值异常保护，避免实验阶段被 NaN 或常数输入中断。
+- 增补中英文模块、函数与关键保护逻辑注释，明确二维输入和安全回退行为。
+
+#### 质量验证
+- 当前静态错误检查通过，`evaluation/metrics.py` 无报错。
+- 该模块已被 `evaluation/kstar_eval.py`、`visualization/kstar_distribution.py` 和 Step 4 notebook 间接复用，说明接口稳定。
+
+#### 模块依赖
+- 被 `evaluation/kstar_eval.py` 直接复用。
+- 被可视化与实验汇总逻辑间接消费，作为 Step 4 数值评估基础层。
+
+### evaluation/kstar_eval.py
+
+#### 完成清单
+- 实现 `evaluate_kstar`，返回 `mae`、`rmse`、`spearman_rho` 与 `spearman_p`。
+- 实现 `evaluate_z_identification`，同时返回 `z_spearman_rho`、`z_spearman_p` 与 `proxy_recon_r2`。
+- 实现 `evaluate_omega_distribution`，返回 `entropy_mean` 与 `peak_accuracy` 两个诊断指标。
+- 增补中英文注释，明确 Step 4 中 k*、z 与 omega 的三类评估职责。
+
+#### 质量验证
+- 当前静态错误检查通过，`evaluation/kstar_eval.py` 无报错。
+- Step 4 训练脚本已稳定产出 `kstar_mae`、`kstar_spearman_rho`、`proxy_recon_r2`、`omega_entropy_mean` 与 `omega_peak_accuracy` 等指标，说明评估接口已闭环。
+
+#### 模块依赖
+- 依赖 `evaluation/metrics.py`。
+- 被 `experiments/run_synthetic.py` 直接调用，用于训练期验证和最终结果汇总。
+
+### visualization/omega_heatmap.py
+
+#### 完成清单
+- 实现 `plot_omega_heatmap`，支持按 `z` 值降序排序实体并绘制 omega 热力图。
+- 在热力图上叠加真实 `k*` 位置，便于直观看到权重峰值与 ground truth 的偏差。
+- 增加 `save_path` 落盘逻辑，支持 Step 4 训练脚本和 notebook 同时复用。
+- 增补中英文注释，明确排序逻辑、坐标含义和保存流程。
+
+#### 质量验证
+- 当前静态错误检查通过，`visualization/omega_heatmap.py` 无报错。
+- notebook 和训练脚本均已成功生成并显示 omega 热力图，说明图像渲染链路可用。
+
+#### 模块依赖
+- 被 `experiments/run_synthetic.py` 用于保存实验产物。
+- 被 `notebooks/01_synthetic_verify.ipynb` 直接调用用于交互式复核。
+
+### visualization/kstar_distribution.py
+
+#### 完成清单
+- 实现 `plot_kstar_scatter`，绘制 predicted vs true k* 散点图。
+- 支持按 `z` 分位数着色，并在图中标注 MAE 和 Spearman rho。
+- 增加对角参考线、坐标范围控制和 `save_path` 输出能力，满足 Step 4 图表需求。
+- 增补中英文注释，说明着色分组、误差标注和文件保存逻辑。
+
+#### 质量验证
+- 当前静态错误检查通过，`visualization/kstar_distribution.py` 无报错。
+- notebook 和训练脚本均已成功生成 k* 散点图，说明可视化与评估指标之间保持一致。
+
+#### 模块依赖
+- 依赖 `evaluation/metrics.py` 获取 MAE 与 Spearman rho。
+- 被 `experiments/run_synthetic.py` 和 `notebooks/01_synthetic_verify.ipynb` 直接复用。
+
+### experiments/run_synthetic.py
+
+#### 完成清单
+- 实现 Step 4 主入口脚本，补齐参数解析、随机种子设置、设备选择、合成面板切分和输出目录组织。
+- 实现 `ExperimentSetup` 与 `ExperimentResult` 数据结构，统一管理训练态对象、历史记录和最终产物。
+- 实现 `setup_experiment`、`train_one_epoch`、`evaluate`、`run_experiment`、`run_e1a`、`run_e1b`、`run_e1c` 和 `main`，完成 E1a/E1b/E1c 的完整训练与评估流水线。
+- 增加 checkpoint、history.csv、history.json、summary.json、predictions.csv 与图像产物的落盘逻辑。
+- 实现本地 sqlite-backed MLflow 记录，并保留 JSON fallback，避免使用已弃用的文件元数据存储后端。
+- 在脚本开头补充工作区根目录注入，确保直接运行 `python experiments/run_synthetic.py` 时可解析顶层包。
+- 增补中英文模块、类、函数与关键步骤注释，明确日志、早停、artifact 与 MLflow 行为。
+
+#### 质量验证
+- 当前静态错误检查通过，`experiments/run_synthetic.py` 无报错。
+- 终端 smoke run 已成功执行 `python experiments/run_synthetic.py --scenario linear --epochs 1 --patience 1 --output-dir outputs/step4_sqlite_smoke`。
+- notebook 已在 PTenv 下成功复用 `run_e1a`、`run_e1b` 与 `run_e1c` 完成 formal_target 运行，说明脚本的 notebook 接入与脚本接入均稳定。
+- formal_target 下 E1a 在 epoch 70 early stop，E1c 在 epoch 58 early stop，表明训练循环、验证与 early stopping 逻辑已完整闭环。
+
+#### 模块依赖
+- 依赖 `config/cmdl_config.py`、`data/synthetic/generate.py`、`model/cmdl_model.py`、`model/loss.py`、`evaluation/kstar_eval.py`、`visualization/omega_heatmap.py`、`visualization/kstar_distribution.py`。
+- 被 `notebooks/01_synthetic_verify.ipynb` 和后续命令行实验直接复用。
+
+### notebooks/01_synthetic_verify.ipynb
+
+#### 完成清单
+- 将原有的合成数据可视化验证 notebook 重构为 Step 4 实验前端，保留仓库根目录发现、绘图环境配置和结果展示能力。
+- 引入 `quick_check`、`notebook_medium`、`formal_target` 三档预设，并将默认计划切换为 `formal_target`。
+- 增加 E1a、E1b、E1c 的阈值说明、summary table、criteria table 和通过性判断输出。
+- 增加线性与非线性场景的结果加载、omega 热力图和 k* 散点图展示逻辑。
+- 新增 Debug Diagnostics 区域，用于诊断 proxy 重构上限、lag 相关性和 omega peak 塌缩情况。
+- 新增 Debug Sweep 区域，用于在不改模型源码的前提下快速比较温度、偏置和 `lambda_r` 对失败模式的影响。
+
+#### 质量验证
+- 最新 notebook 摘要显示当前共有 11 个单元，其中代码单元已成功执行到 formal_target 与诊断区，执行计数覆盖主实验区与 Debug Diagnostics 区。
+- formal_target 下 notebook 已完成 E1a、E1b、E1c 的运行、汇总表展示、criteria table 判断和图像渲染。
+- Notebook 诊断显示：`best_linear_proxy_r2_from_z_true = 0.9392`、`best_linear_proxy_r2_from_z_pred = 0.9487`、`model_proxy_recon_r2 = -18.6828`，说明 E1b 当前失败不来自数据生成上限。
+- Notebook 诊断显示：formal_target 线性场景的 `omega_peak` 分布为 lag 3 占 170 个实体、lag 7 占 30 个实体；非线性场景为 lag 3 占 200 个实体，确认 lag gate 存在明显峰值塌缩。
+- 当前 notebook 也暴露了一个可用性问题：主实验区与诊断区不会自动同步刷新，需要手动重跑诊断单元。
+
+#### 模块依赖
+- 依赖 `experiments/run_synthetic.py`、`visualization/omega_heatmap.py`、`visualization/kstar_distribution.py` 以及 Step 4 产出的 CSV / JSON artifact。
+- 作为 Step 4 的交互式实验入口和问题诊断前端，与 `question.md` 中的已知问题记录形成互补。
+
+### Step 4 阶段结论
+
+#### 当前结论
+- Step 4 的实验工程层已经完整打通：训练脚本、评估指标、可视化、Notebook 前端和 sqlite-backed MLflow 都已可运行。
+- formal_target 当前仍未达到计划书阈值：E1a `kstar_mae = 1.8607`、E1b `proxy_recon_r2 = -18.6828`、E1c `kstar_mae = 2.4281`。
+- 目前最关键的两条问题链已经确认：一是 lag gate 学到了排序但没有恢复正确 lag 数值；二是 z 已具备排序信息，但重构头没有把 z 转换为有效 proxy 重构能力。
+
+#### 后续影响
+- Step 4 下一阶段的重点不应再是盲目扩展超参搜索，而应优先修改训练代码和损失行为。
+- 当前 formal_target、Debug Diagnostics 与 Debug Sweep 的结果已同步整理到 `question.md`，可作为下一轮排障的事实依据。
