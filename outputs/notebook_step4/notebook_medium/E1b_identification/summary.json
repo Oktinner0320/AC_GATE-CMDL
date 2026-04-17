@@ -1,0 +1,10 @@
+{
+  "experiment": "E1b_identification",
+  "scenario": "linear",
+  "source_run": "E1a_linear",
+  "metrics": {
+    "z_spearman_rho": 0.9877371934298358,
+    "z_spearman_p": 1.1649273118340059e-161,
+    "proxy_recon_r2": -21.46690294968933
+  }
+}

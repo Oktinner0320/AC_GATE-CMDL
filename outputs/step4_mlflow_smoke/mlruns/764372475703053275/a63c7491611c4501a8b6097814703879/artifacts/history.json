@@ -1,0 +1,21 @@
+[
+  {
+    "epoch": 1.0,
+    "train_total_loss": 1.1751211881637573,
+    "train_task_loss": 1.0525784492492676,
+    "train_recon_loss": 1.2254273891448975,
+    "train_grad_norm": 21.688865661621094,
+    "val_total_loss": 0.4923861026763916,
+    "val_task_loss": 0.37271642684936523,
+    "val_recon_loss": 1.1966968774795532,
+    "val_kstar_mae": 2.863290083408356,
+    "val_kstar_rmse": 3.299660188650522,
+    "val_kstar_spearman_rho": 0.8494277805335464,
+    "val_kstar_spearman_p": 4.234755575499883e-12,
+    "val_z_spearman_rho": 0.8444652908067544,
+    "val_z_spearman_p": 7.492027810389877e-12,
+    "val_proxy_recon_r2": -26.634139771412478,
+    "val_omega_entropy_mean": 1.7057793189889778,
+    "val_omega_peak_accuracy": 0.05
+  }
+]

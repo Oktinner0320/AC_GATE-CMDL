@@ -1,0 +1,16 @@
+{
+  "scenario": "all",
+  "seed": 42,
+  "lr": 0.001,
+  "epochs": 5,
+  "patience": 3,
+  "lambda_r": 0.1,
+  "temperature": 1.0,
+  "lag_bias_strength": 1.0,
+  "grad_clip": 1.0,
+  "val_fraction": 0.2,
+  "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\notebook_step4",
+  "device": "auto",
+  "disable_mlflow": false,
+  "log_every": 1
+}

@@ -1,0 +1,16 @@
+{
+  "scenario": "linear",
+  "seed": 42,
+  "lr": 0.001,
+  "epochs": 2,
+  "patience": 2,
+  "lambda_r": 0.1,
+  "temperature": 1.0,
+  "lag_bias_strength": 1.0,
+  "grad_clip": 1.0,
+  "val_fraction": 0.2,
+  "output_dir": "outputs/step4_smoke",
+  "device": "auto",
+  "disable_mlflow": true,
+  "log_every": 10
+}

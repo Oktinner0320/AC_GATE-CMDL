@@ -1,0 +1,45 @@
+[
+  {
+    "experiment": "E1a_linear",
+    "scenario": "linear",
+    "best_epoch": 30,
+    "best_val_task_loss": 0.11652173846960068,
+    "total_loss": 0.18623319268226624,
+    "task_loss": 0.07824686914682388,
+    "recon_loss": 1.0798633098602295,
+    "kstar_mae": 1.935703191757202,
+    "kstar_rmse": 2.3934544805572813,
+    "kstar_spearman_rho": 0.97962026842104,
+    "kstar_spearman_p": 5.422067183929247e-140,
+    "z_spearman_rho": 0.9877371934298358,
+    "z_spearman_p": 1.1649273118340059e-161,
+    "proxy_recon_r2": -21.46690294968933,
+    "omega_entropy_mean": 1.754082768836065,
+    "omega_peak_accuracy": 0.055
+  },
+  {
+    "experiment": "E1b_identification",
+    "scenario": "linear",
+    "z_spearman_rho": 0.9877371934298358,
+    "z_spearman_p": 1.1649273118340059e-161,
+    "proxy_recon_r2": -21.46690294968933
+  },
+  {
+    "experiment": "E1c_nonlinear",
+    "scenario": "nonlinear",
+    "best_epoch": 30,
+    "best_val_task_loss": 0.1126261055469513,
+    "total_loss": 0.1816752701997757,
+    "task_loss": 0.080912284553051,
+    "recon_loss": 1.0076298713684082,
+    "kstar_mae": 2.421831954717636,
+    "kstar_rmse": 2.719905055893988,
+    "kstar_spearman_rho": 0.960851131619889,
+    "kstar_spearman_p": 2.520243058982431e-112,
+    "z_spearman_rho": 0.9884767119177981,
+    "z_spearman_p": 2.556452256975574e-164,
+    "proxy_recon_r2": -19.46473281017155,
+    "omega_entropy_mean": 1.519783855632774,
+    "omega_peak_accuracy": 0.12
+  }
+]

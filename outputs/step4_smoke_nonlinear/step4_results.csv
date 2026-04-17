@@ -1,0 +1,2 @@
+experiment,scenario,best_epoch,best_val_task_loss,total_loss,task_loss,recon_loss,kstar_mae,kstar_rmse,kstar_spearman_rho,kstar_spearman_p,z_spearman_rho,z_spearman_p,proxy_recon_r2,omega_entropy_mean,omega_peak_accuracy
+E1c_nonlinear,nonlinear,1,0.39693593978881836,0.46601980924606323,0.34498733282089233,1.2103248834609985,2.62324569940567,2.8964478625331247,0.9043069985588857,3.956922417744582e-75,0.9321938048451214,2.4998394713817285e-89,-24.287463511532366,1.6939087505973072,0.12

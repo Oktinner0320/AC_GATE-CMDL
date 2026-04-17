@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/DevSpace/PyDevspace/CMDL/outputs/step4_mlflow_smoke/mlruns/764372475703053275/a63c7491611c4501a8b6097814703879/artifacts
+end_time: 1776443207297
+entry_point_name: ''
+experiment_id: '764372475703053275'
+lifecycle_stage: active
+run_id: a63c7491611c4501a8b6097814703879
+run_name: E1a_linear
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1776443206570
+status: 3
+tags: []
+user_id: '42155'

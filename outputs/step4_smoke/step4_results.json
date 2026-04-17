@@ -1,0 +1,27 @@
+[
+  {
+    "experiment": "E1a_linear",
+    "scenario": "linear",
+    "best_epoch": 1,
+    "best_val_task_loss": 0.37271642684936523,
+    "total_loss": 0.43803802132606506,
+    "task_loss": 0.3170057535171509,
+    "recon_loss": 1.210322618484497,
+    "kstar_mae": 2.2515303349494933,
+    "kstar_rmse": 2.7547754475220434,
+    "kstar_spearman_rho": 0.9295291855881714,
+    "kstar_spearman_p": 9.932501174919088e-88,
+    "z_spearman_rho": 0.9321458036450913,
+    "z_spearman_p": 2.6748063848903827e-89,
+    "proxy_recon_r2": -24.287403211723127,
+    "omega_entropy_mean": 1.6986091894453859,
+    "omega_peak_accuracy": 0.055
+  },
+  {
+    "experiment": "E1b_identification",
+    "scenario": "linear",
+    "z_spearman_rho": 0.9321458036450913,
+    "z_spearman_p": 2.6748063848903827e-89,
+    "proxy_recon_r2": -24.287403211723127
+  }
+]

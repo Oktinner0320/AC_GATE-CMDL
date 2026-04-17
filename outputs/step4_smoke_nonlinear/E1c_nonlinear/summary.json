@@ -1,0 +1,40 @@
+{
+  "experiment": "E1c_nonlinear",
+  "scenario": "nonlinear",
+  "tracking_backend": "json",
+  "device": "cuda",
+  "best_epoch": 1,
+  "best_val_task_loss": 0.39693593978881836,
+  "config": {
+    "domain": "synthetic",
+    "max_lag": 10,
+    "d_model": 64,
+    "n_proxies": 3,
+    "lambda_r": 0.1,
+    "temperature": 1.0,
+    "lag_bias_strength": 1.0,
+    "n_entities": 200,
+    "seq_length": 30,
+    "seq_features": 1,
+    "static_dim": 2,
+    "lstm_layers": 2,
+    "dropout": 0.05,
+    "noise_std": 0.15,
+    "seed": 42,
+    "scenario": "nonlinear"
+  },
+  "metrics": {
+    "total_loss": 0.46601980924606323,
+    "task_loss": 0.34498733282089233,
+    "recon_loss": 1.2103248834609985,
+    "kstar_mae": 2.62324569940567,
+    "kstar_rmse": 2.8964478625331247,
+    "kstar_spearman_rho": 0.9043069985588857,
+    "kstar_spearman_p": 3.956922417744582e-75,
+    "z_spearman_rho": 0.9321938048451214,
+    "z_spearman_p": 2.4998394713817285e-89,
+    "proxy_recon_r2": -24.287463511532366,
+    "omega_entropy_mean": 1.6939087505973072,
+    "omega_peak_accuracy": 0.12
+  }
+}
