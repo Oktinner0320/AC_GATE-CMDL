@@ -1,0 +1,42 @@
+{
+  "experiment": "no_ac_encoder_nonlinear_seed42",
+  "scenario": "nonlinear",
+  "tracking_backend": "mlflow",
+  "device": "cuda",
+  "best_epoch": 11,
+  "best_val_task_loss": 0.1716671735048294,
+  "config": {
+    "domain": "synthetic",
+    "max_lag": 10,
+    "d_model": 64,
+    "n_proxies": 3,
+    "lambda_r": 1.0,
+    "temperature": 0.5,
+    "lag_bias_strength": 0.0,
+    "n_entities": 200,
+    "seq_length": 30,
+    "seq_features": 1,
+    "static_dim": 2,
+    "lstm_layers": 2,
+    "dropout": 0.05,
+    "noise_std": 0.15,
+    "seed": 42,
+    "scenario": "nonlinear"
+  },
+  "metrics": {
+    "total_loss": 0.12799736857414246,
+    "task_loss": 0.12799736857414246,
+    "recon_loss": 892617949184.0,
+    "kstar_mae": 2.710984802246094,
+    "kstar_rmse": 3.000132809697776,
+    "kstar_spearman_rho": 0.0,
+    "kstar_spearman_p": 1.0,
+    "z_spearman_rho": 0.0,
+    "z_spearman_p": 1.0,
+    "proxy_recon_r2": -12413761596426.385,
+    "omega_entropy_mean": 1.1831657414369394,
+    "omega_peak_accuracy": 0.12
+  },
+  "variant": "no_ac_encoder",
+  "effective_lambda_r": 0.0
+}
