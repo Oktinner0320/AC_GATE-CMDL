@@ -20,7 +20,7 @@ class CMDLConfig:
 	max_lag: int = 10                       # 最大滞后阶数 | Maximum lag horizon.
 	d_model: int = 64                       # 主干网络隐藏维度 | Hidden size for downstream model blocks.
 	n_proxies: int = 3                      # AC 代理变量数量 | Number of AC proxy variables.
-	lambda_r: float = 0.1                   # 代理重构损失权重 | Weight of proxy reconstruction loss.
+	lambda_r: float = 1.0                   # 代理重构损失权重 | Weight of proxy reconstruction loss.
 	temperature: float = 1.0                # 门控 softmax 温度 | Softmax temperature for lag gate.
 	lag_bias_strength: float = 0.0          # 相对位置偏置强度 | Strength of relative position bias in lag gate.
 	n_entities: int = 200                   # 实体数量 | Number of entities in a panel.
@@ -89,7 +89,7 @@ class CMDLConfig:
 				"max_lag": 10,
 				"d_model": 64,
 				"n_proxies": 3,
-				"lambda_r": 0.1,
+				"lambda_r": 1.0,
 				"temperature": 1.0,
 				"lag_bias_strength": 0.0,
 				"n_entities": 200,
