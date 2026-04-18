@@ -65,6 +65,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--epochs", type=int, default=200)
     parser.add_argument("--patience", type=int, default=20)
+    parser.add_argument("--lambda-r", dest="lambda_r", type=float, default=synthetic_defaults.lambda_r)
+    parser.add_argument("--temperature", type=float, default=synthetic_defaults.temperature)
+    parser.add_argument(
+        "--lag-bias-strength",
+        type=float,
+        default=synthetic_defaults.lag_bias_strength,
+    )
     parser.add_argument("--grad-clip", type=float, default=1.0)
     parser.add_argument("--val-fraction", type=float, default=0.2)
     parser.add_argument("--output-dir", type=str, default="outputs/step4_ablation")
@@ -226,7 +233,14 @@ def prepare_panels(args: argparse.Namespace, scenario: str, seed: int) -> tuple[
     为单次 ablation 运行准备完整、训练和验证面板。
     """
 
-    cfg = CMDLConfig.from_domain("synthetic", seed=seed, scenario=scenario)
+    cfg = CMDLConfig.from_domain(
+        "synthetic",
+        seed=seed,
+        scenario=scenario,
+        lambda_r=args.lambda_r,
+        temperature=args.temperature,
+        lag_bias_strength=args.lag_bias_strength,
+    )
     set_seed(cfg.seed)
     full_panel_cpu = generate_cmdl_synthetic(cfg)
     train_indices, val_indices = split_entity_indices(cfg.n_entities, args.val_fraction, cfg.seed)
@@ -293,6 +307,9 @@ def run_variant(
             "lr": args.lr,
             "epochs": args.epochs,
             "patience": args.patience,
+            "lambda_r": args.lambda_r,
+            "temperature": args.temperature,
+            "lag_bias_strength": args.lag_bias_strength,
             "grad_clip": args.grad_clip,
             "val_fraction": args.val_fraction,
             "effective_lambda_r": effective_lambda_r,
