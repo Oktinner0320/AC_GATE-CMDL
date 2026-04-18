@@ -234,11 +234,10 @@
 - `scripts/download_shadow.py`
 - `scripts/download_owid.py`
 - `scripts/download_pwt.py`
-- `data/shadow_loader.py`
-- `data/energy_loader.py`
-- `data/economics_loader.py`
-- `data/preprocessing.py`
-- 三个域的清洗后 DataFrame，存为 parquet
+- `data/shadow/shadow_loader.py`
+- `data/energy/energy_loader.py`
+- `data/economics/economics_loader.py`
+- 三个域的清洗后 DataFrame，存为 parquet（各域 loader 内独立实现）
 
 ### 工作内容
 
@@ -285,7 +284,7 @@
    - 增加 `rtfpna` 做稳健性检查
 
 5. **PWT 经济数据下载与清洗**（泛化域 2）
-6. **统一面板构建** `preprocessing.py`
+6. **各域独立预处理**（分别在各域 loader 内实现）
    - 标准化：时序变量实体内 z-score，proxy 变量跨实体 z-score
    - 输出 `TimeSeriesDataSet` 兼容格式（或自定义 `torch.utils.data.Dataset`）
    - 训练/验证/测试按时间切分（70/15/15），**不按实体切分**
@@ -298,9 +297,9 @@
 
 | 来源 | 文件 / 类 | 复用方式 | 用于 |
 |---|---|---|---|
-| **pytorch-forecasting** | [`TimeSeriesDataSet`](https://github.com/sktime/pytorch-forecasting) | **直接实例化使用**（首选）。自动处理 static/time-varying 分离、滑动窗口、entity 分组、时间索引对齐 | `data/preprocessing.py` |
-| **pytorch-forecasting** | `TimeSeriesDataSet.from_dataset()` | **直接调用**。从训练集自动生成验证集（共享 normalization） | `data/preprocessing.py` |
-| **neuralforecast** | [`neuralforecast/`](https://github.com/Nixtla/neuralforecast) 的 DataFrame 格式 | **参考数据格式**（备选）。要求列名 `unique_id`/`ds`/`y`，如后续想用其 TFT baseline需兼容 | `data/preprocessing.py`（可选） |
+| **pytorch-forecasting** | [`TimeSeriesDataSet`](https://github.com/sktime/pytorch-forecasting) | **直接实例化使用**（首选）。自动处理 static/time-varying 分离、滑动窗口、entity 分组、时间索引对齐 | 各域 loader（`data/shadow/`、`data/energy/`、`data/economics/`） |
+| **pytorch-forecasting** | `TimeSeriesDataSet.from_dataset()` | **直接调用**。从训练集自动生成验证集（共享 normalization） | 各域 loader |
+| **neuralforecast** | [`neuralforecast/`](https://github.com/Nixtla/neuralforecast) 的 DataFrame 格式 | **参考数据格式**（备选）。要求列名 `unique_id`/`ds`/`y`，如后续想用其 TFT baseline需兼容 | 各域 loader（可选） |
 | **OWID energy-data** | [GitHub CSV](https://github.com/owid/energy-data) | **直接 `pd.read_csv(url)`**。无需 clone，列名文档见仓库 README | `scripts/download_owid.py` |
 | **OWID co2-data** | [GitHub CSV](https://github.com/owid/co2-data) | **直接 `pd.read_csv(url)`** | `scripts/download_owid.py` |
 | **wbgapi** | `wb.data.DataFrame()` | **直接 API 调用**，一行拉取 World Bank 指标 | `scripts/download_owid.py`（AC proxy） |
@@ -679,8 +678,8 @@ Step10                                     ████████
 
 | 模块 | 类 | 你的用法 | 目标文件 |
 |---|---|---|---|
-| `pytorch_forecasting` | `TimeSeriesDataSet` | **直接实例化**。面板数据→DataLoader，自动处理窗口和归一化 | `data/preprocessing.py` |
-| 同上 | `TimeSeriesDataSet.from_dataset()` | **直接调用**。验证集构造 | `data/preprocessing.py` |
+| `pytorch_forecasting` | `TimeSeriesDataSet` | **直接实例化**。面板数据→DataLoader，自动处理窗口和归一化 | 各域 loader（`data/shadow/`、`data/energy/`、`data/economics/`） |
+| 同上 | `TimeSeriesDataSet.from_dataset()` | **直接调用**。验证集构造 | 各域 loader |
 | 同上 | `TemporalFusionTransformer` | **直接调用 `.from_dataset()`**。TFT baseline | `baselines/tft_baseline.py` |
 
 ### C.4 linearmodels（Step 6 直接使用）

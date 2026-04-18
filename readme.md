@@ -437,10 +437,12 @@ CMDL/
 ├── data/
 │   ├── synthetic/
 │   │   └── generate.py              合成数据生成（线性 k* 函数）
-│   ├── shadow_loader.py             Medina & Schneider 影子经济 + WGI 加载
-│   ├── energy_loader.py             OWID energy + CO₂ 加载
-│   ├── economics_loader.py          PWT 加载（一个 CSV）
-│   └── preprocessing.py             标准化 + 面板构建（合并为一个文件）
+│   ├── shadow/
+│   │   └── shadow_loader.py         Medina & Schneider 影子经济 + WGI 加载与预处理
+│   ├── energy/
+│   │   └── energy_loader.py         OWID energy + CO₂ 加载与预处理
+│   └── economics/
+│       └── economics_loader.py      PWT 加载与预处理
 │
 ├── model/
 │   ├── ac_encoder.py                MLP 编码器（默认）+ VAE 编码器（消融用）
