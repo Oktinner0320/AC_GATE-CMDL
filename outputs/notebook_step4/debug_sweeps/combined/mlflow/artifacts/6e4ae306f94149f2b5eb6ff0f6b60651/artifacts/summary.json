@@ -1,0 +1,40 @@
+{
+  "experiment": "E1a_linear",
+  "scenario": "linear",
+  "tracking_backend": "mlflow",
+  "device": "cuda",
+  "best_epoch": 60,
+  "best_val_task_loss": 0.09322489798069,
+  "config": {
+    "domain": "synthetic",
+    "max_lag": 10,
+    "d_model": 64,
+    "n_proxies": 3,
+    "lambda_r": 1.0,
+    "temperature": 0.3,
+    "lag_bias_strength": 0.1,
+    "n_entities": 200,
+    "seq_length": 30,
+    "seq_features": 1,
+    "static_dim": 2,
+    "lstm_layers": 2,
+    "dropout": 0.05,
+    "noise_std": 0.15,
+    "seed": 42,
+    "scenario": "linear"
+  },
+  "metrics": {
+    "total_loss": 0.054184671491384506,
+    "task_loss": 0.05084144324064255,
+    "recon_loss": 0.0033432284835726023,
+    "kstar_mae": 1.0383287823200227,
+    "kstar_rmse": 1.3120578217885948,
+    "kstar_spearman_rho": 0.9798355670797242,
+    "kstar_spearman_p": 1.914758574201946e-140,
+    "z_spearman_rho": 0.9885307132678319,
+    "z_spearman_p": 1.6099815834966655e-164,
+    "proxy_recon_r2": 0.9384233398722818,
+    "omega_entropy_mean": 0.9030542019505847,
+    "omega_peak_accuracy": 0.215
+  }
+}
