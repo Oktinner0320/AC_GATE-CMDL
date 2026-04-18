@@ -87,15 +87,22 @@ class PlainLSTMBaseline(nn.Module):
             raise ValueError("macro_controls must align with X_it on the batch and time dimensions")
 
         adapted_sequence = self.input_adapter(X_it)
-        current_sequence = adapted_sequence[:, self.cfg.max_lag :, :]
+        # 与 CMDL backbone 保持同样的输入可见性：不直通 X_t，用 uniform 1/K 的滞后聚合作为时序输入。
+        # Match CMDL backbone visibility: no shortcut on X_t; use a uniform 1/K lag aggregate as the temporal input.
+        total_steps = adapted_sequence.size(1)
+        num_steps = total_steps - self.cfg.max_lag
+        lag_windows = [
+            adapted_sequence[:, self.cfg.max_lag - lag : total_steps - lag, :]
+            for lag in range(1, self.cfg.max_lag + 1)
+        ]
+        lag_context = torch.stack(lag_windows, dim=2).mean(dim=2)
         valid_macro_controls = None if macro_controls is None else macro_controls[:, self.cfg.max_lag :, :]
-        num_steps = current_sequence.size(1)
 
         entity_context = self.entity_embedding(entity_ids)
         repeated_entity = entity_context.unsqueeze(1).expand(-1, num_steps, -1)
         static_context = self.static_projection(s_i).unsqueeze(1).expand(-1, num_steps, -1)
         if valid_macro_controls is None:
-            macro_context = current_sequence.new_zeros(batch_size, num_steps, self.cfg.d_model)
+            macro_context = lag_context.new_zeros(batch_size, num_steps, self.cfg.d_model)
         else:
             if valid_macro_controls.dim() != 3:
                 raise ValueError(
@@ -105,7 +112,7 @@ class PlainLSTMBaseline(nn.Module):
             macro_context = self.control_projection(macro_summary)
 
         fused_inputs = torch.cat(
-            [current_sequence, repeated_entity, static_context, macro_context],
+            [lag_context, repeated_entity, static_context, macro_context],
             dim=-1,
         )
         fused_inputs = self.input_fusion(fused_inputs)
