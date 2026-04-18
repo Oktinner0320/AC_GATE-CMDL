@@ -1,5 +1,40 @@
 # Worklog
 
+## 2026-04-18
+
+### Step 4.5 公平性讨论：checkpoint 选择准则 / Fairness discussion: checkpoint selection criterion
+
+#### 背景 / Context
+- Plain LSTM baseline 与 CMDL/ablation 当前使用了不同的 best checkpoint 选择准则：
+  - Plain LSTM (`experiments/run_lstm_baseline.py`): `val_task_loss`
+  - CMDL & ablation (`experiments/run_synthetic.py`, `experiments/run_ablation.py`): `val_task_loss + val_kstar_mae`
+- 根本原因：`PlainLSTMBaseline` 没有原生 `omega / k_star` 输出，`pseudo_k_star` 是训练后通过 lag occlusion 算出来的 post-hoc 量；如果把它放进早停准则会引入循环优化（模型可能学到让 occlusion 更利落的捷径而非预测更准），且每个 val epoch 多 K=10 次前向、训练时间约 11×。
+
+#### 公平性判断 / Fairness assessment
+- **CMDL vs Plain LSTM 的 task_loss 对比**：baseline 用纯 `val_task_loss` 选模型，等于直接最小化被对比的指标；CMDL 用联合准则，则在 task_loss 上主动让步。该差异**对 baseline 是有利**的，对 CMDL 的 task_loss 优势是**保守**对比，不存在不公平。
+- **CMDL vs Plain LSTM 的 k\* / z 维度对比**：两者准则不同会让人质疑"CMDL 占便宜"，但效应量（ρ ≈ 0.97 vs 0.41）远超准则差异可能解释的范围；该差距的真正解释是 post-hoc occlusion 解释力上限本就低，与准则无关。这两条逻辑要分开陈述。
+- **CMDL vs ablation 的内部对比**：三个 variants 与 CMDL 主线**用同一套联合准则**，无公平性问题。
+
+#### Sanity check（从 `history.csv` 离线重选 best epoch，无需重训）
+- E1a linear：联合准则 epoch=80 → val_task_loss=0.0876；纯 task_loss 准则 epoch=64 → val_task_loss=0.0835（更低 0.004），val_kstar_spearman_rho 0.968 → 0.968（不变），val_kstar_mae 1.20 → 1.32（轻微退化）。
+- E1c nonlinear：联合准则 epoch=196 → val_task_loss=0.1455；纯 task_loss 准则 epoch=47 → val_task_loss=0.1314（更低 0.014），val_kstar_spearman_rho 0.976 → 0.976（不变），val_kstar_mae 0.50 → 1.72（明显退化但 ρ 稳健）。
+- 结论：改用纯 task_loss 准则后 CMDL 的 task_loss 只会更低、不会反转，且 k\* 的排序恢复（spearman ρ）对准则不敏感；联合准则的真正作用体现在 k\* 的尺度对齐（MAE）上。
+
+#### 论文/汇报的标准表述 / Reporting template
+> Although CMDL is selected by `val_task_loss + val_kstar_mae` and the plain LSTM baseline is selected by `val_task_loss` alone, this asymmetry is conservative for our task-loss comparison: the baseline is allowed to optimize directly the metric being reported, while CMDL trades part of its task-loss budget for k\* fidelity. CMDL still attains lower task loss (0.04–0.05 vs 0.07–0.09); a sanity check that re-selects CMDL checkpoints by pure `val_task_loss` further reduces val_task_loss from 0.088 to 0.084 (linear) and from 0.146 to 0.131 (nonlinear), while val_kstar_spearman_rho stays unchanged at 0.968 / 0.976. The result therefore does not hinge on the selection criterion.
+
+#### 中括号填写说明 / Bracket reference
+- 上面的"标准表述"已经把 sanity check 数值就地填好，**无需再填中括号**。具体数值来源：
+  - 0.088 / 0.146：当前 reported `val_task_loss`（联合准则，E1a epoch 80 / E1c epoch 196）。
+  - 0.084 / 0.131：纯 `val_task_loss` 准则下重选的 best epoch 对应值（E1a epoch 64 / E1c epoch 47）。
+  - 0.968 / 0.976：两种准则下 `val_kstar_spearman_rho` 完全一致。
+- 数据来源文件：`outputs/notebook_step4/formal_target/E1a_linear/history.csv`、`outputs/notebook_step4/formal_target/E1c_nonlinear/history.csv`。
+- 若后续重跑 formal_target 改变了 history，应重新执行同一 sanity check 并替换 4 个数字（reported / alt × linear / nonlinear）以及两个 spearman ρ 值。
+
+#### 后续动作 / Follow-up
+- 不修改训练代码（保持当前异构准则）。
+- 若想完全堵住公平性质疑，可补一份 CMDL/ablation 的对照跑（纯 `val_task_loss` 选模型）作为 sanity check 附录，但**不替换主结果**。
+
 ## 2026-04-13
 
 ### config/cmdl_config.py
