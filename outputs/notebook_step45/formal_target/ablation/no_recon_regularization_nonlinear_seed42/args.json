@@ -1,0 +1,19 @@
+{
+  "variant": "all",
+  "scenario": "nonlinear",
+  "seeds": [
+    42
+  ],
+  "lr": 0.001,
+  "epochs": 200,
+  "patience": 20,
+  "lambda_r": 1.0,
+  "temperature": 0.5,
+  "lag_bias_strength": 0.0,
+  "grad_clip": 1.0,
+  "val_fraction": 0.2,
+  "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\notebook_step45\\formal_target\\ablation",
+  "device": "auto",
+  "disable_mlflow": false,
+  "log_every": 10
+}

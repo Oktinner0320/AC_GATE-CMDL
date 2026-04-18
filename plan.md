@@ -3,6 +3,8 @@
 > 面向 Phase 1（Core）的逐步实施指南，含依赖库、开源项目引用与文献阅读节点。
 > 预算：3.5–4 个月（16 周）。每个 Step 标注预计耗时、产出物与阅读任务。
 > 依赖库与安装命令见 [requirements.md](requirements.md)。
+>
+> 执行状态更新（2026-04-18）：Step 1–4 已完成并通过 synthetic formal_target；Step 4.5 的 plain-LSTM baseline、核心消融、统一 comparison 与对比图已完成首版实现。当前下一优先级已转为 Step 5 的真实数据预处理与 loader 打通。
 
 ---
 
@@ -36,7 +38,7 @@
 1. **初始化项目结构**（按 readme.md §七 的 Core 文件树创建空文件）
 2. **编写 `CMDLConfig` 数据类**
    - 四个预设：`synthetic` / `shadow` / `energy` / `economics`
-   - 核心参数：`max_lag=10`, `d_model=64`, `n_proxies`, `lambda_r=0.1`
+   - 核心参数：`max_lag=10`, `d_model=64`, `n_proxies`, `lambda_r=1.0`
 3. **编写合成数据生成器** `generate.py`
    - 线性 ground truth: $k^*(z) = \text{round}(3 + 7(1-z))$, $z \sim U[0,1]$
    - 输出: `(X_it, p_i, s_i, Y_it, z_true, kstar_true)`
@@ -153,7 +155,7 @@
 2. **编写 `DomainAgnosticLoss`**
    ```
    L = L_task (MSE) + λ_r * L_recon (proxy 重构 MSE)
-   仅两项，λ_r 默认 0.1
+   仅两项；当前 synthetic formal_target 配置已统一为 λ_r = 1.0
    ```
 3. **组装 `CMDLModel`**
    - 输入适配层 → AC Encoder → Lag Gate → Backbone → RegressionHead
@@ -189,6 +191,14 @@
 - `evaluation/kstar_eval.py`
 - E1a/E1b 结果数据 + 图表
 
+### 执行状态更新（2026-04-18）
+- `experiments/run_synthetic.py`、评估指标、可视化与 notebook 前端已经完成，`notebooks/01_synthetic_verify.ipynb` 当前可直接复用 `formal_target` 预设重跑 E1a / E1b / E1c。
+- 当前 synthetic `formal_target` 三条验收链已经闭合：
+   - E1a linear：`kstar_mae = 0.9229`，`kstar_spearman_rho = 0.9805`；
+   - E1b identification：`proxy_recon_r2 = 0.9439`，`z_spearman_rho = 0.9892`；
+   - E1c nonlinear：`kstar_mae = 0.5348`，`kstar_spearman_rho = 0.9622`。
+- 当前 `proxy_recon_r2` 的报告口径已经更新为：best checkpoint 选出后，在冻结 `z_i` 上对线性 proxy head 做闭式重拟合；因此它反映的是 `z_i` 表示的可恢复性，而不是训练期原始 reconstructor 的收敛质量。
+
 ### 工作内容
 
 1. **训练循环实现**
@@ -199,6 +209,7 @@
    - 合格线: k* MAE < 1.0, Spearman $\rho_s > 0.8$
 3. **E1b: $z_i$ 识别性验证**
    - 用学到的 $z_i$ 反向预测各 proxy: R² > 0.5
+   - 当前实现口径：使用 best checkpoint 后、冻结 `z_i` 上的线性 proxy head refit 来评估该可恢复性
    - $z_i$ vs $z_{true}$ 的 Spearman > 0.8
 4. **E1c: 非线性场景**
    - 切换到 $k^*(z) = 10(1-z)^2$，验证 MLP 非线性拟合
@@ -225,6 +236,52 @@
 |---|---|---|---|
 | **L8** | Babii et al. (2020) "Machine Learning Panel Data Regressions with an Application to Nowcasting Price Earnings Ratios" *arXiv* (被引14) | §2-3 组级滞后选择方法 | 最接近的计量经济学竞品——理解 CMDL 必须超越的 baseline 方法论 |
 | **L9** | 黄睿珍 (2023) "Time and Entity Adaptation on Panel Data Forecasting Via Meta Learning" 首尔大学硕士论文 | §3-4 元学习处理实体异质性 | 思路相近但机制不同的竞品；确认 Related Work 中的定位差异 |
+
+---
+
+## 四点五、Step 4.5 — 合成基线、消融与统一对比（第 5–6 周，已完成首版）
+
+### 产出物
+- `baselines/lstm_baseline.py`
+- `experiments/run_lstm_baseline.py`
+- `experiments/run_ablation.py`
+- `evaluation/synthetic_comparison.py`
+- `tests/test_lstm_baseline.py`
+- `tests/test_ablation_models.py`
+- `tests/test_synthetic_comparison.py`
+- `notebooks/01_synthetic_verify.ipynb` 中的 Step 4.5 direct run、comparison table 与 comparison figure 单元
+
+### 工作内容
+
+1. **实现 matched plain-LSTM baseline**
+   - 保留 entity embedding 与 static conditioning，移除 AC encoder、lag gate 与 proxy reconstruction。
+   - 目的不是做最弱 baseline，而是隔离 AC-GATE 的核心机制增益。
+
+2. **实现 baseline 的 post-hoc lag 解释**
+   - 使用 lag occlusion 构造 per-entity lag profile，并定义 pseudo-k*。
+   - 在统一 comparison 中将其映射为 `effective_kstar_*` 与 `effective_lag_*`，与 CMDL / ablation 直接对齐。
+
+3. **实现三组 synthetic 核心消融**
+   - `no_ac_encoder`：所有实体共享一个全局 `z` 与共享 lag 分布。
+   - `uniform_lag`：固定 `omega_k = 1 / K`。
+   - `no_recon_regularization`：移除 reconstruction loss，仅保留 task loss。
+
+4. **统一 comparison 报告与 notebook 图表**
+   - 扫描 CMDL、baseline 与 ablation 的 `summary.json`，构造 recovery / identification 两张统一对比表。
+   - 生成 `recovery_comparison.png` 与 `identification_comparison.png`，作为 Step 4.5 正式图表产物。
+
+5. **当前 formal_target 首版结论**
+   - 完整 CMDL 相比 plain LSTM，在 linear / nonlinear 两个场景下都显著提升有效滞后恢复。
+   - `no_ac_encoder` 与 `uniform_lag` 都会显著破坏 k* 恢复，说明主要增益来自 AC conditioning 与 adaptive lag gating。
+   - `no_recon_regularization` 与完整 CMDL 几乎重合，说明当前 synthetic formal_target 中的主要收益并不来自 reconstruction regularization。
+
+### 使用的库
+- 同 Step 4
+- `pandas`（统一 summary 读取与 comparison table 构造）
+
+### 当前状态说明
+- Step 4.5 首版已经完成并通过 notebook formal_target 复核。
+- 当前 notebook formal_target 对比默认验证的是单 seed（42）；多 seed 聚合保留到论文表格阶段。
 
 ---
 
@@ -332,13 +389,17 @@ training = TimeSeriesDataSet(
 
 ---
 
-## 六、Step 6 — Baseline 实现（第 6–7 周）
+## 六、Step 6 — 真实域 Baseline 实现（第 6–7 周；synthetic Plain LSTM 已提前完成）
 
 ### 产出物
 - `baselines/panel_ols.py`
 - `baselines/tft_baseline.py`
 - `baselines/grouped_ardl.py`（新增强 baseline）
 - 三个 baseline 在影子经济域上的初步结果
+
+### 执行状态更新（2026-04-18）
+- `baselines/lstm_baseline.py` 与 `experiments/run_lstm_baseline.py` 已提前用于 Step 4.5 synthetic comparison。
+- 因此当前 Step 6 剩余重点不是再补一个 synthetic LSTM，而是把 `PanelOLS`、TFT 与 grouped ARDL 打通到真实数据域。
 
 ### 工作内容
 
@@ -453,11 +514,15 @@ training = TimeSeriesDataSet(
 
 ---
 
-## 八、Step 8 — 消融实验 E5（第 9–10 周）
+## 八、Step 8 — 消融实验 E5（第 9–10 周；synthetic 核心消融已完成首版）
 
 ### 产出物
 - `experiments/run_ablation.py`
 - 消融对比表（论文 Table 2）
+
+### 执行状态更新（2026-04-18）
+- `experiments/run_ablation.py` 已实现 `no_ac_encoder`、`uniform_lag` 与 `no_recon_regularization` 三个变体，并已在 synthetic formal_target 下完成 linear / nonlinear 两个场景的首版验证。
+- 当前 notebook formal_target 首版 comparison 使用单 seed（42）；脚本已支持多 seed 聚合，但 `5 seed + Wilcoxon` 仍保留到论文表 2 定稿阶段。
 
 ### 工作内容
 
@@ -471,11 +536,12 @@ training = TimeSeriesDataSet(
 
 3. **消融变体 C: 无代理重构正则**
    - $\lambda_r = 0$，$z_i$ 无信息约束
-   - 预期: z_i 退化为无语义噪声，proxy 重构 R² 崩塌
+   - 当前证据更新: 在 synthetic formal_target 下，该变体与完整 CMDL 的 k* / z / proxy 指标几乎重合。
+   - 因此它更适合作为“主要增益不来自 reconstruction regularization”的证据，而不是预设为必然崩塌的失败基线。
 
 4. **统计检验**
    - 每个变体 5 次随机种子运行
-   - 报告 mean ± std，Wilcoxon signed-rank test 对比显著性
+   - 当前代码已经支持 `seeds` 多值输入与聚合；formal_target 首版仅验证 seed=42，后续再补 `mean ± std` 与 Wilcoxon signed-rank test
 
 ### 使用的库
 - 同 Step 4
@@ -697,4 +763,4 @@ Step10                                     ████████
 
 ---
 
-*文档版本：2026-04-17 v3。新增影子经济主验证域（E2），实验编号重排；Step 5 新增影子经济数据任务；Step 7 新增 run_shadow.py；文献索引新增 L15-L17 影子经济方向。与 readme.md v5.0 Core/Expansion 结构对齐。*
+*文档版本：2026-04-18 v4。补充 Step 4 已完成状态与当前 formal_target 口径；新增 Step 4.5 合成 baseline / ablation / comparison 首版；修正 λ_r 默认值、Step 6 baseline 现状与 Step 8 无重构正则的预期表述。与 readme.md v5.0 Core/Expansion 结构对齐。*

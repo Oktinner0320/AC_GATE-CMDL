@@ -465,3 +465,79 @@
 #### 后续影响
 - Step 4 的合成结果作为"方法在已知 ground truth 下机制可行"的支撑证据，不需要再回头修改。
 - 下一步进入 Step 5：优先实现 [data/preprocessing.py](data/preprocessing.py) 的通用清洗函数，再打通 [data/shadow_loader.py](data/shadow_loader.py)（影子经济主验证域），最后以冒烟运行 [experiments/run_shadow.py](experiments/run_shadow.py) 验证张量对齐。
+
+---
+
+### Step 4.5：合成 baseline、消融与统一对比首版完成
+
+本轮在不重跑已存在 CMDL formal_target 的前提下，补齐了 synthetic comparison 链：
+plain LSTM baseline、三组核心消融、统一对比表与正式 comparison 图已经全部打通。
+
+#### baselines/lstm_baseline.py
+
+##### 完成清单
+- 新增 `PlainLSTMBaseline` 与 `PlainLSTMBaselineOutput`，保留 entity embedding 与 static conditioning，但移除 AC encoder、lag gate 与 proxy reconstruction。
+- 保持与 CMDL 尽量一致的输入接口和 warm-up 对齐逻辑，使 synthetic comparison 只比较关键机制差异，而不是把全部侧信息一起删除。
+- 在 LSTM 后复用 `GateAddNorm`，保证 baseline 与主模型在 backbone 末端的稳定化路径一致。
+
+##### 质量验证
+- `tests/test_lstm_baseline.py` 已覆盖 forward shape 契约与 post-hoc lag profile 归一化。
+- 当前 formal_target 下 baseline 已完成 linear 与 nonlinear 两个场景的正式运行。
+
+#### experiments/run_lstm_baseline.py
+
+##### 完成清单
+- 新增 synthetic plain-LSTM baseline 训练脚本，补齐参数解析、训练/验证切分、checkpoint、history、summary 与 predictions 落盘。
+- 实现 `compute_posthoc_lag_profile()`，用 lag occlusion 构造 baseline 的 post-hoc lag 分布与 pseudo-k*，明确其解释结果不是训练得到的原生 omega。
+- 新增 `lag_profile_heatmap.png` 与 `posthoc_kstar_scatter.png` 产物输出，使 baseline 也能进入 Step 4.5 的统一图表链。
+
+##### 质量验证
+- formal_target 当前结果：linear 场景 `posthoc_kstar_mae = 1.9222`、`posthoc_kstar_spearman_rho = 0.1210`；nonlinear 场景 `posthoc_kstar_mae = 2.8005`、`posthoc_kstar_spearman_rho = 0.2191`。
+- 相比完整 CMDL，这确认 plain LSTM 在结构恢复而非单纯任务拟合上明显落后。
+
+#### experiments/run_ablation.py
+
+##### 完成清单
+- 补齐 `no_ac_encoder`、`uniform_lag`、`no_recon_regularization` 三个 synthetic 核心消融变体，并复用 Step 4 的训练、评估、可视化与 MLflow 记录链。
+- 将 `lambda_r`、`temperature`、`lag_bias_strength` 暴露到 CLI / notebook 参数层，保证 Step 4.5 比较时可以与当前 formal_target 配置严格对齐。
+- 保留 `aggregate_results()` 多 seed 汇总入口，为后续论文表格保留统计扩展位点。
+
+##### 质量验证
+- `tests/test_ablation_models.py` 已覆盖 `no_ac_encoder` 的共享 `z/omega` 契约与 `uniform_lag` 的均匀权重约束。
+- 当前 formal_target 对比表已确认：`no_ac_encoder` 与 `uniform_lag` 在 linear / nonlinear 两个场景下都使 `kstar_spearman_rho` 退化到 0；`no_recon_regularization` 与完整 CMDL 基本重合。
+
+#### evaluation/synthetic_comparison.py
+
+##### 完成清单
+- 新增统一 comparison 工具，扫描 CMDL、plain LSTM baseline 与 ablation 的 `summary.json`，并归一化到统一列名。
+- 为 baseline 将 `posthoc_kstar_*` / `posthoc_profile_*` 映射为 `effective_kstar_*` / `effective_lag_*`，从而与 CMDL / ablation 的 `kstar_*` / `omega_*` 在 notebook 中直接并表比较。
+- 新增 `build_recovery_table()` 与 `build_identification_table()` 两个 notebook 视图构造函数。
+
+##### 质量验证
+- `tests/test_synthetic_comparison.py` 已覆盖 family-specific metric normalization、display name 映射以及 recovery / identification 表过滤逻辑。
+- 当前 notebook comparison 单元已成功读出 11 行 formal_target 对比结果。
+
+#### notebooks/01_synthetic_verify.ipynb
+
+##### 完成清单
+- 新增 Step 4.5 Direct Run 区域，用于在 notebook kernel 中直接补跑 formal_target 的 plain-LSTM baseline 与三组 ablation，同时复用既有 CMDL formal_target 输出。
+- 新增 Step 4.5 Comparison 区域，统一展示 recovery 与 identification 两张对比表。
+- 新增 Step 4.5 Figures 区域，保存 `recovery_comparison.png` 与 `identification_comparison.png` 到 `outputs/notebook_step45/formal_target/comparison_plots/`。
+- 在 identification plotting 中补充重复行去重与极端 `proxy_signal_r2` 显示裁剪，避免 `E1b_identification` 与 `E1a_linear` 的重复条目挤压图形可读性。
+
+##### 质量验证
+- formal_target Step 4.5 直跑已成功执行，未重跑已有 CMDL run，只补跑 baseline 与 ablation。
+- 当前统一对比结论清晰：
+  - CMDL vs Plain LSTM：linear `effective_kstar_mae` 为 `0.9229 vs 1.9222`，nonlinear 为 `0.5348 vs 2.8005`；
+  - `no_ac_encoder` 与 `uniform_lag` 明显破坏 k* 排序恢复；
+  - `no_recon_regularization` 与完整 CMDL 几乎重合，说明主要增益来自 AC conditioning 与 adaptive lag gating，而非 reconstruction regularization 本身。
+
+#### 测试与结论汇总
+
+##### 质量验证
+- 先前的 focused validation 已覆盖 `tests/test_lstm_baseline.py`、`tests/test_ablation_models.py`、`tests/test_step3_model.py` 与 `tests/test_synthetic_comparison.py`，共 10 项测试通过。
+- 本轮又完成了 notebook formal_target 的 direct comparison 执行与图片落盘，证明 Step 4.5 工程链已经可复用。
+
+##### 当前结论
+- synthetic formal_target 现在不只证明 Step 4 可行，也已经形成了 Step 4.5 的完整对照证据链。
+- 当前最稳的结论口径是：AC-GATE 的主要收益来自 AC 条件化与自适应 lag gating，它们显著提升了有效滞后恢复与潜变量识别；reconstruction regularization 在当前 synthetic formal_target 中不是主要增益来源。
