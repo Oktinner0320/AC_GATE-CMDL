@@ -438,10 +438,13 @@ CMDL/
 │   ├── synthetic/
 │   │   └── generate.py              合成数据生成（线性 k* 函数）
 │   ├── shadow/
+│   │   ├── download.py              下载影子经济 + WGI 数据
 │   │   └── shadow_loader.py         Medina & Schneider 影子经济 + WGI 加载与预处理
 │   ├── energy/
+│   │   ├── download.py              一键下载 OWID 数据集
 │   │   └── energy_loader.py         OWID energy + CO₂ 加载与预处理
 │   └── economics/
+│       ├── download.py              下载 Penn World Table
 │       └── economics_loader.py      PWT 加载与预处理
 │
 ├── model/
@@ -470,11 +473,6 @@ CMDL/
 ├── visualization/
 │   ├── omega_heatmap.py             ω 分布热力图（按 AC 分位数分组）
 │   └── kstar_distribution.py        k* 跨实体分布图
-│
-├── scripts/
-│   ├── download_shadow.py           下载影子经济 + WGI 数据
-│   ├── download_owid.py             一键下载 OWID 数据集
-│   └── download_pwt.py              下载 Penn World Table
 │
 └── notebooks/
     ├── 01_synthetic_verify.ipynb    合成数据机制验证
@@ -530,9 +528,9 @@ pip install torch pandas numpy scikit-learn scipy matplotlib seaborn mlflow jupy
 pip install pytorch-forecasting linearmodels wbgapi
 
 # 2. 下载数据
-python scripts/download_shadow.py     # 影子经济 + WGI 治理指数
-python scripts/download_owid.py       # OWID 能源 + CO₂
-python scripts/download_pwt.py        # Penn World Table（一个 CSV）
+python data/shadow/download.py        # 影子经济 + WGI 治理指数
+python data/energy/download.py        # OWID 能源 + CO₂
+python data/economics/download.py     # Penn World Table（一个 CSV）
 
 # === Phase 1：Core 实验（对应 plan.md Step 1–10） ===
 

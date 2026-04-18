@@ -52,8 +52,8 @@
 
 | 来源 | 文件 / 类 | 复用方式 | 用于 |
 |---|---|---|---|
-| **OWID energy-data** | 仓库 README 中的 CSV URL | 直接写入 `download_owid.py` 的下载地址 | 确认数据列名和格式 |
-| **Penn World Table** | 官网 CSV 链接 | 直接写入 `download_pwt.py` 的下载地址 | 确认 PWT 列名 |
+| **OWID energy-data** | 仓库 README 中的 CSV URL | 直接写入 `data/energy/download.py` 的下载地址 | 确认数据列名和格式 |
+| **Penn World Table** | 官网 CSV 链接 | 直接写入 `data/economics/download.py` 的下载地址 | 确认 PWT 列名 |
 
 ### �📖 文献阅读（开始前读）
 
@@ -231,9 +231,9 @@
 ## 五、Step 5 — 数据下载 + 预处理管线（第 5–6 周）
 
 ### 产出物
-- `scripts/download_shadow.py`
-- `scripts/download_owid.py`
-- `scripts/download_pwt.py`
+- `data/shadow/download.py`
+- `data/energy/download.py`
+- `data/economics/download.py`
 - `data/shadow/shadow_loader.py`
 - `data/energy/energy_loader.py`
 - `data/economics/economics_loader.py`
@@ -300,9 +300,9 @@
 | **pytorch-forecasting** | [`TimeSeriesDataSet`](https://github.com/sktime/pytorch-forecasting) | **直接实例化使用**（首选）。自动处理 static/time-varying 分离、滑动窗口、entity 分组、时间索引对齐 | 各域 loader（`data/shadow/`、`data/energy/`、`data/economics/`） |
 | **pytorch-forecasting** | `TimeSeriesDataSet.from_dataset()` | **直接调用**。从训练集自动生成验证集（共享 normalization） | 各域 loader |
 | **neuralforecast** | [`neuralforecast/`](https://github.com/Nixtla/neuralforecast) 的 DataFrame 格式 | **参考数据格式**（备选）。要求列名 `unique_id`/`ds`/`y`，如后续想用其 TFT baseline需兼容 | 各域 loader（可选） |
-| **OWID energy-data** | [GitHub CSV](https://github.com/owid/energy-data) | **直接 `pd.read_csv(url)`**。无需 clone，列名文档见仓库 README | `scripts/download_owid.py` |
-| **OWID co2-data** | [GitHub CSV](https://github.com/owid/co2-data) | **直接 `pd.read_csv(url)`** | `scripts/download_owid.py` |
-| **wbgapi** | `wb.data.DataFrame()` | **直接 API 调用**，一行拉取 World Bank 指标 | `scripts/download_owid.py`（AC proxy） |
+| **OWID energy-data** | [GitHub CSV](https://github.com/owid/energy-data) | **直接 `pd.read_csv(url)`**。无需 clone，列名文档见仓库 README | `data/energy/download.py` |
+| **OWID co2-data** | [GitHub CSV](https://github.com/owid/co2-data) | **直接 `pd.read_csv(url)`** | `data/energy/download.py` |
+| **wbgapi** | `wb.data.DataFrame()` | **直接 API 调用**，一行拉取 World Bank 指标 | `data/shadow/download.py`（AC proxy） |
 
 **关键代码片段——pytorch-forecasting 面板构造：**
 ```python
