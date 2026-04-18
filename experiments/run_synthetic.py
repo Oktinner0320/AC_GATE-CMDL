@@ -90,6 +90,8 @@ def parse_args() -> argparse.Namespace:
     解析 Step 4 实验运行所需的命令行参数。
     """
 
+    synthetic_defaults = CMDLConfig.from_domain("synthetic")
+
     parser = argparse.ArgumentParser(description="Run Step 4 synthetic CMDL experiments.")
     parser.add_argument(
         "--scenario",
@@ -101,9 +103,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--epochs", type=int, default=200)
     parser.add_argument("--patience", type=int, default=20)
-    parser.add_argument("--lambda-r", dest="lambda_r", type=float, default=0.1)
-    parser.add_argument("--temperature", type=float, default=1.0)
-    parser.add_argument("--lag-bias-strength", type=float, default=1.0)
+    parser.add_argument("--lambda-r", dest="lambda_r", type=float, default=synthetic_defaults.lambda_r)
+    parser.add_argument("--temperature", type=float, default=synthetic_defaults.temperature)
+    parser.add_argument(
+        "--lag-bias-strength",
+        type=float,
+        default=synthetic_defaults.lag_bias_strength,
+    )
     parser.add_argument("--grad-clip", type=float, default=1.0)
     parser.add_argument("--val-fraction", type=float, default=0.2)
     parser.add_argument("--output-dir", type=str, default="outputs/step4")
