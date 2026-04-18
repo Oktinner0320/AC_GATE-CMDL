@@ -20,6 +20,7 @@ import torch
 
 from config.cmdl_config import CMDLConfig
 from data.synthetic.generate import generate_cmdl_synthetic
+from experiments.run_synthetic import refit_proxy_reconstructor
 from model.backbone import UniversalPanelBackbone
 from model.cmdl_model import CMDLModel
 from model.loss import DomainAgnosticLoss
@@ -56,7 +57,7 @@ class CMDLModelIntegrationTest(unittest.TestCase):
     """
 
     @staticmethod
-    def _build_small_batch() -> tuple[CMDLConfig, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    def _build_small_panel() -> tuple[CMDLConfig, object]:
         # 小规模 synthetic batch 用于快速回归，不追求统计意义，只验证接口与梯度链路。
         # A small synthetic batch keeps regression tests fast; the goal is interface and gradient validation.
         cfg = CMDLConfig.from_domain(
@@ -68,6 +69,11 @@ class CMDLModelIntegrationTest(unittest.TestCase):
             dropout=0.0,
         )
         panel = generate_cmdl_synthetic(cfg)
+        return cfg, panel
+
+    @staticmethod
+    def _build_small_batch() -> tuple[CMDLConfig, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+        cfg, panel = CMDLModelIntegrationTest._build_small_panel()
         entity_ids = panel.entity_ids[:4]
         X_it = panel.X_it[:4]
         p_i = panel.p_i[:4]
@@ -123,6 +129,35 @@ class CMDLModelIntegrationTest(unittest.TestCase):
             optimizer.step()
 
         self.assertLess(loss_values[-1], loss_values[0])
+
+    def test_closed_form_proxy_refit_improves_reconstruction(self) -> None:
+        cfg, panel = self._build_small_panel()
+        model = CMDLModel(cfg)
+
+        with torch.no_grad():
+            model.ac_encoder.proxy_reconstructor.weight.zero_()
+            model.ac_encoder.proxy_reconstructor.bias.zero_()
+            baseline_output = model(
+                entity_ids=panel.entity_ids,
+                X_it=panel.X_it,
+                p_i=panel.p_i,
+                s_i=panel.s_i,
+            )
+            baseline_recon_loss = torch.mean((baseline_output.p_hat_i - panel.p_i) ** 2).item()
+
+        refit_proxy_reconstructor(model, panel)
+
+        with torch.no_grad():
+            refit_output = model(
+                entity_ids=panel.entity_ids,
+                X_it=panel.X_it,
+                p_i=panel.p_i,
+                s_i=panel.s_i,
+            )
+            refit_recon_loss = torch.mean((refit_output.p_hat_i - panel.p_i) ** 2).item()
+
+        self.assertLess(refit_recon_loss, baseline_recon_loss)
+        self.assertGreater(model.ac_encoder.proxy_reconstructor.weight.abs().sum().item(), 0.0)
 
 
 if __name__ == "__main__":

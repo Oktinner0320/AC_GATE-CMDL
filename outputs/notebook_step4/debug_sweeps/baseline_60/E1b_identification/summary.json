@@ -5,6 +5,6 @@
   "metrics": {
     "z_spearman_rho": 0.9887137178429461,
     "z_spearman_p": 3.304705992635063e-165,
-    "proxy_recon_r2": -28.343662754808093
+    "proxy_recon_r2": 0.9398461817026228
   }
 }

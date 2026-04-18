@@ -365,6 +365,45 @@ def setup_experiment(
     )
 
 
+def refit_proxy_reconstructor(model: CMDLModel, panel: SyntheticPanel) -> None:
+    """Refit the linear proxy head on frozen latent scores from one panel split.
+
+    在固定 encoder / lag gate / backbone 的前提下，基于一个面板切分上的 z_i 与 p_i
+    对线性 proxy 重构头做一次闭式最小二乘重拟合。
+    """
+
+    reconstructor = model.ac_encoder.proxy_reconstructor
+    if not isinstance(reconstructor, torch.nn.Linear):
+        raise TypeError("proxy_reconstructor must be an nn.Linear layer")
+
+    was_training = model.training
+    model.eval()
+    with torch.no_grad():
+        output = model(
+            entity_ids=panel.entity_ids,
+            X_it=panel.X_it,
+            p_i=panel.p_i,
+            s_i=panel.s_i,
+        )
+        z_values = output.z_i.detach()
+        proxy_targets = panel.p_i.detach()
+        if z_values.dim() != 2 or z_values.size(-1) != 1:
+            raise ValueError(f"Expected z_i with shape [N, 1], got {tuple(z_values.shape)}")
+        if proxy_targets.dim() != 2:
+            raise ValueError(f"Expected p_i with shape [N, M], got {tuple(proxy_targets.shape)}")
+
+        # 在线性头上直接求最小二乘解，避免 6 参数小头在 Adam 下长期跟不上冻结后的 z 分布。
+        # Solve least squares directly on the linear head so this tiny 6-parameter layer does not rely on slow Adam updates.
+        design_matrix = torch.cat([z_values, torch.ones_like(z_values)], dim=1).to(dtype=torch.float64)
+        target_matrix = proxy_targets.to(dtype=torch.float64)
+        solution = torch.linalg.lstsq(design_matrix, target_matrix).solution.to(dtype=reconstructor.weight.dtype)
+        reconstructor.weight.copy_(solution[0:1].transpose(0, 1))
+        reconstructor.bias.copy_(solution[1])
+
+    if was_training:
+        model.train()
+
+
 def train_one_epoch(
     model: CMDLModel,
     criterion: DomainAgnosticLoss,
@@ -590,6 +629,20 @@ def run_experiment(
                     break
 
         setup.model.load_state_dict(best_state)
+        refit_proxy_reconstructor(setup.model, setup.train_panel)
+        # 覆盖最佳 checkpoint，确保落盘模型与最终 summary / predictions 使用的是同一组参数。
+        # Overwrite the best checkpoint so the serialized model matches the final summary and predictions.
+        torch.save(
+            {
+                "experiment": experiment_name,
+                "best_epoch": best_epoch,
+                "best_val_task_loss": best_val_task_loss,
+                "config": setup.cfg.to_dict(),
+                "proxy_head_refit": True,
+                "model_state_dict": copy.deepcopy(setup.model.state_dict()),
+            },
+            setup.checkpoint_path,
+        )
 
         final_metrics, outputs = evaluate(setup.model, setup.criterion, setup.full_panel, include_outputs=True)
         if outputs is None:
