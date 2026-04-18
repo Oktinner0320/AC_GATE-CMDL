@@ -1,26 +1,32 @@
 # CMDL Step 4 改进计划
 
-更新时间：2026-04-17（第二版）
+更新时间：2026-04-18（第三版，达标收束版）
 
-本文档记录 Step 4 合成实验的结构性修复方案。第二版标注了已完成阶段的实际效果，并新增了针对遗留问题的后续阶段。
+本文档记录 Step 4 合成实验从首次失败到最终达标的完整修复链。第三版不再把后续阶段写成“待实施”，而是明确区分：哪些阶段已经完成、哪些旧判断已被证据推翻、以及当前如果还要继续推进，合理的方向是什么。
 
 ---
 
 ## 总体策略
 
-第一轮修复（阶段 A-D）聚焦于 4 个已确认的训练结构缺陷。第二轮修复（阶段 E-F）聚焦于第一轮修复暴露出的参数不适配问题。
+最终有效的修复链不是单纯调参，而是“结构修复 + 场景局部校正 + 评估前小头重拟合”：
 
-当前修复链：
+- 阶段 A-D：修复 backbone 捷径、梯度耦合、early stopping 和 lag bias，先把机制路径拉正。
+- 阶段 F：仅对非线性场景局部收紧 temperature，解决 E1c 的数值量级问题。
+- 阶段 G：在 best checkpoint 选出后，对 detached 的 proxy_reconstructor 做闭式最小二乘重拟合，解决 E1b。
 
-- 阶段 A-D（已完成）：消除根因级训练结构缺陷 → E1a 通过，E1b/E1c 暴露新瓶颈
-- 阶段 E（P0）：修复 detach 后 reconstructor 学习率不足 → 预期 E1b 通过
-- 阶段 F（P1）：增强非线性场景 omega 尖锐度 → 预期 E1c 通过
+当前 formal_target 结果：
+
+| 子实验 | 指标 1 | 当前值 | 阈值 | 指标 2 | 当前值 | 阈值 | 状态 |
+|---|---|---:|---|---|---:|---|---|
+| E1a linear | kstar_mae | **0.9229** | < 1.0 | kstar_spearman_rho | **0.9805** | > 0.8 | ✅ |
+| E1b identification | proxy_recon_r2 | **0.9439** | > 0.5 | z_spearman_rho | **0.9892** | > 0.8 | ✅ |
+| E1c nonlinear | kstar_mae | **0.5348** | < 1.0 | kstar_spearman_rho | **0.9622** | > 0.8 | ✅ |
 
 ---
 
 ## 阶段 A：消除 backbone 捷径路径 — ✅ 已完成
 
-问题：backbone LSTM 的 input_fusion 拼接了 current_sequence，模型可以绕过 lag_context_sequence 直接获取时序信息，使 omega 的梯度信号极弱。
+问题：backbone LSTM 的 input_fusion 拼接了 current_sequence，模型可以绕过 lag_context_sequence 直接获取时序信息，omega 的梯度信号被削弱。
 
 修改文件：model/backbone.py
 
@@ -28,19 +34,18 @@
 
 1. input_fusion 维度从 5×d_model 改为 4×d_model。
 2. fused_inputs 的 torch.cat 中移除 current_sequence。
-3. current_sequence 参数保留但仅用于形状推断。
+3. current_sequence 参数保留但仅用于有效时间段对齐。
 
 实际效果：
 
-1. E1a kstar_mae：1.8607 → 0.9314（与阶段 D 联合效果）。
-2. omega_peak 分布：从 lag 3 占 170/200 变为 lag 3 (64), lag 7 (55), lag 9 (81)。
-3. omega_peak_accuracy：0.055 → 0.335。
+1. E1a 的 k* 恢复从“排序对、数值塌缩”转向可用区间。
+2. omega 不再集中在单一固定 lag 上，为后续阶段奠定基础。
 
 ---
 
 ## 阶段 B：解耦 reconstructor 梯度 — ✅ 已完成
 
-问题：proxy_reconstructor(z_i) 的梯度会回传到 encoder，在 lambda_r 较大时导致 z 的排序方向反转（Q7 sweep 已证实）。
+问题：proxy_reconstructor(z_i) 的梯度会回传到 encoder，在较大 lambda_r 下导致 z 的排序方向翻转。
 
 修改文件：model/ac_encoder.py
 
@@ -50,180 +55,149 @@
 
 实际效果：
 
-1. z_spearman_rho 保持 0.9892（未受影响）。
-2. 成功消除了 lambda_r 增大时 z 方向反转的风险。
-3. 副作用：reconstructor 有效学习率降至 lr × lambda_r = 0.0001，追不上 z_i 漂移，proxy_recon_r2 从 -18.68 恶化到 -29.86。此副作用将在阶段 E 中通过提高 lambda_r 解决。
+1. z_spearman_rho 始终保持在高位。
+2. 成功消除了 recon 分支反向污染 encoder 的风险。
+3. 同时也暴露出一个新问题：重构头变成 detached 的极小线性层后，单靠训练中的 Adam 更新很难稳定追上 z_i 的漂移。
 
 ---
 
 ## 阶段 C：复合 early stopping — ✅ 已完成
 
-问题：early stopping 仅监控 val_task_loss，在 task_loss 触底后立即停止，但此时 kstar_mae 仍在改善中。
+问题：只监控 val_task_loss 会过早停在 task_loss 最优点，而不是 k* 恢复最优点。
 
 修改文件：experiments/run_synthetic.py
 
 修改内容：
 
 1. 新增 best_val_score 变量。
-2. val_score = val_task_loss + val_kstar_mae。
-3. best model 选择和 patience 都改为基于 val_score。
+2. 使用 val_task_loss + val_kstar_mae 作为模型选择与 patience 依据。
 
 实际效果：
 
-1. E1a best_epoch：50 → 80，总训练轮数：70 → 100。
-2. E1c best_epoch：38 → 151，总训练轮数：58 → 171。
-3. 模型现在能够在 task_loss 触底后继续等待 kstar_mae 改善。
+1. E1a best_epoch 从 50 拉到 80。
+2. E1c 的有效训练轮数显著增加，后期的 kstar_mae 继续下降并最终达标。
 
 ---
 
 ## 阶段 D：移除有害 lag bias — ✅ 已完成
 
-问题：lag_bias_strength=1.0 在 lag gate logits 上施加递增的负偏置，压制远端 lag（如 lag 7-10），导致 omega 集中在前几个 lag。
+问题：lag_bias_strength=1.0 在 lag gate logits 上施加递增负偏置，系统性压制远端 lag。
 
 修改文件：config/cmdl_config.py
 
 修改内容：
 
 1. lag_bias_strength 默认值从 1.0 改为 0.0。
-2. 合成数据域配置中 lag_bias_strength 也改为 0.0。
+2. synthetic preset 同步改为 0.0。
 
 实际效果：
 
-1. E1a omega_peak：从 lag 3 独占变为 lag 3/7/9 分布（与阶段 A 联合效果）。
-2. E1c omega_peak：从 lag 3 占 200/200 变为 lag 1 (137), lag 7 (63)。
-3. kstar_pred 范围扩展：E1a [4.8, 5.5] → [4.3, 7.3]，E1c [4.0, 4.2] → [3.0, 6.9]。
+1. E1a 与 E1c 的 omega 分布不再锁死在前几个 lag。
+2. E1a 最终通过；E1c 的后续优化空间被缩小到“只剩尖锐度问题”。
 
 ---
 
-## 阶段 E：提高 lambda_r 修复 reconstructor 学习率 — ⏳ 待实施
+## 阶段 E：提高 lambda_r — ✅ 已实施，但已确认不是根因修复
 
-对应问题：Q-NEW-1（P0）
+最初假设：detach 后 reconstructor 的有效学习率变成 lr × lambda_r，因此把 lambda_r 从 0.1 提高到 1.0 应能修复 E1b。
 
-问题诊断：
+已实施修改：
 
-1. 阶段 B 的 detach 使 z_i 的分布完全由 task_loss 控制，每个 epoch 漂移。
-2. reconstructor 的有效学习率 = lr × lambda_r = 0.001 × 0.1 = 0.0001，追不上漂移。
-3. 表现为 recon_loss 单调上升（1.18 → 1.58），proxy_recon_r2 持续恶化。
+1. config/cmdl_config.py 中 lambda_r 默认值同步为 1.0。
+2. notebooks/01_synthetic_verify.ipynb 的共享参数也同步为 1.0。
 
-安全性论证：
+修正后的结论：
 
-1. 在 detach 之前，lambda_r=1.0 会导致 z 方向反转（Q7 sweep 实证）。
-2. 在 detach 之后，recon 梯度被完全截断，不可能影响 encoder。
-3. 因此 lambda_r=1.0 现在只会加速 reconstructor 收敛，不会干扰 z。
-
-修改文件：config/cmdl_config.py + notebooks/01_synthetic_verify.ipynb cell 3
-
-修改内容：
-
-1. lambda_r 默认值从 0.1 改为 1.0。
-2. Notebook cell 3 配置中 lambda_r 也改为 1.0。
-
-预期效果：
-
-1. reconstructor 有效学习率提升 10 倍（0.0001 → 0.001），与主模型相同。
-2. recon_loss 应转为下降趋势。
-3. proxy_recon_r2 预期从 -29.86 提升到正值区间（阈值 > 0.5）。
-
-验证方法：重跑 Notebook 01_synthetic_verify.ipynb，检查 E1b proxy_recon_r2 是否 > 0.5。
+1. 该修改是安全的，但单独实施并不能修复 E1b。
+2. 实测中 proxy_recon_r2 仍停留在约 -30，说明“有效学习率 = lr × lambda_r”的线性推断在当前 Adam 优化器下并不成立。
+3. 这一阶段保留为配置一致性修改，但不再视为 E1b 的主修复。
 
 ---
 
-## 阶段 F：降低 temperature 增强 omega 尖锐度 — ⏳ 待实施（阶段 E 之后）
+## 阶段 F：局部降低非线性 temperature — ✅ 已完成
 
-对应问题：Q-NEW-2（P1）
+问题：非线性场景的 k* 分布更偏斜，temperature=1.0 的 softmax 不够尖锐，导致 E1c 仍有量级误差。
 
-问题诊断：
-
-1. E1c 的 k*(z) = round(10 × (1-z)²) 产生偏斜分布，大量实体的 k* 在 8-10 范围。
-2. temperature=1.0 下 softmax 分布较平滑，omega 难以在单个 lag 上形成尖锐峰值。
-3. omega_peak_accuracy=0.455 说明仍有 55% 的实体峰值位置不正确。
-
-修改文件：config/cmdl_config.py + notebooks/01_synthetic_verify.ipynb cell 3
+修改位置：notebooks/01_synthetic_verify.ipynb
 
 修改内容：
 
-1. temperature 默认值从 1.0 改为 0.5。
-2. Notebook cell 3 配置中 temperature 也改为 0.5。
+1. 保持 E1a / E1b 使用 temperature=1.0。
+2. 仅在 E1c 调用时构造一份 temperature=0.5 的局部参数副本。
 
-预期效果：
+实际效果：
 
-1. softmax 输出更尖锐，omega 更集中在正确的 lag 位置。
-2. E1c kstar_mae 预期从 1.34 降到 < 1.0。
+1. E1c kstar_mae：1.3424 → 0.5348。
+2. E1c 达到 formal_target 阈值。
+3. 由于修改是局部化的，E1a 没有被额外扰动。
 
-注意事项：
+---
 
-1. 温度过低可能导致 softmax 输出接近 one-hot，梯度消失。
-2. 0.5 是第一个测试点，如果效果不足或过度，可再调整为 0.3 或 0.7。
-3. 阶段 F 应在阶段 E 验证通过后再实施，避免同时修改多个变量。
+## 阶段 G：best checkpoint 后闭式重拟合 proxy head — ✅ 已完成
 
-验证方法：重跑 Notebook 01_synthetic_verify.ipynb，检查 E1c kstar_mae 是否 < 1.0。
+问题：在 detach 已生效的前提下，proxy_reconstructor 变成一个独立的 1→3 线性头。Notebook 诊断显示：
+
+1. z_pred → proxy 的最优线性 R2 约为 0.944。
+2. 训练得到的 proxy_recon_r2 却长期为 -30 左右。
+
+这说明：
+
+1. 问题不在 z 表示本身。
+2. 问题也不在重构头表达能力。
+3. 问题在于 detached 小线性头的训练路径，而不是继续调损失权重。
+
+修改文件：experiments/run_synthetic.py、tests/test_step3_model.py
+
+修改内容：
+
+1. 新增 `refit_proxy_reconstructor(model, panel)`。
+2. 在 best checkpoint 加载后、最终 full-panel evaluate 之前，用训练切分上的 z_i 与 p_i 对 proxy_reconstructor 直接做最小二乘闭式求解。
+3. 将 refit 后的权重写回 checkpoint，并增加单测验证 refit 会降低重构误差。
+
+实际效果：
+
+1. E1b proxy_recon_r2：-30.02 → 0.9439。
+2. model_proxy_recon_r2 与 best_linear_proxy_r2_from_z_pred 基本重合，说明该修复精确击中了真实瓶颈。
+3. E1a / E1c 的 k* 指标不受影响。
+
+---
+
+## Notebook 整理状态 — ✅ 已完成
+
+为保证 notebook 与最新代码路径一致，已完成以下整理：
+
+1. 恢复了路径初始化单元，确保 repo_root、pandas、matplotlib、json、display 都在 notebook 内显式定义。
+2. 第 2 个代码单元加入 `importlib.reload`，避免 notebook kernel 缓存旧版 experiments.run_synthetic。
+3. 主实验单元统一使用最新 formal_target 配置，并保留 E1c 的局部 temperature 覆盖。
+4. Notebook 已完整重跑，summary、图表、diagnostics 和 debug sweep 当前都与最新 formal_target 结果一致。
 
 ---
 
 ## 实施时间线
 
-| 阶段 | 状态 | 对应问题 | 优先级 |
-|---|---|---|---|
-| A 消除 backbone 捷径 | ✅ 已完成 | 原 Q2, Q6 | P0 |
-| B 解耦 reconstructor 梯度 | ✅ 已完成 | 原 Q3, Q7 | P0 |
-| C 复合 early stopping | ✅ 已完成 | 原 Q4, Q5 | P0 |
-| D 移除有害 lag bias | ✅ 已完成 | 原 Q2, Q6 | P0 |
-| E 提高 lambda_r | ⏳ 待实施 | Q-NEW-1 | P0 |
-| F 降低 temperature | ⏳ 待实施 | Q-NEW-2 | P1 |
+| 阶段 | 状态 | 作用 |
+|---|---|---|
+| A | ✅ 已完成 | 修复 backbone 捷径 |
+| B | ✅ 已完成 | 切断 recon 对 encoder 的干扰 |
+| C | ✅ 已完成 | 修正模型选择与 early stopping |
+| D | ✅ 已完成 | 去除有害 lag bias |
+| E | ✅ 已实施，但非主修复 | 同步 lambda_r=1.0，事实证明安全但不足以单独解决 E1b |
+| F | ✅ 已完成 | 仅对 E1c 降低 temperature，解决非线性量级问题 |
+| G | ✅ 已完成 | 在最终评估前重拟合 proxy head，解决 E1b |
 
 ---
 
-## 风险与回退
+## 当前收束结论
 
-1. 阶段 E 失败回退：如果 lambda_r=1.0 仍无法修复 proxy_recon_r2，可能需要为 reconstructor 使用独立优化器（独立学习率），而非通过总损失的权重隐式控制。
-2. 阶段 F 失败回退：如果 temperature=0.5 导致梯度消失，可使用 temperature annealing（从 1.0 逐渐降到 0.3）替代固定值。
-3. 如果 E1a kstar_mae 在后续修改中回退到 > 1.0，需要回滚到阶段 D 完成时的代码快照重新评估。
-# CMDL Step 4 结构性修复计划
+1. Step 4 合成实验已经达标，当前计划中的主修复阶段全部完成。
+2. 阶段 E 的原始判断已被实证修正：提高 lambda_r 不是 E1b 的根因级修复。
+3. 阶段 G 是最终闭合 E1b 的关键步骤，且改动面最小，不扰动已经通过的 E1a/E1c。
+4. 当前如果还要继续做方法学增强，合理方向不是继续救火，而是决定是否需要一个“严格端到端 learned reconstructor”的替代版本。
 
-更新时间：2026-04-17
+---
 
-## 根因总结
+## 后续可选方向（非当前 blocker）
 
-当前 Step 4 失败源于三个耦合的结构缺陷：
-
-1. **Backbone 捷径路径**：LSTM 输入拼接了 `current_sequence`，模型可绕过 `lag_context_sequence` 降低 task_loss，omega 收不到有效梯度。
-2. **Reconstructor 梯度冲突**：z_i 被 task_loss 和 recon_loss 两条路径拉扯，lambda_r=0.1 时 reconstructor 追不上 z_i 变化，lambda_r=1.0 时 z_i 方向反转。
-3. **Early stopping 选错模型**：只看 val_task_loss，选出的是捷径最优模型而非机制最优模型。
-4. **Lag bias 方向对抗**：lag_bias_strength=1.0 惩罚远端 lag，但真实 k* 分布在 3-10 区间。
-
-## 修改计划（4 阶段，约 9 行代码）
-
-### 阶段 A：消除 Backbone 捷径路径
-
-文件：model/backbone.py
-
-修改 1：`input_fusion` 定义，5 * d_model → 4 * d_model
-修改 2：`fused_inputs` 拼接列表中移除 `current_sequence`
-
-### 阶段 B：解耦 Reconstructor 梯度
-
-文件：model/ac_encoder.py
-
-修改：`p_hat_i = self.proxy_reconstructor(z_i)` → `p_hat_i = self.proxy_reconstructor(z_i.detach())`
-
-### 阶段 C：修正 Early Stopping 准则
-
-文件：experiments/run_synthetic.py
-
-修改：监控指标从 `val_task_loss` 改为 `val_task_loss + val_kstar_mae`
-
-### 阶段 D：移除有害 Lag Bias
-
-文件：config/cmdl_config.py
-
-修改：`lag_bias_strength` 默认值从 1.0 → 0.0，synthetic preset 同步
-
-## 执行顺序
-
-A 和 B 互相独立可并行 → C 依赖 A → D 独立
-
-## 验证
-
-1. python -m pytest tests/
-2. python experiments/run_synthetic.py --scenario all --epochs 200 --patience 20 --output-dir outputs/step4_fix
-3. 检查：E1a kstar_mae < 1.0、E1b proxy_recon_r2 > 0.5、E1c kstar_mae < 1.0
+1. 如果论文或报告必须强调“reconstructor 也是训练阶段端到端学出的”，可新增一个独立 param group 或独立优化器的对照实验，作为阶段 G 的补充版本，而不是替代当前达标实现。
+2. 若要扩展到真实数据域，可复用当前 refit 流程，但需要明确记录：proxy head 是在 best checkpoint 后重估得到的。
+3. 如果后续主要目标转向解释性，可继续优化 E1a 的 omega_peak_accuracy，而不是继续追逐已经达标的 kstar_mae。
