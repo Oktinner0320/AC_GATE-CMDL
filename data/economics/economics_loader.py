@@ -22,7 +22,7 @@ DEFAULT_YEAR_START = 1980
 DEFAULT_YEAR_END = 2023
 EPSILON = 1e-8
 DEFAULT_ECONOMICS_FEATURE_BUNDLE = "minimal"
-SUPPORTED_ECONOMICS_FEATURE_BUNDLES = ("minimal", "growth_aware")
+SUPPORTED_ECONOMICS_FEATURE_BUNDLES = ("minimal", "growth_aware", "effective_labor_aware")
 OPTIONAL_ECONOMICS_EXPORT_COLUMNS = ("ctfp", "rtfpna", "emp", "avh", "labsh", "delta", "rnna", "rkna")
 
 
@@ -134,7 +134,29 @@ def _feature_bundle_columns(feature_bundle: str) -> tuple[list[str], list[str], 
 			"static_log_rgdpna",
 			"static_log_ck",
 		]
+	if normalized == "effective_labor_aware":
+		return [
+			"x_cap_deepening",
+			"x_log_rgdpna_growth",
+			"x_log_ck_growth",
+		], [
+			"proxy_effective_labor_anchor",
+			"proxy_employment_level",
+			"proxy_hc_level",
+			"proxy_hc_trend",
+		], [
+			"static_log_rgdpna",
+			"static_log_ck",
+		]
 	raise AssertionError(f"Unhandled feature_bundle: {feature_bundle}")
+
+
+def _require_bundle_input_columns(frame: pd.DataFrame, feature_bundle: str) -> None:
+	"""Validate that one bundle has the source columns it needs."""
+
+	normalized = _validate_feature_bundle(feature_bundle)
+	if normalized == "effective_labor_aware":
+		_require_columns(frame, {"emp", "avh"})
 
 
 def _validate_loader_shape_contract(
@@ -495,6 +517,11 @@ def build_economics_dataframe(
 		year_end=year_end,
 		max_missing_share=max_missing_share,
 	)
+	_require_bundle_input_columns(cleaned_frame, feature_bundle)
+	if feature_bundle == "effective_labor_aware":
+		cleaned_frame = cleaned_frame.copy()
+		cleaned_frame["log_emp_raw"] = np.log(cleaned_frame["emp"].clip(lower=EPSILON))
+		cleaned_frame["log_emp_hours_raw"] = np.log((cleaned_frame["emp"] * cleaned_frame["avh"]).clip(lower=EPSILON))
 
 	retained_entities: list[pd.DataFrame] = []
 	for entity_code, group in cleaned_frame.groupby("entity_code", sort=True):
@@ -510,6 +537,14 @@ def build_economics_dataframe(
 			entity_frame["proxy_hc_raw"] = float(stats_frame["hc"].mean())
 			entity_frame["x_t"] = _zscore_with_reference(entity_frame["cap_deepening_raw"], reference_mask)
 		elif feature_bundle == "growth_aware":
+			entity_frame["proxy_hc_level_raw"] = float(stats_frame["hc"].mean())
+			entity_frame["proxy_hc_trend_raw"] = _linear_trend(stats_frame["hc"])
+			entity_frame["x_cap_deepening"] = _zscore_with_reference(entity_frame["cap_deepening_raw"], reference_mask)
+			entity_frame["x_log_rgdpna_growth"] = _zscore_with_reference(entity_frame["dlog_rgdpna_raw"], reference_mask)
+			entity_frame["x_log_ck_growth"] = _zscore_with_reference(entity_frame["dlog_ck_raw"], reference_mask)
+		elif feature_bundle == "effective_labor_aware":
+			entity_frame["proxy_effective_labor_anchor_raw"] = float(stats_frame["log_emp_hours_raw"].mean())
+			entity_frame["proxy_employment_level_raw"] = float(stats_frame["log_emp_raw"].mean())
 			entity_frame["proxy_hc_level_raw"] = float(stats_frame["hc"].mean())
 			entity_frame["proxy_hc_trend_raw"] = _linear_trend(stats_frame["hc"])
 			entity_frame["x_cap_deepening"] = _zscore_with_reference(entity_frame["cap_deepening_raw"], reference_mask)
@@ -532,6 +567,14 @@ def build_economics_dataframe(
 		sequence_columns = ["x_t"]
 	elif feature_bundle == "growth_aware":
 		proxy_raw_columns = [("proxy_hc_level_raw", "proxy_hc_level"), ("proxy_hc_trend_raw", "proxy_hc_trend")]
+		sequence_columns = ["x_cap_deepening", "x_log_rgdpna_growth", "x_log_ck_growth"]
+	elif feature_bundle == "effective_labor_aware":
+		proxy_raw_columns = [
+			("proxy_effective_labor_anchor_raw", "proxy_effective_labor_anchor"),
+			("proxy_employment_level_raw", "proxy_employment_level"),
+			("proxy_hc_level_raw", "proxy_hc_level"),
+			("proxy_hc_trend_raw", "proxy_hc_trend"),
+		]
 		sequence_columns = ["x_cap_deepening", "x_log_rgdpna_growth", "x_log_ck_growth"]
 	else:
 		raise AssertionError(f"Unhandled feature_bundle: {feature_bundle}")

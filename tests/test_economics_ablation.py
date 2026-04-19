@@ -55,6 +55,9 @@ class EconomicsAblationTest(unittest.TestCase):
                     "rgdpna": rgdpna_value,
                     "ctfp": tfp_base + 0.030 * step,
                     "rtfpna": 1.10 + 0.020 * country_index + 0.015 * step,
+                    "emp": 10.0 + 2.0 * country_index + 0.10 * step,
+                    "avh": 1800.0 + 20.0 * country_index + 1.0 * step,
+                    "labsh": 0.45 + 0.01 * country_index + 0.001 * step,
                 }
 
                 if country_code == "BBB" and year in {1983, 1984}:
@@ -139,6 +142,45 @@ class EconomicsAblationTest(unittest.TestCase):
                 self.assertTrue((run_dir / "predictions.csv").exists())
                 self.assertTrue((run_dir / "history.csv").exists())
                 self.assertTrue((run_dir / "best_model.pt").exists())
+
+    def test_run_suite_smoke_supports_effective_labor_bundle(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            temporary_root = Path(temporary_dir)
+            csv_path = temporary_root / "pwt_fixture_long.csv"
+            output_root = temporary_root / "economics_ablation_outputs_effective_labor"
+            self._write_fixture_csv(csv_path)
+
+            args = Namespace(
+                variant="all",
+                seeds=[0],
+                csv_path=str(csv_path),
+                year_start=1980,
+                year_end=2004,
+                train_end_year=1997,
+                val_end_year=2000,
+                target_column="ctfp",
+                feature_bundle="effective_labor_aware",
+                max_missing_share=0.20,
+                lr=1e-3,
+                epochs=1,
+                patience=1,
+                lambda_r=0.1,
+                temperature=1.0,
+                lag_bias_strength=1.0,
+                grad_clip=1.0,
+                output_dir=str(output_root),
+                experiment_prefix="economics_ablation_effective_labor",
+                device="cpu",
+                disable_mlflow=True,
+                log_every=1,
+                smoke=True,
+            )
+
+            summary_frame, aggregated = run_suite(args)
+
+            self.assertEqual(len(summary_frame), 3)
+            self.assertEqual(len(aggregated), 3)
+            self.assertTrue((summary_frame["feature_bundle"] == "effective_labor_aware").all())
 
 
 if __name__ == "__main__":

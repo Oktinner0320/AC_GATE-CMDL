@@ -104,7 +104,7 @@ def parse_args() -> argparse.Namespace:
 		type=str,
 		choices=list(SUPPORTED_ECONOMICS_FEATURE_BUNDLES),
 		default=DEFAULT_ECONOMICS_FEATURE_BUNDLE,
-		help="Economics feature/proxy bundle to use, e.g. minimal or growth_aware.",
+		help="Economics feature/proxy bundle to use, e.g. minimal, growth_aware, or effective_labor_aware.",
 	)
 	parser.add_argument("--max-missing-share", type=float, default=0.15)
 	parser.add_argument("--seed", type=int, default=economics_defaults.seed)
