@@ -72,6 +72,31 @@ def _zscore(values: pd.Series) -> pd.Series:
 	return pd.Series(normalized.astype(np.float32), index=values.index)
 
 
+def _zscore_with_reference(values: pd.Series, reference_mask: pd.Series | np.ndarray) -> pd.Series:
+	"""Standardize a series using statistics computed on a reference subset.
+
+	用参考子区间上的均值和方差对整段序列做标准化，避免把未来窗口信息泄漏回训练期。
+	"""
+
+	array = pd.to_numeric(values, errors="coerce").astype(float)
+	mask = np.asarray(reference_mask, dtype=bool)
+	if mask.shape[0] != len(array):
+		raise ValueError("reference_mask must align with the values length")
+
+	reference_array = array[mask]
+	reference_array = reference_array[np.isfinite(reference_array)]
+	if reference_array.size == 0:
+		raise ValueError("reference subset for z-score is empty or non-finite")
+
+	mean = float(reference_array.mean())
+	std = float(reference_array.std(ddof=0))
+	if not np.isfinite(std) or std < EPSILON:
+		return pd.Series(np.zeros(len(array), dtype=np.float32), index=values.index)
+
+	normalized = (array - mean) / std
+	return pd.Series(normalized.astype(np.float32), index=values.index)
+
+
 def _require_columns(frame: pd.DataFrame, required_columns: set[str]) -> None:
 	"""Validate that the PWT frame contains all required columns.
 
@@ -102,17 +127,25 @@ def build_economics_dataframe(
 	target_column: str = "ctfp",
 	year_start: int = DEFAULT_YEAR_START,
 	year_end: int = DEFAULT_YEAR_END,
+	stats_end_year: int | None = None,
 	max_missing_share: float = 0.15,
 ) -> pd.DataFrame:
 	"""Build a cleaned long-form dataframe for the economics domain.
 
 	为 economics 域构建清洗后的长表。该函数只服务 PWT，不尝试跨域抽象。
+	其中 proxy/static 聚合和 X/Y 标准化默认只使用 stats_end_year 之前的统计量。
 	"""
 
 	if year_end <= year_start:
 		raise ValueError(f"year_end must be greater than year_start, got {year_start}..{year_end}")
 	if not 0.0 <= max_missing_share < 1.0:
 		raise ValueError(f"max_missing_share must be in [0, 1), got {max_missing_share}")
+	if stats_end_year is None:
+		stats_end_year = year_end
+	if not year_start <= stats_end_year <= year_end:
+		raise ValueError(
+			f"stats_end_year must be within [{year_start}, {year_end}], got {stats_end_year}"
+		)
 
 	source_path = _resolve_csv_path(csv_path)
 	dataframe = load_pwt_source(str(source_path))
@@ -173,11 +206,16 @@ def build_economics_dataframe(
 		if entity_frame[fill_columns].isna().any().any():
 			continue
 
-		entity_frame["proxy_hc_raw"] = float(entity_frame.iloc[0]["hc"])
-		entity_frame["static_log_rgdpna_raw"] = float(entity_frame.iloc[0]["log_rgdpna_raw"])
-		entity_frame["static_log_ck_raw"] = float(entity_frame.iloc[0]["log_ck_raw"])
-		entity_frame["x_t"] = _zscore(entity_frame["cap_deepening_raw"])
-		entity_frame["y_t"] = _zscore(entity_frame[target_column])
+		stats_frame = entity_frame.loc[entity_frame.index <= stats_end_year, fill_columns]
+		if stats_frame.empty or stats_frame.isna().any().any():
+			continue
+		reference_mask = entity_frame.index.to_numpy() <= stats_end_year
+
+		entity_frame["proxy_hc_raw"] = float(stats_frame["hc"].mean())
+		entity_frame["static_log_rgdpna_raw"] = float(stats_frame["log_rgdpna_raw"].mean())
+		entity_frame["static_log_ck_raw"] = float(stats_frame["log_ck_raw"].mean())
+		entity_frame["x_t"] = _zscore_with_reference(entity_frame["cap_deepening_raw"], reference_mask)
+		entity_frame["y_t"] = _zscore_with_reference(entity_frame[target_column], reference_mask)
 		retained_entities.append(entity_frame.reset_index().rename(columns={"index": "year"}))
 
 	if not retained_entities:
@@ -227,6 +265,7 @@ def load_economics_panel(
 	target_column: str = "ctfp",
 	year_start: int = DEFAULT_YEAR_START,
 	year_end: int = DEFAULT_YEAR_END,
+	stats_end_year: int | None = None,
 	max_missing_share: float = 0.15,
 ) -> EconomicsPanel:
 	"""Load the economics domain into dense CMDL tensors.
@@ -242,8 +281,11 @@ def load_economics_panel(
 		target_column=target_column,
 		year_start=year_start,
 		year_end=year_end,
+		stats_end_year=stats_end_year,
 		max_missing_share=max_missing_share,
 	)
+	if stats_end_year is None:
+		stats_end_year = year_end
 
 	entity_codes = sorted(dataframe["entity_code"].unique().tolist())
 	years = sorted(dataframe["year"].unique().tolist())
@@ -293,6 +335,7 @@ def load_economics_panel(
 			"years": years,
 			"year_start": int(years[0]),
 			"year_end": int(years[-1]),
+			"stats_end_year": int(stats_end_year),
 			"n_entities": n_entities,
 			"seq_length": seq_length,
 			"max_missing_share": float(max_missing_share),

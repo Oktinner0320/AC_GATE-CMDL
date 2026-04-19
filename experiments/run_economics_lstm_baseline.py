@@ -1,7 +1,7 @@
-"""Economics-domain experiment entrypoint for real-data CMDL validation.
+"""Economics-domain plain LSTM baseline runner.
 
-该脚本复用 Step 4 的训练壳子思路，但数据清洗与时间切分完全按 economics 域
-单独实现，不依赖任何跨域 preprocessing 抽象。
+该脚本在 economics 真实数据上复用当前 plain LSTM baseline，
+并与 AC-GATE 使用同一份 loader、同一组时间切分和同一套日志落盘习惯。
 """
 
 from __future__ import annotations
@@ -9,9 +9,7 @@ from __future__ import annotations
 import argparse
 import copy
 import importlib
-import json
 import os
-import random
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -31,7 +29,9 @@ except ImportError:
 import numpy as np
 import pandas as pd
 import torch
+import torch.nn.functional as F
 
+from baselines.lstm_baseline import PlainLSTMBaseline, PlainLSTMBaselineOutput
 from config.cmdl_config import CMDLConfig
 from data.economics.economics_loader import (
 	DEFAULT_YEAR_END,
@@ -42,18 +42,23 @@ from data.economics.economics_loader import (
 	load_economics_panel,
 )
 from evaluation.metrics import compute_mae, compute_mse, compute_r2, compute_spearman
-from model.cmdl_model import CMDLModel
-from model.loss import DomainAgnosticLoss
+from experiments.run_economics import (
+	build_sqlite_tracking_uri,
+	move_panel_to_device,
+	save_json,
+	select_device,
+	set_seed,
+)
 
 
-MLFLOW_EXPERIMENT_NAME = "CMDL-Step5-Economics"
+MLFLOW_EXPERIMENT_NAME = "CMDL-Step5-Economics-Baseline"
 
 
 @dataclass(slots=True)
-class EconomicsExperimentSetup:
-	"""Bundle runtime objects for one economics experiment.
+class EconomicsBaselineSetup:
+	"""Bundle runtime objects for one economics baseline run.
 
-	economics 单次实验所需运行时对象集合。
+	economics 域 plain LSTM baseline 单次实验所需对象集合。
 	"""
 
 	cfg: CMDLConfig
@@ -61,8 +66,7 @@ class EconomicsExperimentSetup:
 	train_panel: EconomicsPanel
 	val_panel: EconomicsPanel
 	test_panel: EconomicsPanel
-	model: CMDLModel
-	criterion: DomainAgnosticLoss
+	model: PlainLSTMBaseline
 	optimizer: torch.optim.Optimizer
 	device: torch.device
 	run_dir: Path
@@ -74,14 +78,14 @@ class EconomicsExperimentSetup:
 
 
 def parse_args() -> argparse.Namespace:
-	"""Parse CLI arguments for the economics real-data experiment.
+	"""Parse CLI arguments for the economics real-data plain-LSTM baseline.
 
-	解析 economics 现实数据实验所需参数。
+	解析 economics 真实数据 plain-LSTM baseline 的命令行参数。
 	"""
 
 	economics_defaults = CMDLConfig.from_domain("economics")
 
-	parser = argparse.ArgumentParser(description="Run the economics-domain CMDL experiment.")
+	parser = argparse.ArgumentParser(description="Run the economics-domain plain LSTM baseline.")
 	parser.add_argument(
 		"--csv-path",
 		type=str,
@@ -98,80 +102,20 @@ def parse_args() -> argparse.Namespace:
 	parser.add_argument("--lr", type=float, default=1e-3)
 	parser.add_argument("--epochs", type=int, default=120)
 	parser.add_argument("--patience", type=int, default=20)
-	parser.add_argument("--lambda-r", dest="lambda_r", type=float, default=economics_defaults.lambda_r)
-	parser.add_argument("--temperature", type=float, default=economics_defaults.temperature)
-	parser.add_argument("--lag-bias-strength", type=float, default=economics_defaults.lag_bias_strength)
 	parser.add_argument("--grad-clip", type=float, default=1.0)
-	parser.add_argument("--output-dir", type=str, default="outputs/step5/economics")
-	parser.add_argument("--experiment-name", type=str, default="E4_economics")
+	parser.add_argument("--output-dir", type=str, default="outputs/step5/economics_lstm_baseline")
+	parser.add_argument("--experiment-name", type=str, default="E4_economics_lstm_baseline")
 	parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
 	parser.add_argument("--disable-mlflow", action="store_true")
 	parser.add_argument("--log-every", type=int, default=10)
-	parser.add_argument("--smoke", action="store_true", help="Run a one-epoch smoke check instead of a full training run.")
+	parser.add_argument("--smoke", action="store_true", help="Run a one-epoch smoke check instead of a full baseline run.")
 	return parser.parse_args()
-
-
-def set_seed(seed: int) -> None:
-	"""Seed Python, NumPy, and PyTorch RNGs.
-
-	同步设置 Python、NumPy 与 PyTorch 的随机种子。
-	"""
-
-	random.seed(seed)
-	np.random.seed(seed)
-	torch.manual_seed(seed)
-	if torch.cuda.is_available():
-		torch.cuda.manual_seed_all(seed)
-
-
-def select_device(device_name: str) -> torch.device:
-	"""Resolve the target execution device.
-
-	解析实验执行设备。
-	"""
-
-	if device_name == "cuda":
-		if not torch.cuda.is_available():
-			raise RuntimeError("CUDA was requested but is not available")
-		return torch.device("cuda")
-	if device_name == "cpu":
-		return torch.device("cpu")
-	return torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
-def save_json(path: Path, payload: Any) -> None:
-	"""Write JSON payloads with stable UTF-8 formatting.
-
-	使用稳定的 UTF-8 格式写出 JSON 文件。
-	"""
-
-	path.parent.mkdir(parents=True, exist_ok=True)
-	with path.open("w", encoding="utf-8") as handle:
-		json.dump(payload, handle, indent=2, ensure_ascii=True, default=str)
-
-
-def prefix_metrics(prefix: str, metrics: dict[str, float]) -> dict[str, float]:
-	"""Namespace a metric dictionary with a fixed prefix.
-
-	为一组指标统一添加前缀，便于区分 train/val/test 阶段。
-	"""
-
-	return {f"{prefix}_{key}": float(value) for key, value in metrics.items()}
-
-
-def build_sqlite_tracking_uri(database_path: Path) -> str:
-	"""Build a Windows-safe sqlite tracking URI for local MLflow runs.
-
-	为本地 MLflow 构造兼容 Windows 的 sqlite tracking URI。
-	"""
-
-	return f"sqlite:///{database_path.resolve().as_posix()}"
 
 
 def ensure_mlflow_experiment(tracking_uri: str, artifact_root: Path) -> None:
 	"""Create the MLflow experiment if it does not already exist.
 
-	若实验不存在，则创建 economics 域的 MLflow 实验。
+	若实验不存在，则创建 economics baseline 的 MLflow 实验。
 	"""
 
 	if mlflow is None:
@@ -251,122 +195,202 @@ def finish_mlflow(artifact_paths: list[Path]) -> None:
 	mlflow.end_run(status="FINISHED")
 
 
-def move_panel_to_device(panel: EconomicsPanel, device: torch.device) -> EconomicsPanel:
-	"""Move an economics panel onto the specified device.
+def aligned_targets(y_true: torch.Tensor, warmup_steps: int) -> torch.Tensor:
+	"""Trim warm-up steps from targets to match the baseline outputs.
 
-	将 economics 面板中的全部张量字段移动到指定设备。
+	去除 warm-up 时间步，使目标张量与 baseline 输出对齐。
 	"""
 
-	return EconomicsPanel(
-		X_it=panel.X_it.to(device),
-		p_i=panel.p_i.to(device),
-		s_i=panel.s_i.to(device),
-		Y_it=panel.Y_it.to(device),
-		entity_ids=panel.entity_ids.to(device),
-		time_index=panel.time_index.to(device),
-		entity_codes=list(panel.entity_codes),
-		entity_names=list(panel.entity_names),
-		metadata=dict(panel.metadata),
+	if y_true.dim() != 2:
+		raise ValueError(f"Expected y_true with shape [B, T], got {tuple(y_true.shape)}")
+	if y_true.size(1) <= warmup_steps:
+		raise ValueError("y_true length must be greater than warmup_steps")
+	return y_true[:, warmup_steps:]
+
+
+def compute_posthoc_lag_profile(
+	model: PlainLSTMBaseline,
+	panel: EconomicsPanel,
+	base_output: PlainLSTMBaselineOutput | None = None,
+) -> tuple[torch.Tensor, torch.Tensor]:
+	"""Estimate per-entity effective lag profiles by lag-wise occlusion.
+
+	用逐 lag 的输入遮挡构造 economics baseline 的 post-hoc 有效滞后分布，
+	并据此得到 pseudo-k*。该分布是解释结果，不是训练得到的原生 omega。
+	"""
+
+	target = aligned_targets(panel.Y_it, model.cfg.max_lag)
+	model.eval()
+	with torch.no_grad():
+		if base_output is None:
+			base_output = model(
+				entity_ids=panel.entity_ids,
+				X_it=panel.X_it,
+				s_i=panel.s_i,
+			)
+
+		base_entity_errors = torch.mean((base_output.y_pred - target) ** 2, dim=1)
+		lag_deltas: list[torch.Tensor] = []
+
+		for lag_index in range(1, model.cfg.max_lag + 1):
+			occluded_inputs = panel.X_it.clone()
+			start_index = model.cfg.max_lag - lag_index
+			end_index = panel.X_it.size(1) - lag_index
+			occluded_inputs[:, start_index:end_index, :] = 0.0
+
+			occluded_output = model(
+				entity_ids=panel.entity_ids,
+				X_it=occluded_inputs,
+				s_i=panel.s_i,
+			)
+			occluded_entity_errors = torch.mean((occluded_output.y_pred - target) ** 2, dim=1)
+			lag_deltas.append((occluded_entity_errors - base_entity_errors).unsqueeze(1))
+
+		raw_profile = torch.cat(lag_deltas, dim=1)
+		positive_profile = raw_profile.clamp(min=0.0)
+		profile_sums = positive_profile.sum(dim=1, keepdim=True)
+		normalized_profile = positive_profile / profile_sums.clamp_min(1e-8)
+		uniform_profile = torch.full_like(normalized_profile, 1.0 / model.cfg.max_lag)
+		lag_profile = torch.where(profile_sums > 0.0, normalized_profile, uniform_profile)
+		lag_indices = torch.arange(
+			1,
+			model.cfg.max_lag + 1,
+			device=lag_profile.device,
+			dtype=lag_profile.dtype,
+		)
+		pseudo_k_star = torch.sum(lag_profile * lag_indices.unsqueeze(0), dim=1)
+
+	return lag_profile, pseudo_k_star
+
+
+def setup_experiment(args: argparse.Namespace) -> EconomicsBaselineSetup:
+	"""Prepare data, model, optimizer, and output layout for the economics baseline.
+
+	为 economics baseline 准备数据、模型、优化器与输出目录。
+	"""
+
+	if args.smoke:
+		args.epochs = 1
+		args.patience = 1
+
+	set_seed(args.seed)
+	full_panel_cpu = load_economics_panel(
+		csv_path=args.csv_path,
+		target_column=args.target_column,
+		year_start=args.year_start,
+		year_end=args.year_end,
+		stats_end_year=args.train_end_year,
+		max_missing_share=args.max_missing_share,
+	)
+
+	cfg = CMDLConfig.from_domain(
+		"economics",
+		seed=args.seed,
+		n_entities=full_panel_cpu.X_it.shape[0],
+		seq_length=full_panel_cpu.X_it.shape[1],
+		seq_features=full_panel_cpu.X_it.shape[2],
+		n_proxies=full_panel_cpu.p_i.shape[1],
+		static_dim=full_panel_cpu.s_i.shape[1],
+	)
+
+	train_panel_cpu, val_panel_cpu, test_panel_cpu = build_temporal_splits(
+		panel=full_panel_cpu,
+		max_lag=cfg.max_lag,
+		train_end_year=args.train_end_year,
+		val_end_year=args.val_end_year,
+	)
+	device = select_device(args.device)
+
+	full_panel = move_panel_to_device(full_panel_cpu, device)
+	train_panel = move_panel_to_device(train_panel_cpu, device)
+	val_panel = move_panel_to_device(val_panel_cpu, device)
+	test_panel = move_panel_to_device(test_panel_cpu, device)
+
+	model = PlainLSTMBaseline(cfg).to(device)
+	optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+
+	run_dir = Path(args.output_dir).resolve() / args.experiment_name
+	run_dir.mkdir(parents=True, exist_ok=True)
+
+	return EconomicsBaselineSetup(
+		cfg=cfg,
+		full_panel=full_panel,
+		train_panel=train_panel,
+		val_panel=val_panel,
+		test_panel=test_panel,
+		model=model,
+		optimizer=optimizer,
+		device=device,
+		run_dir=run_dir,
+		checkpoint_path=run_dir / "best_model.pt",
+		history_json_path=run_dir / "history.json",
+		history_csv_path=run_dir / "history.csv",
+		summary_path=run_dir / "summary.json",
+		predictions_path=run_dir / "predictions.csv",
 	)
 
 
-def refit_proxy_reconstructor(model: CMDLModel, panel: EconomicsPanel) -> None:
-	"""Refit the linear proxy head on frozen economics latent scores.
-
-	在固定主体模型参数的前提下，对 economics 域的线性 proxy 重构头做闭式重拟合。
-	"""
-
-	reconstructor = model.ac_encoder.proxy_reconstructor
-	if not isinstance(reconstructor, torch.nn.Linear):
-		raise TypeError("proxy_reconstructor must be an nn.Linear layer")
-
-	was_training = model.training
-	model.eval()
-	with torch.no_grad():
-		output = model(
-			entity_ids=panel.entity_ids,
-			X_it=panel.X_it,
-			p_i=panel.p_i,
-			s_i=panel.s_i,
-		)
-		design_matrix = torch.cat([output.z_i.detach(), torch.ones_like(output.z_i.detach())], dim=1).to(
-			dtype=torch.float64
-		)
-		target_matrix = panel.p_i.detach().to(dtype=torch.float64)
-		solution = torch.linalg.lstsq(design_matrix, target_matrix).solution.to(dtype=reconstructor.weight.dtype)
-		reconstructor.weight.copy_(solution[0:1].transpose(0, 1))
-		reconstructor.bias.copy_(solution[1])
-
-	if was_training:
-		model.train()
-
-
 def train_one_epoch(
-	model: CMDLModel,
-	criterion: DomainAgnosticLoss,
+	model: PlainLSTMBaseline,
 	optimizer: torch.optim.Optimizer,
 	panel: EconomicsPanel,
 	grad_clip: float,
 ) -> dict[str, float]:
-	"""Run one optimization step over the economics training split.
+	"""Run one optimization epoch on the economics training split.
 
-	在 economics 训练切分上执行一轮参数更新。
+	在 economics 训练切分上执行一轮 plain-LSTM baseline 参数更新。
 	"""
 
 	model.train()
 	optimizer.zero_grad(set_to_none=True)
 
-	output = model(entity_ids=panel.entity_ids, X_it=panel.X_it, p_i=panel.p_i, s_i=panel.s_i)
-	losses = criterion(output.y_pred, panel.Y_it, output.p_hat_i, panel.p_i)
-	if not torch.isfinite(losses.total_loss):
-		raise FloatingPointError("Encountered a non-finite total loss during economics training")
+	output = model(entity_ids=panel.entity_ids, X_it=panel.X_it, s_i=panel.s_i)
+	target = aligned_targets(panel.Y_it, model.cfg.max_lag)
+	task_loss = F.mse_loss(output.y_pred, target)
+	if not torch.isfinite(task_loss):
+		raise FloatingPointError("Encountered a non-finite task loss during economics baseline training")
 
-	losses.total_loss.backward()
+	task_loss.backward()
 	grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=grad_clip)
 	optimizer.step()
 
 	return {
-		"total_loss": float(losses.total_loss.item()),
-		"task_loss": float(losses.task_loss.item()),
-		"recon_loss": float(losses.recon_loss.item()),
+		"task_loss": float(task_loss.item()),
 		"grad_norm": float(grad_norm),
 	}
 
 
 def evaluate(
-	model: CMDLModel,
-	criterion: DomainAgnosticLoss,
+	model: PlainLSTMBaseline,
 	panel: EconomicsPanel,
 	include_outputs: bool = False,
 ) -> tuple[dict[str, float], dict[str, np.ndarray] | None]:
-	"""Evaluate one economics split and optionally return detailed outputs.
+	"""Evaluate one economics split and optionally return serialized outputs.
 
 	评估 economics 的一个时间切分，并在需要时返回详细输出。
 	"""
 
 	model.eval()
 	with torch.no_grad():
-		output = model(entity_ids=panel.entity_ids, X_it=panel.X_it, p_i=panel.p_i, s_i=panel.s_i)
-		losses = criterion(output.y_pred, panel.Y_it, output.p_hat_i, panel.p_i)
+		output = model(entity_ids=panel.entity_ids, X_it=panel.X_it, s_i=panel.s_i)
+		target = aligned_targets(panel.Y_it, model.cfg.max_lag)
+		task_loss = F.mse_loss(output.y_pred, target)
 
-	aligned_y_true = panel.Y_it[:, model.cfg.max_lag :]
-	omega = output.omega.detach().cpu().numpy()
-	omega_entropy = -np.sum(omega * np.log(np.clip(omega, 1e-8, None)), axis=1)
-	kstar_rho, kstar_p_value = compute_spearman(output.k_star, panel.p_i[:, 0])
+	lag_profile, pseudo_k_star = compute_posthoc_lag_profile(model, panel, base_output=output)
+	lag_profile_np = lag_profile.detach().cpu().numpy()
+	lag_entropy = -np.sum(lag_profile_np * np.log(np.clip(lag_profile_np, 1e-8, None)), axis=1)
+	kstar_rho, kstar_p_value = compute_spearman(pseudo_k_star, panel.p_i[:, 0])
 
 	metrics = {
-		"total_loss": float(losses.total_loss.item()),
-		"task_loss": float(losses.task_loss.item()),
-		"recon_loss": float(losses.recon_loss.item()),
-		"mse": float(compute_mse(output.y_pred, aligned_y_true)),
-		"mae": float(compute_mae(output.y_pred, aligned_y_true)),
-		"r2": float(compute_r2(output.y_pred, aligned_y_true)),
-		"proxy_recon_r2": float(compute_r2(output.p_hat_i, panel.p_i)),
-		"kstar_proxy_spearman_rho": float(kstar_rho),
-		"kstar_proxy_spearman_p": float(kstar_p_value),
-		"kstar_mean": float(output.k_star.mean().item()),
-		"kstar_std": float(output.k_star.std(unbiased=False).item()) if output.k_star.numel() > 1 else 0.0,
-		"omega_entropy_mean": float(np.mean(omega_entropy)),
+		"task_loss": float(task_loss.item()),
+		"mse": float(compute_mse(output.y_pred, target)),
+		"mae": float(compute_mae(output.y_pred, target)),
+		"r2": float(compute_r2(output.y_pred, target)),
+		"posthoc_kstar_proxy_spearman_rho": float(kstar_rho),
+		"posthoc_kstar_proxy_spearman_p": float(kstar_p_value),
+		"posthoc_kstar_mean": float(pseudo_k_star.mean().item()),
+		"posthoc_kstar_std": float(pseudo_k_star.std(unbiased=False).item()) if pseudo_k_star.numel() > 1 else 0.0,
+		"lag_profile_entropy_mean": float(np.mean(lag_entropy)),
 	}
 
 	if not include_outputs:
@@ -378,28 +402,27 @@ def evaluate(
 		"entity_names": np.asarray(panel.entity_names, dtype=object),
 		"years": np.asarray(get_prediction_years(panel, model.cfg.max_lag), dtype=np.int64),
 		"y_pred": output.y_pred.detach().cpu().numpy(),
-		"y_true": aligned_y_true.detach().cpu().numpy(),
-		"omega": output.omega.detach().cpu().numpy(),
-		"k_star": output.k_star.detach().cpu().numpy(),
-		"p_pred": output.p_hat_i.detach().cpu().numpy(),
+		"y_true": target.detach().cpu().numpy(),
+		"lag_profile": lag_profile_np,
+		"posthoc_k_star": pseudo_k_star.detach().cpu().numpy(),
 		"p_true": panel.p_i.detach().cpu().numpy(),
 	}
 	return metrics, outputs
 
 
 def save_predictions(outputs: dict[str, np.ndarray], path: Path) -> None:
-	"""Persist economics test predictions and entity-level lag diagnostics.
+	"""Persist economics baseline predictions and post-hoc lag diagnostics.
 
-	保存 economics 测试集预测结果和实体级 lag 诊断信息。
+	保存 economics baseline 的预测结果和 post-hoc lag 诊断信息。
 	"""
 
 	rows: list[dict[str, Any]] = []
 	years = outputs["years"].astype(int)
-	omega = outputs["omega"]
+	lag_profile = outputs["lag_profile"]
 
 	for entity_index, entity_id in enumerate(outputs["entity_ids"].astype(int)):
-		omega_row = omega[entity_index]
-		omega_peak = int(np.argmax(omega_row) + 1)
+		lag_profile_row = lag_profile[entity_index]
+		lag_profile_peak = int(np.argmax(lag_profile_row) + 1)
 		for time_index, year in enumerate(years):
 			row = {
 				"entity_id": int(entity_id),
@@ -408,13 +431,12 @@ def save_predictions(outputs: dict[str, np.ndarray], path: Path) -> None:
 				"year": int(year),
 				"y_true": float(outputs["y_true"][entity_index, time_index]),
 				"y_pred": float(outputs["y_pred"][entity_index, time_index]),
-				"k_star": float(outputs["k_star"][entity_index]),
-				"omega_peak": omega_peak,
+				"posthoc_k_star": float(outputs["posthoc_k_star"][entity_index]),
+				"lag_profile_peak": lag_profile_peak,
 				"proxy_1_true": float(outputs["p_true"][entity_index, 0]),
-				"proxy_1_pred": float(outputs["p_pred"][entity_index, 0]),
 			}
-			for lag_index, lag_weight in enumerate(omega_row, start=1):
-				row[f"omega_{lag_index}"] = float(lag_weight)
+			for lag_index, lag_weight in enumerate(lag_profile_row, start=1):
+				row[f"lag_profile_{lag_index}"] = float(lag_weight)
 			rows.append(row)
 
 	dataframe = pd.DataFrame(rows)
@@ -423,7 +445,7 @@ def save_predictions(outputs: dict[str, np.ndarray], path: Path) -> None:
 
 
 def summarize_run(
-	setup: EconomicsExperimentSetup,
+	setup: EconomicsBaselineSetup,
 	args: argparse.Namespace,
 	tracking_backend: str,
 	best_epoch: int,
@@ -432,17 +454,19 @@ def summarize_run(
 	val_metrics: dict[str, float],
 	test_metrics: dict[str, float],
 ) -> dict[str, Any]:
-	"""Build the JSON summary for one completed economics experiment.
+	"""Build the JSON summary for one completed economics baseline run.
 
-	生成 economics 实验完成后的 JSON 汇总结果。
+	生成 economics baseline 实验完成后的 JSON 汇总结果。
 	"""
 
 	return {
 		"experiment": args.experiment_name,
+		"model": "plain_lstm",
 		"tracking_backend": tracking_backend,
 		"device": str(setup.device),
 		"best_epoch": int(best_epoch),
 		"best_val_task_loss": float(best_val_task_loss),
+		"posthoc_lag_method": "lag_occlusion",
 		"config": setup.cfg.to_dict(),
 		"data": {
 			"source_path": setup.full_panel.metadata["source_path"],
@@ -466,82 +490,10 @@ def summarize_run(
 	}
 
 
-def setup_experiment(args: argparse.Namespace) -> EconomicsExperimentSetup:
-	"""Prepare data, model, optimizer, and output layout for economics.
-
-	为 economics 实验准备数据、模型、优化器与输出目录。
-	"""
-
-	if args.smoke:
-		args.epochs = 1
-		args.patience = 1
-
-	set_seed(args.seed)
-	full_panel_cpu = load_economics_panel(
-		csv_path=args.csv_path,
-		target_column=args.target_column,
-		year_start=args.year_start,
-		year_end=args.year_end,
-		stats_end_year=args.train_end_year,
-		max_missing_share=args.max_missing_share,
-	)
-
-	cfg = CMDLConfig.from_domain(
-		"economics",
-		seed=args.seed,
-		lambda_r=args.lambda_r,
-		temperature=args.temperature,
-		lag_bias_strength=args.lag_bias_strength,
-		n_entities=full_panel_cpu.X_it.shape[0],
-		seq_length=full_panel_cpu.X_it.shape[1],
-		seq_features=full_panel_cpu.X_it.shape[2],
-		n_proxies=full_panel_cpu.p_i.shape[1],
-		static_dim=full_panel_cpu.s_i.shape[1],
-	)
-
-	train_panel_cpu, val_panel_cpu, test_panel_cpu = build_temporal_splits(
-		panel=full_panel_cpu,
-		max_lag=cfg.max_lag,
-		train_end_year=args.train_end_year,
-		val_end_year=args.val_end_year,
-	)
-	device = select_device(args.device)
-
-	full_panel = move_panel_to_device(full_panel_cpu, device)
-	train_panel = move_panel_to_device(train_panel_cpu, device)
-	val_panel = move_panel_to_device(val_panel_cpu, device)
-	test_panel = move_panel_to_device(test_panel_cpu, device)
-
-	model = CMDLModel(cfg).to(device)
-	criterion = DomainAgnosticLoss(lambda_r=cfg.lambda_r, warmup_steps=cfg.max_lag)
-	optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-
-	run_dir = Path(args.output_dir).resolve() / args.experiment_name
-	run_dir.mkdir(parents=True, exist_ok=True)
-
-	return EconomicsExperimentSetup(
-		cfg=cfg,
-		full_panel=full_panel,
-		train_panel=train_panel,
-		val_panel=val_panel,
-		test_panel=test_panel,
-		model=model,
-		criterion=criterion,
-		optimizer=optimizer,
-		device=device,
-		run_dir=run_dir,
-		checkpoint_path=run_dir / "best_model.pt",
-		history_json_path=run_dir / "history.json",
-		history_csv_path=run_dir / "history.csv",
-		summary_path=run_dir / "summary.json",
-		predictions_path=run_dir / "predictions.csv",
-	)
-
-
 def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
-	"""Train and evaluate the economics real-data experiment.
+	"""Train and evaluate the economics real-data plain-LSTM baseline.
 
-	完成 economics 现实数据实验的训练、评估、日志与落盘。
+	完成 economics 真实数据 plain-LSTM baseline 的训练、评估、日志与落盘。
 	"""
 
 	setup = setup_experiment(args)
@@ -553,14 +505,12 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
 		run_name=args.experiment_name,
 		params={
 			"experiment": args.experiment_name,
+			"model": "plain_lstm",
 			"target_column": args.target_column,
 			"seed": args.seed,
 			"lr": args.lr,
 			"epochs": args.epochs,
 			"patience": args.patience,
-			"lambda_r": args.lambda_r,
-			"temperature": args.temperature,
-			"lag_bias_strength": args.lag_bias_strength,
 			"grad_clip": args.grad_clip,
 			"year_start": args.year_start,
 			"year_end": args.year_end,
@@ -580,26 +530,30 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
 		for epoch in range(1, args.epochs + 1):
 			train_metrics = train_one_epoch(
 				model=setup.model,
-				criterion=setup.criterion,
 				optimizer=setup.optimizer,
 				panel=setup.train_panel,
 				grad_clip=args.grad_clip,
 			)
-			val_metrics, _ = evaluate(setup.model, setup.criterion, setup.val_panel)
+			val_metrics, _ = evaluate(setup.model, setup.val_panel)
 
-			epoch_record: dict[str, float] = {"epoch": float(epoch)}
-			epoch_record.update(prefix_metrics("train", train_metrics))
-			epoch_record.update(prefix_metrics("val", val_metrics))
+			epoch_record: dict[str, float] = {
+				"epoch": float(epoch),
+				"train_task_loss": float(train_metrics["task_loss"]),
+				"train_grad_norm": float(train_metrics["grad_norm"]),
+				"val_task_loss": float(val_metrics["task_loss"]),
+				"val_mae": float(val_metrics["mae"]),
+				"val_r2": float(val_metrics["r2"]),
+			}
 			history.append(epoch_record)
 			log_mlflow_metrics({key: value for key, value in epoch_record.items() if key != "epoch"}, step=epoch)
 
 			if epoch == 1 or (args.log_every > 0 and epoch % args.log_every == 0):
 				print(
 					f"[{args.experiment_name}] epoch={epoch:03d} "
-					f"train_total={train_metrics['total_loss']:.4f} "
+					f"train_task={train_metrics['task_loss']:.4f} "
 					f"val_task={val_metrics['task_loss']:.4f} "
-					f"val_r2={val_metrics['r2']:.4f} "
-					f"val_proxy_r2={val_metrics['proxy_recon_r2']:.4f}"
+					f"val_mae={val_metrics['mae']:.4f} "
+					f"val_r2={val_metrics['r2']:.4f}"
 				)
 
 			if val_metrics["task_loss"] < best_val_task_loss - 1e-8:
@@ -610,6 +564,7 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
 				torch.save(
 					{
 						"experiment": args.experiment_name,
+						"model": "plain_lstm",
 						"best_epoch": best_epoch,
 						"best_val_task_loss": best_val_task_loss,
 						"config": setup.cfg.to_dict(),
@@ -624,24 +579,11 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
 					break
 
 		setup.model.load_state_dict(best_state)
-		refit_proxy_reconstructor(setup.model, setup.train_panel)
-		torch.save(
-			{
-				"experiment": args.experiment_name,
-				"best_epoch": best_epoch,
-				"best_val_task_loss": best_val_task_loss,
-				"config": setup.cfg.to_dict(),
-				"proxy_head_refit": True,
-				"model_state_dict": copy.deepcopy(setup.model.state_dict()),
-			},
-			setup.checkpoint_path,
-		)
-
-		train_metrics, _ = evaluate(setup.model, setup.criterion, setup.train_panel)
-		val_metrics, _ = evaluate(setup.model, setup.criterion, setup.val_panel)
-		test_metrics, outputs = evaluate(setup.model, setup.criterion, setup.test_panel, include_outputs=True)
+		train_metrics, _ = evaluate(setup.model, setup.train_panel)
+		val_metrics, _ = evaluate(setup.model, setup.val_panel)
+		test_metrics, outputs = evaluate(setup.model, setup.test_panel, include_outputs=True)
 		if outputs is None:
-			raise RuntimeError("Expected test outputs from economics evaluation")
+			raise RuntimeError("Expected outputs from economics baseline evaluation")
 
 		pd.DataFrame(history).to_csv(setup.history_csv_path, index=False)
 		save_json(setup.history_json_path, history)
@@ -673,22 +615,22 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
 
 
 def main() -> None:
-	"""Execute the economics real-data experiment.
+	"""Execute the economics real-data plain-LSTM baseline.
 
-	执行 economics 现实数据实验，并打印关键指标摘要。
+	执行 economics 真实数据 plain-LSTM baseline，并打印关键指标摘要。
 	"""
 
 	args = parse_args()
 	summary = run_experiment(args)
-
 	test_metrics = summary["metrics"]["test"]
-	print("Economics experiment complete.")
+
+	print("Economics plain-LSTM baseline complete.")
 	print(
 		f"best_epoch={summary['best_epoch']} "
 		f"test_mse={test_metrics['mse']:.4f} "
 		f"test_mae={test_metrics['mae']:.4f} "
 		f"test_r2={test_metrics['r2']:.4f} "
-		f"proxy_recon_r2={test_metrics['proxy_recon_r2']:.4f}"
+		f"posthoc_kstar_proxy_rho={test_metrics['posthoc_kstar_proxy_spearman_rho']:.4f}"
 	)
 
 

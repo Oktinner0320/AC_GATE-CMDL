@@ -26,6 +26,7 @@ from data.economics.economics_loader import (
     get_prediction_years,
     load_economics_panel,
 )
+from experiments.run_economics_lstm_baseline import run_experiment as run_baseline_experiment
 from experiments.run_economics import run_experiment
 
 
@@ -96,6 +97,41 @@ class EconomicsLoaderTest(unittest.TestCase):
             self.assertTrue(torch.isfinite(panel.Y_it).all().item())
             self.assertTrue(torch.isfinite(panel.p_i).all().item())
             self.assertTrue(torch.isfinite(panel.s_i).all().item())
+
+    def test_loader_uses_train_window_stats_for_scaling_and_static_features(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            temporary_root = Path(temporary_dir)
+            base_csv_path = temporary_root / "pwt_fixture_base.csv"
+            shifted_csv_path = temporary_root / "pwt_fixture_shifted.csv"
+            self._write_fixture_csv(base_csv_path, year_start=1980, year_end=1991)
+
+            shifted_frame = pd.read_csv(base_csv_path)
+            future_mask = (shifted_frame["countrycode"] == "AAA") & (shifted_frame["year"] >= 1988)
+            shifted_frame.loc[future_mask, "hc"] = shifted_frame.loc[future_mask, "hc"] + 50.0
+            shifted_frame.loc[future_mask, "ck"] = shifted_frame.loc[future_mask, "ck"] * 25.0
+            shifted_frame.loc[future_mask, "rgdpna"] = shifted_frame.loc[future_mask, "rgdpna"] * 0.20
+            shifted_frame.loc[future_mask, "ctfp"] = shifted_frame.loc[future_mask, "ctfp"] + 100.0
+            shifted_frame.to_csv(shifted_csv_path, index=False)
+
+            base_panel = load_economics_panel(
+                csv_path=base_csv_path,
+                year_start=1980,
+                year_end=1991,
+                stats_end_year=1987,
+                max_missing_share=0.20,
+            )
+            shifted_panel = load_economics_panel(
+                csv_path=shifted_csv_path,
+                year_start=1980,
+                year_end=1991,
+                stats_end_year=1987,
+                max_missing_share=0.20,
+            )
+
+            torch.testing.assert_close(base_panel.p_i, shifted_panel.p_i, atol=1e-6, rtol=1e-6)
+            torch.testing.assert_close(base_panel.s_i, shifted_panel.s_i, atol=1e-6, rtol=1e-6)
+            torch.testing.assert_close(base_panel.X_it[:, :8, :], shifted_panel.X_it[:, :8, :], atol=1e-6, rtol=1e-6)
+            torch.testing.assert_close(base_panel.Y_it[:, :8], shifted_panel.Y_it[:, :8], atol=1e-6, rtol=1e-6)
 
     def test_download_utility_reads_excel_data_sheet_and_caches_csv(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_dir:
@@ -183,6 +219,44 @@ class EconomicsLoaderTest(unittest.TestCase):
             run_dir = output_root / "economics_smoke"
 
             self.assertEqual(summary["experiment"], "economics_smoke")
+            self.assertIn("test", summary["metrics"])
+            self.assertTrue(np.isfinite(summary["metrics"]["test"]["mse"]))
+            self.assertTrue((run_dir / "summary.json").exists())
+            self.assertTrue((run_dir / "predictions.csv").exists())
+            self.assertTrue((run_dir / "history.csv").exists())
+
+    def test_run_economics_lstm_baseline_smoke_writes_summary_and_predictions(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            temporary_root = Path(temporary_dir)
+            csv_path = temporary_root / "pwt_fixture_long.csv"
+            output_root = temporary_root / "baseline_outputs"
+            self._write_fixture_csv(csv_path, year_start=1980, year_end=2004)
+
+            args = Namespace(
+                csv_path=str(csv_path),
+                year_start=1980,
+                year_end=2004,
+                train_end_year=1997,
+                val_end_year=2000,
+                target_column="ctfp",
+                max_missing_share=0.20,
+                seed=42,
+                lr=1e-3,
+                epochs=1,
+                patience=1,
+                grad_clip=1.0,
+                output_dir=str(output_root),
+                experiment_name="economics_lstm_smoke",
+                device="cpu",
+                disable_mlflow=True,
+                log_every=1,
+                smoke=True,
+            )
+
+            summary = run_baseline_experiment(args)
+            run_dir = output_root / "economics_lstm_smoke"
+
+            self.assertEqual(summary["model"], "plain_lstm")
             self.assertIn("test", summary["metrics"])
             self.assertTrue(np.isfinite(summary["metrics"]["test"]["mse"]))
             self.assertTrue((run_dir / "summary.json").exists())
