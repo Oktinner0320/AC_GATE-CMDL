@@ -13,6 +13,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import torch
 
 
 WORKSPACE_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -22,7 +23,8 @@ if WORKSPACE_ROOT not in sys.path:
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 
-from experiments.run_economics_ablation import run_suite  # noqa: E402
+from experiments.run_economics import setup_experiment  # noqa: E402
+from experiments.run_economics_ablation import prepare_variant_setup, run_suite  # noqa: E402
 
 
 class EconomicsAblationTest(unittest.TestCase):
@@ -120,6 +122,11 @@ class EconomicsAblationTest(unittest.TestCase):
             no_recon_summary = json.loads((no_recon_run_dir / "summary.json").read_text(encoding="utf-8"))
             self.assertEqual(no_recon_summary["variant"], "no_recon_regularization")
             self.assertAlmostEqual(no_recon_summary["effective_lambda_r"], 0.0)
+            self.assertTrue(no_recon_summary["diagnostics"]["ablation"]["matched_init_to_full_cmdl"])
+            self.assertEqual(
+                no_recon_summary["diagnostics"]["ablation"]["causal_ablation_validity"],
+                "matched_init_effective_lambda_only",
+            )
 
             no_ac_summary = json.loads(
                 (output_root / "economics_ablation_no_ac_encoder_seed0" / "summary.json").read_text(encoding="utf-8")
@@ -187,6 +194,58 @@ class EconomicsAblationTest(unittest.TestCase):
                     ).read_text(encoding="utf-8")
                 )
                 self.assertEqual(summary["data"]["feature_bundle"], "effective_labor_aware")
+
+    def test_no_recon_prepare_variant_setup_reuses_full_cmdl_initialization(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            temporary_root = Path(temporary_dir)
+            csv_path = temporary_root / "pwt_fixture_long.csv"
+            self._write_fixture_csv(csv_path)
+
+            base_args = Namespace(
+                csv_path=str(csv_path),
+                year_start=1980,
+                year_end=2004,
+                train_end_year=1997,
+                val_end_year=2000,
+                target_column="ctfp",
+                max_missing_share=0.20,
+                seed=42,
+                lr=1e-3,
+                epochs=1,
+                patience=1,
+                lambda_r=0.1,
+                temperature=1.0,
+                lag_bias_strength=1.0,
+                grad_clip=1.0,
+                output_dir=str(temporary_root / "outputs"),
+                experiment_name="economics_full_reference",
+                experiment_prefix="economics_ablation",
+                device="cpu",
+                disable_mlflow=True,
+                log_every=1,
+                smoke=True,
+            )
+
+            full_setup = setup_experiment(Namespace(**vars(base_args)))
+            no_recon_setup, _, effective_lambda_r, ablation_diagnostics = prepare_variant_setup(
+                args=base_args,
+                variant="no_recon_regularization",
+                seed=42,
+            )
+
+            self.assertEqual(effective_lambda_r, 0.0)
+            self.assertTrue(ablation_diagnostics["matched_init_to_full_cmdl"])
+            self.assertEqual(
+                ablation_diagnostics["causal_ablation_validity"],
+                "matched_init_effective_lambda_only",
+            )
+            for parameter_name, reference_tensor in full_setup.model.state_dict().items():
+                torch.testing.assert_close(
+                    no_recon_setup.model.state_dict()[parameter_name],
+                    reference_tensor,
+                    atol=0.0,
+                    rtol=0.0,
+                )
 
 
 if __name__ == "__main__":

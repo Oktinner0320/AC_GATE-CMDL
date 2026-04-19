@@ -191,6 +191,11 @@ class EconomicsComparisonTest(unittest.TestCase):
                     },
                     "data": self._build_data_payload(),
                     "diagnostics": {
+                        "ablation": {
+                            "same_architecture_as_full_cmdl": False,
+                            "matched_init_to_full_cmdl": False,
+                            "causal_ablation_validity": "architecture_changed",
+                        },
                         "proxy_refit": {
                             "status": "skipped_rank_deficient",
                             "applied": False,
@@ -255,6 +260,8 @@ class EconomicsComparisonTest(unittest.TestCase):
             self.assertFalse(bool(ablation_row["proxy_metric_interpretable"]))
             self.assertTrue(pd.isna(ablation_row["test_proxy_signal_r2"]))
             self.assertTrue(pd.isna(ablation_row["test_effective_kstar_proxy_spearman_rho"]))
+            self.assertFalse(bool(ablation_row["matched_init_to_full_cmdl"]))
+            self.assertEqual(ablation_row["causal_ablation_validity"], "architecture_changed")
 
             task_table = build_task_table(comparison)
             interpretability_table = build_interpretability_table(comparison)

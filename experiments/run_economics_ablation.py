@@ -45,6 +45,24 @@ from model.loss import DomainAgnosticLoss
 VARIANT_CHOICES = ["all", "no_ac_encoder", "uniform_lag", "no_recon_regularization"]
 
 
+def _ablation_diagnostics(variant: str, matched_init_to_full_cmdl: bool) -> dict[str, Any]:
+    """Describe whether one ablation run is a clean causal comparison to full CMDL."""
+
+    same_architecture_as_full_cmdl = variant == "no_recon_regularization"
+    if variant == "no_recon_regularization" and matched_init_to_full_cmdl:
+        causal_ablation_validity = "matched_init_effective_lambda_only"
+    elif same_architecture_as_full_cmdl:
+        causal_ablation_validity = "same_architecture_unmatched_init"
+    else:
+        causal_ablation_validity = "architecture_changed"
+
+    return {
+        "same_architecture_as_full_cmdl": same_architecture_as_full_cmdl,
+        "matched_init_to_full_cmdl": matched_init_to_full_cmdl,
+        "causal_ablation_validity": causal_ablation_validity,
+    }
+
+
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments for the economics ablation suite.
 
@@ -115,7 +133,7 @@ def prepare_variant_setup(
     args: argparse.Namespace,
     variant: str,
     seed: int,
-) -> tuple[Any, argparse.Namespace, float]:
+) -> tuple[Any, argparse.Namespace, float, dict[str, Any]]:
     """Prepare one economics ablation setup by reusing the standard runner.
 
     复用标准 economics runner，准备单个 ablation 变体的运行时对象。
@@ -125,11 +143,17 @@ def prepare_variant_setup(
     variant_args.seed = int(seed)
     variant_args.experiment_name = f"{args.experiment_prefix}_{variant}_seed{seed}"
     setup = setup_experiment(variant_args)
-    model, effective_lambda_r = build_variant_model(variant, setup.cfg)
+    if variant == "no_recon_regularization":
+        model = setup.model
+        effective_lambda_r = 0.0
+        matched_init_to_full_cmdl = True
+    else:
+        model, effective_lambda_r = build_variant_model(variant, setup.cfg)
+        matched_init_to_full_cmdl = False
     setup.model = model.to(setup.device)
     setup.criterion = DomainAgnosticLoss(lambda_r=effective_lambda_r, warmup_steps=setup.cfg.max_lag)
     setup.optimizer = torch.optim.Adam(setup.model.parameters(), lr=variant_args.lr)
-    return setup, variant_args, effective_lambda_r
+    return setup, variant_args, effective_lambda_r, _ablation_diagnostics(variant, matched_init_to_full_cmdl)
 
 
 def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, Any]:
@@ -138,7 +162,11 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
     训练并评估单个 economics ablation 变体与随机种子。
     """
 
-    setup, variant_args, effective_lambda_r = prepare_variant_setup(args=args, variant=variant, seed=seed)
+    setup, variant_args, effective_lambda_r, ablation_diagnostics = prepare_variant_setup(
+        args=args,
+        variant=variant,
+        seed=seed,
+    )
     save_json(setup.run_dir / "args.json", vars(variant_args))
 
     tracking_backend = try_start_mlflow(
@@ -157,6 +185,8 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
             "patience": variant_args.patience,
             "lambda_r": variant_args.lambda_r,
             "effective_lambda_r": effective_lambda_r,
+            "matched_init_to_full_cmdl": ablation_diagnostics["matched_init_to_full_cmdl"],
+            "causal_ablation_validity": ablation_diagnostics["causal_ablation_validity"],
             "temperature": variant_args.temperature,
             "lag_bias_strength": variant_args.lag_bias_strength,
             "grad_clip": variant_args.grad_clip,
@@ -213,6 +243,7 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
                         "best_epoch": best_epoch,
                         "best_val_task_loss": best_val_task_loss,
                         "effective_lambda_r": float(effective_lambda_r),
+                        "ablation_diagnostics": dict(ablation_diagnostics),
                         "config": setup.cfg.to_dict(),
                         "model_state_dict": best_state,
                     },
@@ -240,6 +271,7 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
                 "best_epoch": best_epoch,
                 "best_val_task_loss": best_val_task_loss,
                 "effective_lambda_r": float(effective_lambda_r),
+                "ablation_diagnostics": dict(ablation_diagnostics),
                 "config": setup.cfg.to_dict(),
                 "proxy_head_refit": proxy_refit_result.applied,
                 "proxy_refit": proxy_refit_result.to_dict(),
@@ -288,6 +320,7 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
         summary["model"] = "cmdl_ablation"
         summary["variant"] = variant
         summary["effective_lambda_r"] = float(effective_lambda_r)
+        summary.setdefault("diagnostics", {})["ablation"] = dict(ablation_diagnostics)
         save_json(setup.summary_path, summary)
         return summary
     finally:
@@ -324,6 +357,7 @@ def aggregate_results(rows: list[dict[str, Any]]) -> pd.DataFrame:
         "source_path",
         "proxy_refit_status",
         "proxy_refit_reason",
+        "causal_ablation_validity",
     }
     numeric_columns = [
         column
@@ -360,6 +394,12 @@ def run_suite(args: argparse.Namespace) -> tuple[pd.DataFrame, pd.DataFrame]:
                     "source_path": summary["data"]["source_path"],
                     "seed": summary["config"]["seed"],
                     "effective_lambda_r": summary.get("effective_lambda_r"),
+                    "matched_init_to_full_cmdl": summary.get("diagnostics", {})
+                    .get("ablation", {})
+                    .get("matched_init_to_full_cmdl"),
+                    "causal_ablation_validity": summary.get("diagnostics", {})
+                    .get("ablation", {})
+                    .get("causal_ablation_validity"),
                     "best_epoch": summary["best_epoch"],
                     "best_val_task_loss": summary["best_val_task_loss"],
                     "proxy_refit_status": summary.get("diagnostics", {}).get("proxy_refit", {}).get("status"),

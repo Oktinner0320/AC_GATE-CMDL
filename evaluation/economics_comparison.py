@@ -66,6 +66,8 @@ _IDENTITY_COLUMNS = [
     "noise_std",
     "best_epoch",
     "best_val_task_loss",
+    "matched_init_to_full_cmdl",
+    "causal_ablation_validity",
     "proxy_refit_status",
     "proxy_refit_applied",
     "proxy_metric_interpretable",
@@ -222,6 +224,7 @@ def _normalize_summary(summary_path: Path, output_root: Path, family: str) -> di
     config = dict(payload.get("config", {}))
     data = dict(payload.get("data", {}))
     diagnostics = dict(payload.get("diagnostics", {}))
+    ablation = dict(diagnostics.get("ablation") or {})
     proxy_refit = dict(diagnostics.get("proxy_refit") or {})
     train_year_start, train_year_end = _year_bounds(data.get("train_years"))
     val_year_start, val_year_end = _year_bounds(data.get("val_years"))
@@ -274,6 +277,8 @@ def _normalize_summary(summary_path: Path, output_root: Path, family: str) -> di
         "noise_std": config.get("noise_std"),
         "best_epoch": payload.get("best_epoch"),
         "best_val_task_loss": payload.get("best_val_task_loss"),
+        "matched_init_to_full_cmdl": ablation.get("matched_init_to_full_cmdl"),
+        "causal_ablation_validity": ablation.get("causal_ablation_validity"),
         "proxy_refit_status": proxy_refit.get("status"),
         "proxy_refit_applied": proxy_refit.get("applied"),
         "proxy_metric_interpretable": proxy_refit.get("metrics_interpretable"),
