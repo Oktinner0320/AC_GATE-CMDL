@@ -1,0 +1,50 @@
+"""Utilities for consolidating energy CMDL, baseline, and ablation outputs.
+
+统一读取 energy CMDL、plain LSTM baseline 与 ablation 的 summary.json，
+并生成可直接在 notebook 中展示的对比表。
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import pandas as pd
+
+from evaluation.economics_comparison import (
+    build_economics_comparison,
+    build_interpretability_table as _build_interpretability_table,
+    build_task_table as _build_task_table,
+)
+
+
+def build_energy_comparison(
+    cmdl_root: Path | str | None = None,
+    baseline_root: Path | str | None = None,
+    ablation_root: Path | str | None = None,
+) -> pd.DataFrame:
+    """Combine energy CMDL, baseline, and ablation runs into one table."""
+
+    return build_economics_comparison(
+        cmdl_root=cmdl_root,
+        baseline_root=baseline_root,
+        ablation_root=ablation_root,
+    )
+
+
+def build_task_table(comparison_frame: pd.DataFrame, split: str = "test") -> pd.DataFrame:
+    """Build the forecast-comparison table used in the energy notebook."""
+
+    return _build_task_table(comparison_frame, split=split)
+
+
+def build_interpretability_table(comparison_frame: pd.DataFrame, split: str = "test") -> pd.DataFrame:
+    """Build the lag/proxy diagnostics table used in the energy notebook."""
+
+    return _build_interpretability_table(comparison_frame, split=split)
+
+
+__all__ = [
+    "build_energy_comparison",
+    "build_interpretability_table",
+    "build_task_table",
+]
