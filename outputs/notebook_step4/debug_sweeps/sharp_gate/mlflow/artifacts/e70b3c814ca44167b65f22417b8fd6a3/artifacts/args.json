@@ -1,0 +1,16 @@
+{
+  "scenario": "linear",
+  "seed": 0,
+  "lr": 0.001,
+  "lambda_r": 0.1,
+  "temperature": 0.3,
+  "lag_bias_strength": 0.1,
+  "grad_clip": 1.0,
+  "val_fraction": 0.2,
+  "device": "auto",
+  "disable_mlflow": false,
+  "epochs": 60,
+  "patience": 15,
+  "log_every": 20,
+  "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\notebook_step4\\debug_sweeps\\sharp_gate"
+}
