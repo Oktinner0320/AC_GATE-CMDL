@@ -26,6 +26,7 @@ from data.economics.economics_loader import (
     get_prediction_years,
     load_economics_panel,
 )
+from data.economics.prepare import save_cleaned_economics_table
 from experiments.run_economics_lstm_baseline import run_experiment as run_baseline_experiment
 from experiments.run_economics import run_experiment
 
@@ -160,6 +161,86 @@ class EconomicsLoaderTest(unittest.TestCase):
             self.assertTrue({"countrycode", "year", "ctfp", "hc", "ck", "rgdpna"}.issubset(cached_frame.columns))
             self.assertEqual(len(cached_frame), len(dataframe))
 
+    def test_prepare_exports_cleaned_long_form_table(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            temporary_root = Path(temporary_dir)
+            csv_path = temporary_root / "pwt_fixture.csv"
+            output_path = temporary_root / "cleaned" / "economics_cleaned_long.csv"
+            self._write_fixture_csv(csv_path, year_start=1980, year_end=1991)
+
+            saved_path = save_cleaned_economics_table(
+                csv_path=csv_path,
+                output_path=output_path,
+                year_start=1980,
+                year_end=1991,
+                max_missing_share=0.20,
+            )
+            cleaned_frame = pd.read_csv(saved_path)
+
+            self.assertTrue(saved_path.exists())
+            self.assertEqual(saved_path, output_path.resolve())
+            self.assertEqual(sorted(cleaned_frame["entity_code"].unique().tolist()), ["AAA", "BBB", "CCC"])
+            self.assertEqual(len(cleaned_frame), 36)
+            self.assertTrue(
+                {
+                    "entity_code",
+                    "entity_name",
+                    "year",
+                    "hc",
+                    "ck",
+                    "rgdpna",
+                    "ctfp",
+                    "cap_deepening_raw",
+                    "hc_was_missing",
+                    "ctfp_was_missing",
+                    "row_was_missing",
+                    "entity_missing_share",
+                }.issubset(cleaned_frame.columns)
+            )
+
+            bbb_gap_rows = cleaned_frame[
+                (cleaned_frame["entity_code"] == "BBB") & (cleaned_frame["year"].isin([1983, 1984]))
+            ]
+            self.assertEqual(bbb_gap_rows["ctfp_was_missing"].tolist(), [1, 1])
+            self.assertTrue(np.isfinite(bbb_gap_rows["ctfp"]).all())
+
+    def test_loader_accepts_cleaned_long_form_table(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            temporary_root = Path(temporary_dir)
+            raw_csv_path = temporary_root / "pwt_fixture.csv"
+            cleaned_csv_path = temporary_root / "economics_cleaned_long.csv"
+            self._write_fixture_csv(raw_csv_path, year_start=1980, year_end=1991)
+
+            save_cleaned_economics_table(
+                csv_path=raw_csv_path,
+                output_path=cleaned_csv_path,
+                year_start=1980,
+                year_end=1991,
+                max_missing_share=0.20,
+            )
+
+            raw_panel = load_economics_panel(
+                csv_path=raw_csv_path,
+                year_start=1980,
+                year_end=1991,
+                stats_end_year=1987,
+                max_missing_share=0.20,
+            )
+            cleaned_panel = load_economics_panel(
+                csv_path=cleaned_csv_path,
+                year_start=1980,
+                year_end=1991,
+                stats_end_year=1987,
+                max_missing_share=0.20,
+            )
+
+            self.assertEqual(raw_panel.entity_codes, cleaned_panel.entity_codes)
+            self.assertEqual(raw_panel.metadata["years"], cleaned_panel.metadata["years"])
+            torch.testing.assert_close(raw_panel.X_it, cleaned_panel.X_it, atol=1e-6, rtol=1e-6)
+            torch.testing.assert_close(raw_panel.Y_it, cleaned_panel.Y_it, atol=1e-6, rtol=1e-6)
+            torch.testing.assert_close(raw_panel.p_i, cleaned_panel.p_i, atol=1e-6, rtol=1e-6)
+            torch.testing.assert_close(raw_panel.s_i, cleaned_panel.s_i, atol=1e-6, rtol=1e-6)
+
     def test_temporal_splits_keep_context_years(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_dir:
             csv_path = Path(temporary_dir) / "pwt_fixture.csv"
@@ -221,6 +302,57 @@ class EconomicsLoaderTest(unittest.TestCase):
             self.assertEqual(summary["experiment"], "economics_smoke")
             self.assertIn("test", summary["metrics"])
             self.assertTrue(np.isfinite(summary["metrics"]["test"]["mse"]))
+            self.assertTrue((run_dir / "summary.json").exists())
+            self.assertTrue((run_dir / "predictions.csv").exists())
+            self.assertTrue((run_dir / "history.csv").exists())
+
+    def test_run_economics_smoke_accepts_cleaned_long_form_csv(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            temporary_root = Path(temporary_dir)
+            raw_csv_path = temporary_root / "pwt_fixture_long.csv"
+            cleaned_csv_path = temporary_root / "economics_cleaned_long.csv"
+            output_root = temporary_root / "cleaned_outputs"
+            self._write_fixture_csv(raw_csv_path, year_start=1980, year_end=2004)
+
+            save_cleaned_economics_table(
+                csv_path=raw_csv_path,
+                output_path=cleaned_csv_path,
+                year_start=1980,
+                year_end=2004,
+                max_missing_share=0.20,
+            )
+
+            args = Namespace(
+                csv_path=str(cleaned_csv_path),
+                year_start=1980,
+                year_end=2004,
+                train_end_year=1997,
+                val_end_year=2000,
+                target_column="ctfp",
+                max_missing_share=0.20,
+                seed=42,
+                lr=1e-3,
+                epochs=1,
+                patience=1,
+                lambda_r=0.1,
+                temperature=1.0,
+                lag_bias_strength=1.0,
+                grad_clip=1.0,
+                output_dir=str(output_root),
+                experiment_name="economics_cleaned_smoke",
+                device="cpu",
+                disable_mlflow=True,
+                log_every=1,
+                smoke=True,
+            )
+
+            summary = run_experiment(args)
+            run_dir = output_root / "economics_cleaned_smoke"
+
+            self.assertEqual(summary["experiment"], "economics_cleaned_smoke")
+            self.assertIn("test", summary["metrics"])
+            self.assertTrue(np.isfinite(summary["metrics"]["test"]["mse"]))
+            self.assertEqual(summary["data"]["source_path"], str(cleaned_csv_path.resolve()))
             self.assertTrue((run_dir / "summary.json").exists())
             self.assertTrue((run_dir / "predictions.csv").exists())
             self.assertTrue((run_dir / "history.csv").exists())

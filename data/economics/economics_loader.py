@@ -122,33 +122,155 @@ def _validate_loader_shape_contract(cfg: CMDLConfig) -> None:
 		raise ValueError(f"Economics loader currently emits exactly 2 static features, got {cfg.static_dim}")
 
 
-def build_economics_dataframe(
+def _looks_like_cleaned_economics_frame(frame: pd.DataFrame, target_column: str) -> bool:
+	"""Infer whether a table is the cleaned long-form economics export.
+
+	判断输入表是否已经是清洗后的 economics long-form 导出。
+	"""
+
+	required_columns = {
+		"entity_code",
+		"entity_name",
+		"year",
+		"hc",
+		"ck",
+		"rgdpna",
+		target_column,
+		"cap_deepening_raw",
+		"log_rgdpna_raw",
+		"log_ck_raw",
+	}
+	return required_columns.issubset(frame.columns)
+
+
+def _build_cleaned_from_exported_table(
+	dataframe: pd.DataFrame,
+	target_column: str,
+	year_start: int,
+	year_end: int,
+) -> pd.DataFrame:
+	"""Validate and normalize an already cleaned long-form economics table.
+
+	校验并规范化已经清洗好的 economics long-form 表，使其可直接复用到训练 loader。
+	"""
+
+	required_columns = {
+		"entity_code",
+		"entity_name",
+		"year",
+		"hc",
+		"ck",
+		"rgdpna",
+		target_column,
+		"cap_deepening_raw",
+		"log_rgdpna_raw",
+		"log_ck_raw",
+	}
+	_require_columns(dataframe, required_columns)
+
+	frame = dataframe.copy()
+	frame["entity_code"] = frame["entity_code"].astype(str).str.strip()
+	frame["entity_name"] = frame["entity_name"].fillna(frame["entity_code"]).astype(str)
+	frame["year"] = pd.to_numeric(frame["year"], errors="coerce")
+
+	numeric_columns = [
+		"hc",
+		"ck",
+		"rgdpna",
+		target_column,
+		"cap_deepening_raw",
+		"log_rgdpna_raw",
+		"log_ck_raw",
+	]
+	for column_name in numeric_columns:
+		frame[column_name] = pd.to_numeric(frame[column_name], errors="coerce")
+
+	frame = frame.dropna(subset=["entity_code", "year"])
+	frame["year"] = frame["year"].astype(int)
+	frame = frame[(frame["year"] >= year_start) & (frame["year"] <= year_end)].copy()
+	if frame.empty:
+		raise ValueError("No economics rows remain after filtering the cleaned long-form table")
+
+	expected_years = list(range(year_start, year_end + 1))
+	retained_entities: list[pd.DataFrame] = []
+	optional_defaults: dict[str, Any] = {
+		"hc_was_missing": 0,
+		"ck_was_missing": 0,
+		"rgdpna_was_missing": 0,
+		f"{target_column}_was_missing": 0,
+		"row_was_missing": 0,
+		"entity_missing_share": 0.0,
+	}
+
+	for entity_code, group in frame.groupby("entity_code", sort=True):
+		entity_frame = group.sort_values("year").groupby("year", as_index=False).last()
+		if entity_frame["year"].tolist() != expected_years:
+			raise ValueError(
+				"Cleaned economics input must remain a balanced panel for the requested year range; "
+				f"entity {entity_code} does not cover {year_start}..{year_end}"
+			)
+		if entity_frame[numeric_columns].isna().any().any():
+			raise ValueError(f"Cleaned economics input still contains missing numeric values for entity {entity_code}")
+		if not np.isfinite(entity_frame[numeric_columns].to_numpy(dtype=float)).all():
+			raise ValueError(f"Cleaned economics input contains non-finite numeric values for entity {entity_code}")
+
+		for column_name, default_value in optional_defaults.items():
+			if column_name not in entity_frame.columns:
+				entity_frame[column_name] = default_value
+		retained_entities.append(entity_frame)
+
+	cleaned_frame = pd.concat(retained_entities, ignore_index=True)
+	cleaned_frame = cleaned_frame.sort_values(["entity_code", "year"]).reset_index(drop=True)
+
+	return cleaned_frame[
+		[
+			"entity_code",
+			"entity_name",
+			"year",
+			"hc",
+			"ck",
+			"rgdpna",
+			target_column,
+			"cap_deepening_raw",
+			"log_rgdpna_raw",
+			"log_ck_raw",
+			"hc_was_missing",
+			"ck_was_missing",
+			"rgdpna_was_missing",
+			f"{target_column}_was_missing",
+			"row_was_missing",
+			"entity_missing_share",
+		]
+	]
+
+
+def build_cleaned_economics_dataframe(
 	csv_path: str | Path | None = None,
 	target_column: str = "ctfp",
 	year_start: int = DEFAULT_YEAR_START,
 	year_end: int = DEFAULT_YEAR_END,
-	stats_end_year: int | None = None,
 	max_missing_share: float = 0.15,
 ) -> pd.DataFrame:
-	"""Build a cleaned long-form dataframe for the economics domain.
+	"""Build a cleaned long-form economics table before model-specific transforms.
 
-	为 economics 域构建清洗后的长表。该函数只服务 PWT，不尝试跨域抽象。
-	其中 proxy/static 聚合和 X/Y 标准化默认只使用 stats_end_year 之前的统计量。
+	先生成可落盘检查的 economics 清洗长表，再由下游步骤追加训练窗口相关的
+	aggregation 与标准化，避免把“清洗”和“建模预处理”混为一体。
 	"""
 
 	if year_end <= year_start:
 		raise ValueError(f"year_end must be greater than year_start, got {year_start}..{year_end}")
 	if not 0.0 <= max_missing_share < 1.0:
 		raise ValueError(f"max_missing_share must be in [0, 1), got {max_missing_share}")
-	if stats_end_year is None:
-		stats_end_year = year_end
-	if not year_start <= stats_end_year <= year_end:
-		raise ValueError(
-			f"stats_end_year must be within [{year_start}, {year_end}], got {stats_end_year}"
-		)
 
 	source_path = _resolve_csv_path(csv_path)
 	dataframe = load_pwt_source(str(source_path))
+	if _looks_like_cleaned_economics_frame(dataframe, target_column):
+		return _build_cleaned_from_exported_table(
+			dataframe=dataframe,
+			target_column=target_column,
+			year_start=year_start,
+			year_end=year_end,
+		)
 
 	required_columns = {"countrycode", "year", "hc", "ck", "rgdpna", target_column}
 	_require_columns(dataframe, required_columns)
@@ -165,8 +287,8 @@ def build_economics_dataframe(
 	long_frame["country"] = long_frame["country"].fillna(long_frame["countrycode"]).astype(str)
 	long_frame["year"] = pd.to_numeric(long_frame["year"], errors="coerce")
 
-	numeric_columns = ["hc", "ck", "rgdpna", target_column]
-	for column_name in numeric_columns:
+	base_columns = ["hc", "ck", "rgdpna", target_column]
+	for column_name in base_columns:
 		long_frame[column_name] = pd.to_numeric(long_frame[column_name], errors="coerce")
 
 	long_frame = long_frame.dropna(subset=["countrycode", "year"])
@@ -177,14 +299,9 @@ def build_economics_dataframe(
 	if long_frame.empty:
 		raise ValueError("No economics rows remain after the initial year and positivity filters")
 
-	long_frame["cap_deepening_raw"] = long_frame["ck"] / long_frame["rgdpna"]
-	long_frame.loc[~np.isfinite(long_frame["cap_deepening_raw"]), "cap_deepening_raw"] = np.nan
-	long_frame["log_rgdpna_raw"] = np.log(long_frame["rgdpna"].clip(lower=EPSILON))
-	long_frame["log_ck_raw"] = np.log(long_frame["ck"].clip(lower=EPSILON))
-
 	expected_years = list(range(year_start, year_end + 1))
-	fill_columns = [target_column, "hc", "cap_deepening_raw", "log_rgdpna_raw", "log_ck_raw"]
 	retained_entities: list[pd.DataFrame] = []
+	missing_flag_columns = [f"{column_name}_was_missing" for column_name in base_columns]
 
 	for entity_code, group in long_frame.groupby("countrycode", sort=True):
 		group = group.sort_values("year").groupby("year", as_index=False).last()
@@ -195,27 +312,29 @@ def build_economics_dataframe(
 		entity_frame["countrycode"] = str(entity_code)
 		entity_frame["country"] = entity_name
 
-		missing_share = float(entity_frame[fill_columns].isna().mean().mean())
+		missing_share = float(entity_frame[base_columns].isna().mean().mean())
 		if missing_share > max_missing_share:
 			continue
 
-		entity_frame[fill_columns] = entity_frame[fill_columns].interpolate(
+		for column_name in base_columns:
+			entity_frame[f"{column_name}_was_missing"] = entity_frame[column_name].isna().astype(np.int8)
+		entity_frame["row_was_missing"] = entity_frame[missing_flag_columns].max(axis=1).astype(np.int8)
+		entity_frame["entity_missing_share"] = float(missing_share)
+
+		entity_frame[base_columns] = entity_frame[base_columns].interpolate(
 			method="linear",
 			limit_direction="both",
 		)
-		if entity_frame[fill_columns].isna().any().any():
+		if entity_frame[base_columns].isna().any().any():
 			continue
 
-		stats_frame = entity_frame.loc[entity_frame.index <= stats_end_year, fill_columns]
-		if stats_frame.empty or stats_frame.isna().any().any():
+		entity_frame["cap_deepening_raw"] = entity_frame["ck"] / entity_frame["rgdpna"]
+		entity_frame["log_rgdpna_raw"] = np.log(entity_frame["rgdpna"].clip(lower=EPSILON))
+		entity_frame["log_ck_raw"] = np.log(entity_frame["ck"].clip(lower=EPSILON))
+		derived_columns = ["cap_deepening_raw", "log_rgdpna_raw", "log_ck_raw"]
+		if not np.isfinite(entity_frame[derived_columns].to_numpy(dtype=float)).all():
 			continue
-		reference_mask = entity_frame.index.to_numpy() <= stats_end_year
 
-		entity_frame["proxy_hc_raw"] = float(stats_frame["hc"].mean())
-		entity_frame["static_log_rgdpna_raw"] = float(stats_frame["log_rgdpna_raw"].mean())
-		entity_frame["static_log_ck_raw"] = float(stats_frame["log_ck_raw"].mean())
-		entity_frame["x_t"] = _zscore_with_reference(entity_frame["cap_deepening_raw"], reference_mask)
-		entity_frame["y_t"] = _zscore_with_reference(entity_frame[target_column], reference_mask)
 		retained_entities.append(entity_frame.reset_index().rename(columns={"index": "year"}))
 
 	if not retained_entities:
@@ -225,8 +344,84 @@ def build_economics_dataframe(
 		)
 
 	cleaned_frame = pd.concat(retained_entities, ignore_index=True)
-	static_frame = cleaned_frame.groupby("countrycode", as_index=False).agg(
-		entity_name=("country", "first"),
+	cleaned_frame = cleaned_frame.rename(columns={"countrycode": "entity_code", "country": "entity_name"})
+	cleaned_frame = cleaned_frame.sort_values(["entity_code", "year"]).reset_index(drop=True)
+
+	return cleaned_frame[
+		[
+			"entity_code",
+			"entity_name",
+			"year",
+			"hc",
+			"ck",
+			"rgdpna",
+			target_column,
+			"cap_deepening_raw",
+			"log_rgdpna_raw",
+			"log_ck_raw",
+			"hc_was_missing",
+			"ck_was_missing",
+			"rgdpna_was_missing",
+			f"{target_column}_was_missing",
+			"row_was_missing",
+			"entity_missing_share",
+		]
+	]
+
+
+def build_economics_dataframe(
+	csv_path: str | Path | None = None,
+	target_column: str = "ctfp",
+	year_start: int = DEFAULT_YEAR_START,
+	year_end: int = DEFAULT_YEAR_END,
+	stats_end_year: int | None = None,
+	max_missing_share: float = 0.15,
+) -> pd.DataFrame:
+	"""Build a cleaned long-form dataframe for the economics domain.
+
+	为 economics 域构建清洗后的长表。该函数只服务 PWT，不尝试跨域抽象。
+	其中 proxy/static 聚合和 X/Y 标准化默认只使用 stats_end_year 之前的统计量。
+	"""
+
+	if stats_end_year is None:
+		stats_end_year = year_end
+	if not year_start <= stats_end_year <= year_end:
+		raise ValueError(
+			f"stats_end_year must be within [{year_start}, {year_end}], got {stats_end_year}"
+		)
+
+	cleaned_frame = build_cleaned_economics_dataframe(
+		csv_path=csv_path,
+		target_column=target_column,
+		year_start=year_start,
+		year_end=year_end,
+		max_missing_share=max_missing_share,
+	)
+
+	retained_entities: list[pd.DataFrame] = []
+	for entity_code, group in cleaned_frame.groupby("entity_code", sort=True):
+		entity_frame = group.sort_values("year").copy()
+		stats_frame = entity_frame.loc[entity_frame["year"] <= stats_end_year]
+		if stats_frame.empty:
+			continue
+		reference_mask = entity_frame["year"].to_numpy() <= stats_end_year
+
+		entity_frame["proxy_hc_raw"] = float(stats_frame["hc"].mean())
+		entity_frame["static_log_rgdpna_raw"] = float(stats_frame["log_rgdpna_raw"].mean())
+		entity_frame["static_log_ck_raw"] = float(stats_frame["log_ck_raw"].mean())
+		entity_frame["x_t"] = _zscore_with_reference(entity_frame["cap_deepening_raw"], reference_mask)
+		entity_frame["y_t"] = _zscore_with_reference(entity_frame[target_column], reference_mask)
+		retained_entities.append(entity_frame)
+
+	if not retained_entities:
+		raise ValueError(
+			"No economics entities remain after missing-value filtering. "
+			"Relax max_missing_share or use a different year range."
+		)
+
+	cleaned_frame = pd.concat(retained_entities, ignore_index=True)
+	static_frame = cleaned_frame.groupby("entity_code", as_index=False).agg(
+		entity_name=("entity_name", "first"),
 		proxy_hc_raw=("proxy_hc_raw", "first"),
 		static_log_rgdpna_raw=("static_log_rgdpna_raw", "first"),
 		static_log_ck_raw=("static_log_ck_raw", "first"),
@@ -237,12 +432,11 @@ def build_economics_dataframe(
 
 	cleaned_frame = cleaned_frame.merge(
 		static_frame[
-			["countrycode", "proxy_hc", "static_log_rgdpna", "static_log_ck"]
+			["entity_code", "proxy_hc", "static_log_rgdpna", "static_log_ck"]
 		],
-		on="countrycode",
+		on="entity_code",
 		how="left",
 	)
-	cleaned_frame = cleaned_frame.rename(columns={"countrycode": "entity_code", "country": "entity_name"})
 	cleaned_frame = cleaned_frame.sort_values(["entity_code", "year"]).reset_index(drop=True)
 
 	return cleaned_frame[
@@ -434,6 +628,7 @@ __all__ = [
 	"DEFAULT_YEAR_START",
 	"EconomicsPanel",
 	"build_economics_dataframe",
+	"build_cleaned_economics_dataframe",
 	"build_temporal_splits",
 	"get_prediction_years",
 	"load_economics_panel",
