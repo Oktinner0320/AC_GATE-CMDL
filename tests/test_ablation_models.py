@@ -18,6 +18,7 @@ import torch
 from config.cmdl_config import CMDLConfig
 from data.synthetic.generate import generate_cmdl_synthetic
 from experiments.run_ablation import NoACEncoderCMDLModel, UniformLagCMDLModel
+from experiments.run_economics import refit_proxy_reconstructor
 
 
 class AblationModelTest(unittest.TestCase):
@@ -54,6 +55,18 @@ class AblationModelTest(unittest.TestCase):
         self.assertEqual(tuple(output.omega.shape), (cfg.n_entities, cfg.max_lag))
         self.assertTrue(torch.allclose(output.z_i, output.z_i[:1].expand_as(output.z_i)))
         self.assertTrue(torch.allclose(output.omega, output.omega[:1].expand_as(output.omega)))
+
+    def test_no_ac_encoder_refit_reports_rank_deficiency(self) -> None:
+        cfg, panel = self._build_small_panel()
+        model = NoACEncoderCMDLModel(cfg)
+
+        result = refit_proxy_reconstructor(model, panel)
+
+        self.assertEqual(result.status, "skipped_rank_deficient")
+        self.assertFalse(result.applied)
+        self.assertFalse(result.metrics_interpretable)
+        self.assertEqual(result.design_rank, 1)
+        self.assertEqual(result.design_columns, 2)
 
     def test_uniform_lag_outputs_uniform_weights(self) -> None:
         cfg, panel = self._build_small_panel()

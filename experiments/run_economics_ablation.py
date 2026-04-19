@@ -217,7 +217,13 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
                     break
 
         setup.model.load_state_dict(best_state)
-        refit_proxy_reconstructor(setup.model, setup.train_panel)
+        proxy_refit_result = refit_proxy_reconstructor(setup.model, setup.train_panel)
+        if not proxy_refit_result.applied:
+            print(
+                f"[{variant_args.experiment_name}] proxy refit skipped: "
+                f"{proxy_refit_result.reason} (rank={proxy_refit_result.design_rank}/"
+                f"{proxy_refit_result.design_columns})"
+            )
         torch.save(
             {
                 "experiment": variant_args.experiment_name,
@@ -227,15 +233,32 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
                 "best_val_task_loss": best_val_task_loss,
                 "effective_lambda_r": float(effective_lambda_r),
                 "config": setup.cfg.to_dict(),
-                "proxy_head_refit": True,
+                "proxy_head_refit": proxy_refit_result.applied,
+                "proxy_refit": proxy_refit_result.to_dict(),
                 "model_state_dict": copy.deepcopy(setup.model.state_dict()),
             },
             setup.checkpoint_path,
         )
 
-        train_metrics, _ = evaluate(setup.model, setup.criterion, setup.train_panel)
-        val_metrics, _ = evaluate(setup.model, setup.criterion, setup.val_panel)
-        test_metrics, outputs = evaluate(setup.model, setup.criterion, setup.test_panel, include_outputs=True)
+        train_metrics, _ = evaluate(
+            setup.model,
+            setup.criterion,
+            setup.train_panel,
+            proxy_refit_result=proxy_refit_result,
+        )
+        val_metrics, _ = evaluate(
+            setup.model,
+            setup.criterion,
+            setup.val_panel,
+            proxy_refit_result=proxy_refit_result,
+        )
+        test_metrics, outputs = evaluate(
+            setup.model,
+            setup.criterion,
+            setup.test_panel,
+            include_outputs=True,
+            proxy_refit_result=proxy_refit_result,
+        )
         if outputs is None:
             raise RuntimeError("Expected test outputs from economics ablation evaluation")
 
@@ -252,6 +275,7 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
             train_metrics=train_metrics,
             val_metrics=val_metrics,
             test_metrics=test_metrics,
+            proxy_refit_result=proxy_refit_result,
         )
         summary["model"] = "cmdl_ablation"
         summary["variant"] = variant
@@ -282,10 +306,21 @@ def aggregate_results(rows: list[dict[str, Any]]) -> pd.DataFrame:
 
     frame = pd.DataFrame(rows)
     group_columns = [column for column in ["variant", "target_column"] if column in frame.columns]
+    non_numeric_columns = {
+        "experiment",
+        "model",
+        "variant",
+        "target_column",
+        "seed",
+        "run_dir",
+        "source_path",
+        "proxy_refit_status",
+        "proxy_refit_reason",
+    }
     numeric_columns = [
         column
         for column in frame.columns
-        if column not in {"experiment", "model", "variant", "target_column", "seed", "run_dir", "source_path"}
+        if column not in non_numeric_columns and pd.api.types.is_numeric_dtype(frame[column])
     ]
     aggregated = frame.groupby(group_columns, as_index=False)[numeric_columns].agg(["mean", "std"])
     aggregated.columns = [
@@ -319,6 +354,12 @@ def run_suite(args: argparse.Namespace) -> tuple[pd.DataFrame, pd.DataFrame]:
                     "effective_lambda_r": summary.get("effective_lambda_r"),
                     "best_epoch": summary["best_epoch"],
                     "best_val_task_loss": summary["best_val_task_loss"],
+                    "proxy_refit_status": summary.get("diagnostics", {}).get("proxy_refit", {}).get("status"),
+                    "proxy_refit_applied": summary.get("diagnostics", {}).get("proxy_refit", {}).get("applied"),
+                    "proxy_metric_interpretable": summary.get("diagnostics", {})
+                    .get("proxy_refit", {})
+                    .get("metrics_interpretable"),
+                    "proxy_refit_reason": summary.get("diagnostics", {}).get("proxy_refit", {}).get("reason"),
                     "run_dir": str(output_root / summary["experiment"]),
                     **prefix_metrics("train", summary["metrics"]["train"]),
                     **prefix_metrics("val", summary["metrics"]["val"]),

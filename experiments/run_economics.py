@@ -73,6 +73,40 @@ class EconomicsExperimentSetup:
 	predictions_path: Path
 
 
+@dataclass(slots=True)
+class ProxyRefitResult:
+	"""Describe whether the closed-form proxy refit is interpretable.
+
+	记录 proxy head 闭式重拟合是否成功，以及对应诊断是否可解释。
+	"""
+
+	status: str
+	applied: bool
+	metrics_interpretable: bool
+	reason: str | None
+	design_rank: int | None
+	design_columns: int | None
+	latent_std: float | None
+	proxy_std: float | None
+
+	def to_dict(self) -> dict[str, Any]:
+		"""Convert the refit result into a JSON-serializable dictionary."""
+
+		return {
+			"status": self.status,
+			"applied": self.applied,
+			"metrics_interpretable": self.metrics_interpretable,
+			"reason": self.reason,
+			"design_rank": self.design_rank,
+			"design_columns": self.design_columns,
+			"latent_std": self.latent_std,
+			"proxy_std": self.proxy_std,
+		}
+
+
+_METRIC_EPS = 1e-10
+
+
 def parse_args() -> argparse.Namespace:
 	"""Parse CLI arguments for the economics real-data experiment.
 
@@ -270,7 +304,35 @@ def move_panel_to_device(panel: EconomicsPanel, device: torch.device) -> Economi
 	)
 
 
-def refit_proxy_reconstructor(model: CMDLModel, panel: EconomicsPanel) -> None:
+def _tensor_population_std(tensor: torch.Tensor) -> float:
+	"""Return the population standard deviation of a tensor as a Python float."""
+
+	values = tensor.detach().to(dtype=torch.float64).reshape(-1)
+	if values.numel() <= 1:
+		return 0.0
+	return float(values.std(unbiased=False).item())
+
+
+def _build_proxy_refit_matrices(
+	model: CMDLModel,
+	panel: EconomicsPanel,
+) -> tuple[torch.Tensor, torch.Tensor]:
+	"""Build the linear system used by the proxy-head refit."""
+
+	output = model(
+		entity_ids=panel.entity_ids,
+		X_it=panel.X_it,
+		p_i=panel.p_i,
+		s_i=panel.s_i,
+	)
+	design_matrix = torch.cat([output.z_i.detach(), torch.ones_like(output.z_i.detach())], dim=1).to(
+		dtype=torch.float64
+	)
+	target_matrix = panel.p_i.detach().to(dtype=torch.float64)
+	return output.z_i.detach(), design_matrix, target_matrix
+
+
+def refit_proxy_reconstructor(model: CMDLModel, panel: EconomicsPanel) -> ProxyRefitResult:
 	"""Refit the linear proxy head on frozen economics latent scores.
 
 	在固定主体模型参数的前提下，对 economics 域的线性 proxy 重构头做闭式重拟合。
@@ -282,23 +344,54 @@ def refit_proxy_reconstructor(model: CMDLModel, panel: EconomicsPanel) -> None:
 
 	was_training = model.training
 	model.eval()
+	result: ProxyRefitResult
 	with torch.no_grad():
-		output = model(
-			entity_ids=panel.entity_ids,
-			X_it=panel.X_it,
-			p_i=panel.p_i,
-			s_i=panel.s_i,
-		)
-		design_matrix = torch.cat([output.z_i.detach(), torch.ones_like(output.z_i.detach())], dim=1).to(
-			dtype=torch.float64
-		)
-		target_matrix = panel.p_i.detach().to(dtype=torch.float64)
-		solution = torch.linalg.lstsq(design_matrix, target_matrix).solution.to(dtype=reconstructor.weight.dtype)
-		reconstructor.weight.copy_(solution[0:1].transpose(0, 1))
-		reconstructor.bias.copy_(solution[1])
+		latent_scores, design_matrix, target_matrix = _build_proxy_refit_matrices(model, panel)
+		design_rank = int(torch.linalg.matrix_rank(design_matrix).item())
+		design_columns = int(design_matrix.shape[1])
+		latent_std = _tensor_population_std(latent_scores)
+		proxy_std = _tensor_population_std(target_matrix)
+
+		if proxy_std <= _METRIC_EPS:
+			result = ProxyRefitResult(
+				status="skipped_constant_proxy",
+				applied=False,
+				metrics_interpretable=False,
+				reason="constant_proxy",
+				design_rank=design_rank,
+				design_columns=design_columns,
+				latent_std=latent_std,
+				proxy_std=proxy_std,
+			)
+		elif design_rank < design_columns:
+			result = ProxyRefitResult(
+				status="skipped_rank_deficient",
+				applied=False,
+				metrics_interpretable=False,
+				reason="rank_deficient_design",
+				design_rank=design_rank,
+				design_columns=design_columns,
+				latent_std=latent_std,
+				proxy_std=proxy_std,
+			)
+		else:
+			solution = torch.linalg.lstsq(design_matrix, target_matrix).solution.to(dtype=reconstructor.weight.dtype)
+			reconstructor.weight.copy_(solution[0:1].transpose(0, 1))
+			reconstructor.bias.copy_(solution[1])
+			result = ProxyRefitResult(
+				status="applied_ols",
+				applied=True,
+				metrics_interpretable=True,
+				reason=None,
+				design_rank=design_rank,
+				design_columns=design_columns,
+				latent_std=latent_std,
+				proxy_std=proxy_std,
+			)
 
 	if was_training:
 		model.train()
+	return result
 
 
 def train_one_epoch(
@@ -338,6 +431,7 @@ def evaluate(
 	criterion: DomainAgnosticLoss,
 	panel: EconomicsPanel,
 	include_outputs: bool = False,
+	proxy_refit_result: ProxyRefitResult | None = None,
 ) -> tuple[dict[str, float], dict[str, np.ndarray] | None]:
 	"""Evaluate one economics split and optionally return detailed outputs.
 
@@ -352,7 +446,16 @@ def evaluate(
 	aligned_y_true = panel.Y_it[:, model.cfg.max_lag :]
 	omega = output.omega.detach().cpu().numpy()
 	omega_entropy = -np.sum(omega * np.log(np.clip(omega, 1e-8, None)), axis=1)
-	kstar_rho, kstar_p_value = compute_spearman(output.k_star, panel.p_i[:, 0])
+	kstar_std = float(output.k_star.std(unbiased=False).item()) if output.k_star.numel() > 1 else 0.0
+	proxy_std = _tensor_population_std(panel.p_i[:, 0])
+	kstar_proxy_metric_valid = kstar_std > _METRIC_EPS and proxy_std > _METRIC_EPS
+	if kstar_proxy_metric_valid:
+		kstar_rho, kstar_p_value = compute_spearman(output.k_star, panel.p_i[:, 0])
+	else:
+		kstar_rho, kstar_p_value = float("nan"), float("nan")
+
+	proxy_metric_valid = True if proxy_refit_result is None else proxy_refit_result.metrics_interpretable
+	proxy_recon_r2 = float(compute_r2(output.p_hat_i, panel.p_i)) if proxy_metric_valid else float("nan")
 
 	metrics = {
 		"total_loss": float(losses.total_loss.item()),
@@ -361,11 +464,13 @@ def evaluate(
 		"mse": float(compute_mse(output.y_pred, aligned_y_true)),
 		"mae": float(compute_mae(output.y_pred, aligned_y_true)),
 		"r2": float(compute_r2(output.y_pred, aligned_y_true)),
-		"proxy_recon_r2": float(compute_r2(output.p_hat_i, panel.p_i)),
+		"proxy_recon_r2": proxy_recon_r2,
+		"proxy_metric_valid": float(proxy_metric_valid),
 		"kstar_proxy_spearman_rho": float(kstar_rho),
 		"kstar_proxy_spearman_p": float(kstar_p_value),
 		"kstar_mean": float(output.k_star.mean().item()),
-		"kstar_std": float(output.k_star.std(unbiased=False).item()) if output.k_star.numel() > 1 else 0.0,
+		"kstar_std": kstar_std,
+		"kstar_proxy_metric_valid": float(kstar_proxy_metric_valid),
 		"omega_entropy_mean": float(np.mean(omega_entropy)),
 	}
 
@@ -431,6 +536,7 @@ def summarize_run(
 	train_metrics: dict[str, float],
 	val_metrics: dict[str, float],
 	test_metrics: dict[str, float],
+	proxy_refit_result: ProxyRefitResult | None = None,
 ) -> dict[str, Any]:
 	"""Build the JSON summary for one completed economics experiment.
 
@@ -462,6 +568,9 @@ def summarize_run(
 			"train": {key: float(value) for key, value in train_metrics.items()},
 			"val": {key: float(value) for key, value in val_metrics.items()},
 			"test": {key: float(value) for key, value in test_metrics.items()},
+		},
+		"diagnostics": {
+			"proxy_refit": None if proxy_refit_result is None else proxy_refit_result.to_dict(),
 		},
 	}
 
@@ -624,22 +733,45 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
 					break
 
 		setup.model.load_state_dict(best_state)
-		refit_proxy_reconstructor(setup.model, setup.train_panel)
+		proxy_refit_result = refit_proxy_reconstructor(setup.model, setup.train_panel)
+		if not proxy_refit_result.applied:
+			print(
+				f"[{args.experiment_name}] proxy refit skipped: "
+				f"{proxy_refit_result.reason} (rank={proxy_refit_result.design_rank}/"
+				f"{proxy_refit_result.design_columns})"
+			)
 		torch.save(
 			{
 				"experiment": args.experiment_name,
 				"best_epoch": best_epoch,
 				"best_val_task_loss": best_val_task_loss,
 				"config": setup.cfg.to_dict(),
-				"proxy_head_refit": True,
+				"proxy_head_refit": proxy_refit_result.applied,
+				"proxy_refit": proxy_refit_result.to_dict(),
 				"model_state_dict": copy.deepcopy(setup.model.state_dict()),
 			},
 			setup.checkpoint_path,
 		)
 
-		train_metrics, _ = evaluate(setup.model, setup.criterion, setup.train_panel)
-		val_metrics, _ = evaluate(setup.model, setup.criterion, setup.val_panel)
-		test_metrics, outputs = evaluate(setup.model, setup.criterion, setup.test_panel, include_outputs=True)
+		train_metrics, _ = evaluate(
+			setup.model,
+			setup.criterion,
+			setup.train_panel,
+			proxy_refit_result=proxy_refit_result,
+		)
+		val_metrics, _ = evaluate(
+			setup.model,
+			setup.criterion,
+			setup.val_panel,
+			proxy_refit_result=proxy_refit_result,
+		)
+		test_metrics, outputs = evaluate(
+			setup.model,
+			setup.criterion,
+			setup.test_panel,
+			include_outputs=True,
+			proxy_refit_result=proxy_refit_result,
+		)
 		if outputs is None:
 			raise RuntimeError("Expected test outputs from economics evaluation")
 
@@ -656,6 +788,7 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
 			train_metrics=train_metrics,
 			val_metrics=val_metrics,
 			test_metrics=test_metrics,
+			proxy_refit_result=proxy_refit_result,
 		)
 		save_json(setup.summary_path, summary)
 		return summary

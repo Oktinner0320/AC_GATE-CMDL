@@ -186,6 +186,18 @@ class EconomicsComparisonTest(unittest.TestCase):
                         "scenario": "linear",
                     },
                     "data": self._build_data_payload(),
+                    "diagnostics": {
+                        "proxy_refit": {
+                            "status": "skipped_rank_deficient",
+                            "applied": False,
+                            "metrics_interpretable": False,
+                            "reason": "rank_deficient_design",
+                            "design_rank": 1,
+                            "design_columns": 2,
+                            "latent_std": 0.0,
+                            "proxy_std": 0.12,
+                        }
+                    },
                     "metrics": {
                         "train": {"task_loss": 0.40, "mse": 0.40, "mae": 0.47, "r2": 0.30},
                         "val": {"task_loss": 0.31, "mse": 0.31, "mae": 0.39, "r2": 0.21},
@@ -196,11 +208,13 @@ class EconomicsComparisonTest(unittest.TestCase):
                             "mse": 0.35,
                             "mae": 0.41,
                             "r2": 0.18,
-                            "proxy_recon_r2": -0.10,
-                            "kstar_proxy_spearman_rho": 0.14,
-                            "kstar_proxy_spearman_p": 0.50,
+                            "proxy_recon_r2": float("nan"),
+                            "proxy_metric_valid": 0.0,
+                            "kstar_proxy_spearman_rho": float("nan"),
+                            "kstar_proxy_spearman_p": float("nan"),
                             "kstar_mean": 5.0,
-                            "kstar_std": 2.5,
+                            "kstar_std": 0.0,
+                            "kstar_proxy_metric_valid": 0.0,
                             "omega_entropy_mean": 2.1,
                         },
                     },
@@ -232,6 +246,10 @@ class EconomicsComparisonTest(unittest.TestCase):
             self.assertEqual(ablation_row["display_name"], "No AC Encoder")
             self.assertEqual(ablation_row["variant"], "no_ac_encoder")
             self.assertAlmostEqual(ablation_row["effective_lambda_r"], 0.0)
+            self.assertEqual(ablation_row["proxy_refit_status"], "skipped_rank_deficient")
+            self.assertFalse(bool(ablation_row["proxy_metric_interpretable"]))
+            self.assertTrue(pd.isna(ablation_row["test_proxy_signal_r2"]))
+            self.assertTrue(pd.isna(ablation_row["test_effective_kstar_proxy_spearman_rho"]))
 
             task_table = build_task_table(comparison)
             interpretability_table = build_interpretability_table(comparison)
@@ -275,11 +293,15 @@ class EconomicsComparisonTest(unittest.TestCase):
                     "experiment",
                     "target_column",
                     "lag_method",
+                    "proxy_refit_status",
+                    "proxy_metric_interpretable",
                     "test_effective_kstar_proxy_spearman_rho",
+                    "test_effective_kstar_proxy_metric_valid",
                     "test_effective_kstar_mean",
                     "test_effective_kstar_std",
                     "test_effective_lag_entropy_mean",
                     "test_proxy_signal_r2",
+                    "test_proxy_signal_metric_valid",
                 ],
             )
 

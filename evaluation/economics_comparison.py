@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 from typing import Any
 
@@ -61,6 +62,14 @@ _IDENTITY_COLUMNS = [
     "noise_std",
     "best_epoch",
     "best_val_task_loss",
+    "proxy_refit_status",
+    "proxy_refit_applied",
+    "proxy_metric_interpretable",
+    "proxy_refit_reason",
+    "proxy_design_rank",
+    "proxy_design_columns",
+    "proxy_latent_std",
+    "proxy_target_std",
     "run_dir",
     "output_root",
 ]
@@ -119,37 +128,86 @@ def _lag_method(payload: dict[str, Any], family: str) -> str:
     return "learned_omega"
 
 
-def _normalize_split_metrics(split: str, metrics: dict[str, Any], family: str) -> dict[str, Any]:
+def _finite_or_none(value: Any) -> Any:
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        if not math.isfinite(float(value)):
+            return None
+        return float(value)
+    return value
+
+
+def _bool_flag(value: Any) -> bool | None:
+    normalized = _finite_or_none(value)
+    if normalized is None:
+        return None
+    if isinstance(normalized, bool):
+        return normalized
+    return bool(float(normalized) >= 0.5)
+
+
+def _normalize_split_metrics(
+    split: str,
+    metrics: dict[str, Any],
+    family: str,
+    proxy_metric_interpretable: bool | None = None,
+) -> dict[str, Any]:
     row: dict[str, Any] = {
-        f"{split}_total_loss": metrics.get("total_loss"),
-        f"{split}_task_loss": metrics.get("task_loss"),
-        f"{split}_recon_loss": metrics.get("recon_loss"),
-        f"{split}_mse": metrics.get("mse"),
-        f"{split}_mae": metrics.get("mae"),
-        f"{split}_r2": metrics.get("r2"),
+        f"{split}_total_loss": _finite_or_none(metrics.get("total_loss")),
+        f"{split}_task_loss": _finite_or_none(metrics.get("task_loss")),
+        f"{split}_recon_loss": _finite_or_none(metrics.get("recon_loss")),
+        f"{split}_mse": _finite_or_none(metrics.get("mse")),
+        f"{split}_mae": _finite_or_none(metrics.get("mae")),
+        f"{split}_r2": _finite_or_none(metrics.get("r2")),
     }
 
     if family == "plain_lstm":
+        kstar_metric_valid = _bool_flag(metrics.get("kstar_proxy_metric_valid"))
+        kstar_rho = _finite_or_none(metrics.get("posthoc_kstar_proxy_spearman_rho"))
+        kstar_p = _finite_or_none(metrics.get("posthoc_kstar_proxy_spearman_p"))
+        if kstar_metric_valid is False:
+            kstar_rho = None
+            kstar_p = None
         row.update(
             {
                 f"{split}_proxy_signal_r2": None,
-                f"{split}_effective_kstar_proxy_spearman_rho": metrics.get("posthoc_kstar_proxy_spearman_rho"),
-                f"{split}_effective_kstar_proxy_spearman_p": metrics.get("posthoc_kstar_proxy_spearman_p"),
-                f"{split}_effective_kstar_mean": metrics.get("posthoc_kstar_mean"),
-                f"{split}_effective_kstar_std": metrics.get("posthoc_kstar_std"),
-                f"{split}_effective_lag_entropy_mean": metrics.get("lag_profile_entropy_mean"),
+                f"{split}_proxy_signal_metric_valid": None,
+                f"{split}_effective_kstar_proxy_spearman_rho": kstar_rho,
+                f"{split}_effective_kstar_proxy_spearman_p": kstar_p,
+                f"{split}_effective_kstar_mean": _finite_or_none(metrics.get("posthoc_kstar_mean")),
+                f"{split}_effective_kstar_std": _finite_or_none(metrics.get("posthoc_kstar_std")),
+                f"{split}_effective_lag_entropy_mean": _finite_or_none(metrics.get("lag_profile_entropy_mean")),
+                f"{split}_effective_kstar_proxy_metric_valid": kstar_metric_valid,
             }
         )
         return row
 
+    proxy_metric_valid = _bool_flag(metrics.get("proxy_metric_valid"))
+    if proxy_metric_interpretable is False:
+        proxy_metric_valid = False
+    kstar_metric_valid = _bool_flag(metrics.get("kstar_proxy_metric_valid"))
+    proxy_signal = _finite_or_none(metrics.get("proxy_recon_r2"))
+    kstar_rho = _finite_or_none(metrics.get("kstar_proxy_spearman_rho"))
+    kstar_p = _finite_or_none(metrics.get("kstar_proxy_spearman_p"))
+    if proxy_metric_valid is False:
+        proxy_signal = None
+    if kstar_metric_valid is False:
+        kstar_rho = None
+        kstar_p = None
+
     row.update(
         {
-            f"{split}_proxy_signal_r2": metrics.get("proxy_recon_r2"),
-            f"{split}_effective_kstar_proxy_spearman_rho": metrics.get("kstar_proxy_spearman_rho"),
-            f"{split}_effective_kstar_proxy_spearman_p": metrics.get("kstar_proxy_spearman_p"),
-            f"{split}_effective_kstar_mean": metrics.get("kstar_mean"),
-            f"{split}_effective_kstar_std": metrics.get("kstar_std"),
-            f"{split}_effective_lag_entropy_mean": metrics.get("omega_entropy_mean"),
+            f"{split}_proxy_signal_r2": proxy_signal,
+            f"{split}_proxy_signal_metric_valid": proxy_metric_valid,
+            f"{split}_effective_kstar_proxy_spearman_rho": kstar_rho,
+            f"{split}_effective_kstar_proxy_spearman_p": kstar_p,
+            f"{split}_effective_kstar_mean": _finite_or_none(metrics.get("kstar_mean")),
+            f"{split}_effective_kstar_std": _finite_or_none(metrics.get("kstar_std")),
+            f"{split}_effective_lag_entropy_mean": _finite_or_none(metrics.get("omega_entropy_mean")),
+            f"{split}_effective_kstar_proxy_metric_valid": kstar_metric_valid,
         }
     )
     return row
@@ -159,6 +217,8 @@ def _normalize_summary(summary_path: Path, output_root: Path, family: str) -> di
     payload = _read_json(summary_path)
     config = dict(payload.get("config", {}))
     data = dict(payload.get("data", {}))
+    diagnostics = dict(payload.get("diagnostics", {}))
+    proxy_refit = dict(diagnostics.get("proxy_refit") or {})
     train_year_start, train_year_end = _year_bounds(data.get("train_years"))
     val_year_start, val_year_end = _year_bounds(data.get("val_years"))
     test_year_start, test_year_end = _year_bounds(data.get("test_years"))
@@ -206,6 +266,14 @@ def _normalize_summary(summary_path: Path, output_root: Path, family: str) -> di
         "noise_std": config.get("noise_std"),
         "best_epoch": payload.get("best_epoch"),
         "best_val_task_loss": payload.get("best_val_task_loss"),
+        "proxy_refit_status": proxy_refit.get("status"),
+        "proxy_refit_applied": proxy_refit.get("applied"),
+        "proxy_metric_interpretable": proxy_refit.get("metrics_interpretable"),
+        "proxy_refit_reason": proxy_refit.get("reason"),
+        "proxy_design_rank": proxy_refit.get("design_rank"),
+        "proxy_design_columns": proxy_refit.get("design_columns"),
+        "proxy_latent_std": proxy_refit.get("latent_std"),
+        "proxy_target_std": proxy_refit.get("proxy_std"),
         "run_dir": str(summary_path.parent),
         "output_root": str(output_root),
     }
@@ -215,7 +283,14 @@ def _normalize_summary(summary_path: Path, output_root: Path, family: str) -> di
         split_metrics = dict(metrics_by_split.get(split, {}))
         for key, value in split_metrics.items():
             row[f"{split}_{key}"] = value
-        row.update(_normalize_split_metrics(split, split_metrics, family))
+        row.update(
+            _normalize_split_metrics(
+                split,
+                split_metrics,
+                family,
+                proxy_metric_interpretable=proxy_refit.get("metrics_interpretable"),
+            )
+        )
 
     return row
 
@@ -328,11 +403,15 @@ def build_interpretability_table(comparison_frame: pd.DataFrame, split: str = "t
         "experiment",
         "target_column",
         "lag_method",
+        "proxy_refit_status",
+        "proxy_metric_interpretable",
         f"{split}_effective_kstar_proxy_spearman_rho",
+        f"{split}_effective_kstar_proxy_metric_valid",
         f"{split}_effective_kstar_mean",
         f"{split}_effective_kstar_std",
         f"{split}_effective_lag_entropy_mean",
         f"{split}_proxy_signal_r2",
+        f"{split}_proxy_signal_metric_valid",
     ]
     interpretability = _ensure_columns(comparison_frame, columns)
     if interpretability.empty:

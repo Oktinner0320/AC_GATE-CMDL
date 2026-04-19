@@ -118,6 +118,21 @@ class EconomicsAblationTest(unittest.TestCase):
             self.assertEqual(no_recon_summary["variant"], "no_recon_regularization")
             self.assertAlmostEqual(no_recon_summary["effective_lambda_r"], 0.0)
 
+            no_ac_summary = json.loads(
+                (output_root / "economics_ablation_no_ac_encoder_seed0" / "summary.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(
+                no_ac_summary["diagnostics"]["proxy_refit"]["status"],
+                "skipped_rank_deficient",
+            )
+            self.assertFalse(no_ac_summary["diagnostics"]["proxy_refit"]["applied"])
+            self.assertFalse(no_ac_summary["diagnostics"]["proxy_refit"]["metrics_interpretable"])
+            self.assertTrue(np.isnan(no_ac_summary["metrics"]["test"]["proxy_recon_r2"]))
+            self.assertTrue(np.isnan(no_ac_summary["metrics"]["test"]["kstar_proxy_spearman_rho"]))
+            no_ac_row = summary_frame.loc[summary_frame["variant"] == "no_ac_encoder"].iloc[0]
+            self.assertEqual(no_ac_row["proxy_refit_status"], "skipped_rank_deficient")
+            self.assertFalse(bool(no_ac_row["proxy_metric_interpretable"]))
+
             for variant in ["no_ac_encoder", "uniform_lag", "no_recon_regularization"]:
                 run_dir = output_root / f"economics_ablation_{variant}_seed0"
                 self.assertTrue((run_dir / "summary.json").exists())
