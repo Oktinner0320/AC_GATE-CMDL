@@ -36,6 +36,10 @@ class EconomicsComparisonTest(unittest.TestCase):
         return {
             "source_path": "C:/tmp/economics_cleaned_long.csv",
             "target_column": "ctfp",
+            "feature_bundle": "minimal",
+            "seq_feature_columns": ["x_t"],
+            "proxy_columns": ["proxy_hc"],
+            "static_columns": ["static_log_rgdpna", "static_log_ck"],
             "stats_end_year": 2007,
             "year_start": 1980,
             "year_end": 2023,
@@ -234,6 +238,7 @@ class EconomicsComparisonTest(unittest.TestCase):
             self.assertEqual(cmdl_row["display_name"], "CMDL")
             self.assertEqual(cmdl_row["lag_method"], "learned_omega")
             self.assertAlmostEqual(cmdl_row["test_proxy_signal_r2"], 0.91)
+            self.assertEqual(cmdl_row["feature_bundle"], "minimal")
 
             baseline_row = comparison.loc[comparison["family"] == "plain_lstm"].iloc[0]
             self.assertEqual(baseline_row["display_name"], "Plain LSTM")
@@ -276,6 +281,7 @@ class EconomicsComparisonTest(unittest.TestCase):
                     "seed",
                     "experiment",
                     "target_column",
+                    "feature_bundle",
                     "best_epoch",
                     "best_val_task_loss",
                     "test_r2",
@@ -292,6 +298,7 @@ class EconomicsComparisonTest(unittest.TestCase):
                     "seed",
                     "experiment",
                     "target_column",
+                    "feature_bundle",
                     "lag_method",
                     "proxy_refit_status",
                     "proxy_metric_interpretable",

@@ -23,6 +23,7 @@ import pandas as pd
 import torch
 
 from config.cmdl_config import CMDLConfig
+from data.economics.economics_loader import DEFAULT_ECONOMICS_FEATURE_BUNDLE, SUPPORTED_ECONOMICS_FEATURE_BUNDLES
 from experiments.run_ablation import NoACEncoderCMDLModel, UniformLagCMDLModel
 from experiments.run_economics import (
     evaluate,
@@ -61,6 +62,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--train-end-year", type=int, default=2007)
     parser.add_argument("--val-end-year", type=int, default=2013)
     parser.add_argument("--target-column", type=str, default="ctfp")
+    parser.add_argument(
+        "--feature-bundle",
+        type=str,
+        choices=list(SUPPORTED_ECONOMICS_FEATURE_BUNDLES),
+        default=DEFAULT_ECONOMICS_FEATURE_BUNDLE,
+    )
     parser.add_argument("--max-missing-share", type=float, default=0.15)
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--epochs", type=int, default=120)
@@ -143,6 +150,7 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
             "model": "cmdl_ablation",
             "variant": variant,
             "target_column": variant_args.target_column,
+            "feature_bundle": getattr(variant_args, "feature_bundle", DEFAULT_ECONOMICS_FEATURE_BUNDLE),
             "seed": variant_args.seed,
             "lr": variant_args.lr,
             "epochs": variant_args.epochs,

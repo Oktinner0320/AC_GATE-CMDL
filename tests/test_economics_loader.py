@@ -61,6 +61,12 @@ class EconomicsLoaderTest(unittest.TestCase):
                     "rgdpna": rgdpna_value,
                     "ctfp": tfp_base + 0.030 * step,
                     "rtfpna": 1.10 + 0.020 * country_index + 0.015 * step,
+                    "emp": 10.0 + 2.0 * country_index + 0.10 * step,
+                    "avh": 1800.0 + 20.0 * country_index + 1.0 * step,
+                    "labsh": 0.45 + 0.01 * country_index + 0.001 * step,
+                    "delta": 0.05 + 0.002 * country_index + 0.0005 * step,
+                    "rnna": 200.0 + 30.0 * country_index + 3.0 * step,
+                    "rkna": 1.0 + 0.05 * country_index + 0.01 * step,
                 }
 
                 if country_code == "BBB" and year in {1983, 1984}:
@@ -93,11 +99,43 @@ class EconomicsLoaderTest(unittest.TestCase):
             self.assertEqual(tuple(panel.s_i.shape), (3, 2))
             self.assertEqual(panel.entity_codes, ["AAA", "BBB", "CCC"])
             self.assertEqual(panel.metadata["years"], list(range(1980, 1992)))
+            self.assertEqual(panel.metadata["feature_bundle"], "minimal")
+            self.assertEqual(panel.metadata["seq_feature_columns"], ["x_t"])
             torch.testing.assert_close(panel.entity_ids, torch.arange(3, dtype=torch.long))
             self.assertTrue(torch.isfinite(panel.X_it).all().item())
             self.assertTrue(torch.isfinite(panel.Y_it).all().item())
             self.assertTrue(torch.isfinite(panel.p_i).all().item())
             self.assertTrue(torch.isfinite(panel.s_i).all().item())
+
+    def test_loader_supports_growth_aware_bundle(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            csv_path = Path(temporary_dir) / "pwt_fixture.csv"
+            self._write_fixture_csv(csv_path)
+
+            panel = load_economics_panel(
+                csv_path=csv_path,
+                feature_bundle="growth_aware",
+                target_column="rtfpna",
+                year_start=1980,
+                year_end=1991,
+                stats_end_year=1987,
+                max_missing_share=0.20,
+            )
+
+            self.assertEqual(tuple(panel.X_it.shape), (3, 12, 3))
+            self.assertEqual(tuple(panel.Y_it.shape), (3, 12))
+            self.assertEqual(tuple(panel.p_i.shape), (3, 2))
+            self.assertEqual(tuple(panel.s_i.shape), (3, 2))
+            self.assertEqual(panel.metadata["feature_bundle"], "growth_aware")
+            self.assertEqual(
+                panel.metadata["seq_feature_columns"],
+                ["x_cap_deepening", "x_log_rgdpna_growth", "x_log_ck_growth"],
+            )
+            self.assertEqual(panel.metadata["proxy_columns"], ["proxy_hc_level", "proxy_hc_trend"])
+            self.assertEqual(panel.metadata["static_columns"], ["static_log_rgdpna", "static_log_ck"])
+            self.assertEqual(panel.metadata["target_column"], "rtfpna")
+            self.assertTrue(torch.isfinite(panel.X_it).all().item())
+            self.assertTrue(torch.isfinite(panel.p_i).all().item())
 
     def test_loader_uses_train_window_stats_for_scaling_and_static_features(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_dir:
@@ -123,6 +161,45 @@ class EconomicsLoaderTest(unittest.TestCase):
             )
             shifted_panel = load_economics_panel(
                 csv_path=shifted_csv_path,
+                year_start=1980,
+                year_end=1991,
+                stats_end_year=1987,
+                max_missing_share=0.20,
+            )
+
+            torch.testing.assert_close(base_panel.p_i, shifted_panel.p_i, atol=1e-6, rtol=1e-6)
+            torch.testing.assert_close(base_panel.s_i, shifted_panel.s_i, atol=1e-6, rtol=1e-6)
+            torch.testing.assert_close(base_panel.X_it[:, :8, :], shifted_panel.X_it[:, :8, :], atol=1e-6, rtol=1e-6)
+            torch.testing.assert_close(base_panel.Y_it[:, :8], shifted_panel.Y_it[:, :8], atol=1e-6, rtol=1e-6)
+
+    def test_growth_bundle_uses_train_window_stats_for_scaling_and_proxy_summaries(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            temporary_root = Path(temporary_dir)
+            base_csv_path = temporary_root / "pwt_fixture_base.csv"
+            shifted_csv_path = temporary_root / "pwt_fixture_shifted.csv"
+            self._write_fixture_csv(base_csv_path, year_start=1980, year_end=1991)
+
+            shifted_frame = pd.read_csv(base_csv_path)
+            future_mask = (shifted_frame["countrycode"] == "AAA") & (shifted_frame["year"] >= 1988)
+            shifted_frame.loc[future_mask, "hc"] = shifted_frame.loc[future_mask, "hc"] + 50.0
+            shifted_frame.loc[future_mask, "ck"] = shifted_frame.loc[future_mask, "ck"] * 25.0
+            shifted_frame.loc[future_mask, "rgdpna"] = shifted_frame.loc[future_mask, "rgdpna"] * 0.20
+            shifted_frame.loc[future_mask, "rtfpna"] = shifted_frame.loc[future_mask, "rtfpna"] + 100.0
+            shifted_frame.to_csv(shifted_csv_path, index=False)
+
+            base_panel = load_economics_panel(
+                csv_path=base_csv_path,
+                feature_bundle="growth_aware",
+                target_column="rtfpna",
+                year_start=1980,
+                year_end=1991,
+                stats_end_year=1987,
+                max_missing_share=0.20,
+            )
+            shifted_panel = load_economics_panel(
+                csv_path=shifted_csv_path,
+                feature_bundle="growth_aware",
+                target_column="rtfpna",
                 year_start=1980,
                 year_end=1991,
                 stats_end_year=1987,
@@ -190,7 +267,16 @@ class EconomicsLoaderTest(unittest.TestCase):
                     "ck",
                     "rgdpna",
                     "ctfp",
+                    "rtfpna",
+                    "emp",
+                    "avh",
+                    "labsh",
+                    "delta",
+                    "rnna",
+                    "rkna",
                     "cap_deepening_raw",
+                    "dlog_rgdpna_raw",
+                    "dlog_ck_raw",
                     "hc_was_missing",
                     "ctfp_was_missing",
                     "row_was_missing",
@@ -306,6 +392,46 @@ class EconomicsLoaderTest(unittest.TestCase):
             self.assertTrue((run_dir / "predictions.csv").exists())
             self.assertTrue((run_dir / "history.csv").exists())
 
+    def test_run_economics_growth_bundle_smoke_writes_bundle_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            temporary_root = Path(temporary_dir)
+            csv_path = temporary_root / "pwt_fixture_long.csv"
+            output_root = temporary_root / "outputs_growth"
+            self._write_fixture_csv(csv_path, year_start=1980, year_end=2004)
+
+            args = Namespace(
+                csv_path=str(csv_path),
+                year_start=1980,
+                year_end=2004,
+                train_end_year=1997,
+                val_end_year=2000,
+                target_column="rtfpna",
+                feature_bundle="growth_aware",
+                max_missing_share=0.20,
+                seed=42,
+                lr=1e-3,
+                epochs=1,
+                patience=1,
+                lambda_r=0.1,
+                temperature=1.0,
+                lag_bias_strength=1.0,
+                grad_clip=1.0,
+                output_dir=str(output_root),
+                experiment_name="economics_growth_smoke",
+                device="cpu",
+                disable_mlflow=True,
+                log_every=1,
+                smoke=True,
+            )
+
+            summary = run_experiment(args)
+
+            self.assertEqual(summary["data"]["feature_bundle"], "growth_aware")
+            self.assertEqual(summary["data"]["target_column"], "rtfpna")
+            self.assertEqual(summary["data"]["seq_feature_columns"], ["x_cap_deepening", "x_log_rgdpna_growth", "x_log_ck_growth"])
+            self.assertEqual(summary["data"]["proxy_columns"], ["proxy_hc_level", "proxy_hc_trend"])
+            self.assertTrue(np.isfinite(summary["metrics"]["test"]["mse"]))
+
     def test_run_economics_smoke_accepts_cleaned_long_form_csv(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_dir:
             temporary_root = Path(temporary_dir)
@@ -356,6 +482,42 @@ class EconomicsLoaderTest(unittest.TestCase):
             self.assertTrue((run_dir / "summary.json").exists())
             self.assertTrue((run_dir / "predictions.csv").exists())
             self.assertTrue((run_dir / "history.csv").exists())
+
+    def test_run_economics_lstm_growth_bundle_smoke_writes_bundle_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            temporary_root = Path(temporary_dir)
+            csv_path = temporary_root / "pwt_fixture_long.csv"
+            output_root = temporary_root / "baseline_outputs_growth"
+            self._write_fixture_csv(csv_path, year_start=1980, year_end=2004)
+
+            args = Namespace(
+                csv_path=str(csv_path),
+                year_start=1980,
+                year_end=2004,
+                train_end_year=1997,
+                val_end_year=2000,
+                target_column="rtfpna",
+                feature_bundle="growth_aware",
+                max_missing_share=0.20,
+                seed=42,
+                lr=1e-3,
+                epochs=1,
+                patience=1,
+                grad_clip=1.0,
+                output_dir=str(output_root),
+                experiment_name="economics_lstm_growth_smoke",
+                device="cpu",
+                disable_mlflow=True,
+                log_every=1,
+                smoke=True,
+            )
+
+            summary = run_baseline_experiment(args)
+
+            self.assertEqual(summary["data"]["feature_bundle"], "growth_aware")
+            self.assertEqual(summary["data"]["target_column"], "rtfpna")
+            self.assertEqual(summary["data"]["proxy_columns"], ["proxy_hc_level", "proxy_hc_trend"])
+            self.assertTrue(np.isfinite(summary["metrics"]["test"]["mse"]))
 
     def test_run_economics_lstm_baseline_smoke_writes_summary_and_predictions(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_dir:

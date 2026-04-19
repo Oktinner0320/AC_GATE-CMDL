@@ -23,6 +23,7 @@ from data.economics.economics_loader import (
 
 
 DEFAULT_ECONOMICS_CLEANED_OUTPUT_PATH = Path(__file__).resolve().parent / "processed" / "economics_cleaned_long.csv"
+DEFAULT_ECONOMICS_CLEANED_V2_OUTPUT_PATH = Path(__file__).resolve().parent / "processed" / "economics_cleaned_long_v2.csv"
 
 
 def parse_args() -> argparse.Namespace:
@@ -117,5 +118,6 @@ if __name__ == "__main__":
 
 __all__ = [
 	"DEFAULT_ECONOMICS_CLEANED_OUTPUT_PATH",
+	"DEFAULT_ECONOMICS_CLEANED_V2_OUTPUT_PATH",
 	"save_cleaned_economics_table",
 ]

@@ -34,9 +34,11 @@ import torch
 
 from config.cmdl_config import CMDLConfig
 from data.economics.economics_loader import (
+	DEFAULT_ECONOMICS_FEATURE_BUNDLE,
 	DEFAULT_YEAR_END,
 	DEFAULT_YEAR_START,
 	EconomicsPanel,
+	SUPPORTED_ECONOMICS_FEATURE_BUNDLES,
 	build_temporal_splits,
 	get_prediction_years,
 	load_economics_panel,
@@ -127,6 +129,13 @@ def parse_args() -> argparse.Namespace:
 	parser.add_argument("--train-end-year", type=int, default=2007)
 	parser.add_argument("--val-end-year", type=int, default=2013)
 	parser.add_argument("--target-column", type=str, default="ctfp", help="PWT target column, e.g. ctfp or rtfpna.")
+	parser.add_argument(
+		"--feature-bundle",
+		type=str,
+		choices=list(SUPPORTED_ECONOMICS_FEATURE_BUNDLES),
+		default=DEFAULT_ECONOMICS_FEATURE_BUNDLE,
+		help="Economics feature/proxy bundle to use, e.g. minimal or growth_aware.",
+	)
 	parser.add_argument("--max-missing-share", type=float, default=0.15)
 	parser.add_argument("--seed", type=int, default=economics_defaults.seed)
 	parser.add_argument("--lr", type=float, default=1e-3)
@@ -553,6 +562,10 @@ def summarize_run(
 		"data": {
 			"source_path": setup.full_panel.metadata["source_path"],
 			"target_column": setup.full_panel.metadata["target_column"],
+			"feature_bundle": setup.full_panel.metadata["feature_bundle"],
+			"seq_feature_columns": list(setup.full_panel.metadata["seq_feature_columns"]),
+			"proxy_columns": list(setup.full_panel.metadata["proxy_columns"]),
+			"static_columns": list(setup.full_panel.metadata["static_columns"]),
 			"stats_end_year": int(setup.full_panel.metadata["stats_end_year"]),
 			"year_start": int(args.year_start),
 			"year_end": int(args.year_end),
@@ -584,11 +597,13 @@ def setup_experiment(args: argparse.Namespace) -> EconomicsExperimentSetup:
 	if args.smoke:
 		args.epochs = 1
 		args.patience = 1
+	feature_bundle = getattr(args, "feature_bundle", DEFAULT_ECONOMICS_FEATURE_BUNDLE)
 
 	set_seed(args.seed)
 	full_panel_cpu = load_economics_panel(
 		csv_path=args.csv_path,
 		target_column=args.target_column,
+		feature_bundle=feature_bundle,
 		year_start=args.year_start,
 		year_end=args.year_end,
 		stats_end_year=args.train_end_year,
@@ -663,6 +678,7 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
 		params={
 			"experiment": args.experiment_name,
 			"target_column": args.target_column,
+			"feature_bundle": getattr(args, "feature_bundle", DEFAULT_ECONOMICS_FEATURE_BUNDLE),
 			"seed": args.seed,
 			"lr": args.lr,
 			"epochs": args.epochs,

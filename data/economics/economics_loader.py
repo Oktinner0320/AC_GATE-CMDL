@@ -21,6 +21,9 @@ from data.economics.download import DEFAULT_PWT_OUTPUT_PATH, load_pwt_source
 DEFAULT_YEAR_START = 1980
 DEFAULT_YEAR_END = 2023
 EPSILON = 1e-8
+DEFAULT_ECONOMICS_FEATURE_BUNDLE = "minimal"
+SUPPORTED_ECONOMICS_FEATURE_BUNDLES = ("minimal", "growth_aware")
+OPTIONAL_ECONOMICS_EXPORT_COLUMNS = ("ctfp", "rtfpna", "emp", "avh", "labsh", "delta", "rnna", "rkna")
 
 
 @dataclass(slots=True)
@@ -108,18 +111,65 @@ def _require_columns(frame: pd.DataFrame, required_columns: set[str]) -> None:
 		raise ValueError(f"Missing required economics columns: {missing_columns}")
 
 
-def _validate_loader_shape_contract(cfg: CMDLConfig) -> None:
-	"""Ensure the economics loader matches the current domain preset contract.
+def _validate_feature_bundle(feature_bundle: str) -> str:
+	"""Validate and normalize the requested economics feature bundle."""
 
-	保证 economics loader 当前构造出的特征维度与配置契约一致。
-	"""
+	normalized = str(feature_bundle).strip().lower()
+	if normalized not in SUPPORTED_ECONOMICS_FEATURE_BUNDLES:
+		raise ValueError(
+			f"Unsupported economics feature_bundle: {feature_bundle}. "
+			f"Expected one of {list(SUPPORTED_ECONOMICS_FEATURE_BUNDLES)}"
+		)
+	return normalized
 
-	if cfg.seq_features != 1:
-		raise ValueError(f"Economics loader currently emits exactly 1 sequential feature, got {cfg.seq_features}")
-	if cfg.n_proxies != 1:
-		raise ValueError(f"Economics loader currently emits exactly 1 proxy feature, got {cfg.n_proxies}")
-	if cfg.static_dim != 2:
-		raise ValueError(f"Economics loader currently emits exactly 2 static features, got {cfg.static_dim}")
+
+def _feature_bundle_columns(feature_bundle: str) -> tuple[list[str], list[str], list[str]]:
+	"""Return the standardized column names emitted by one economics bundle."""
+
+	normalized = _validate_feature_bundle(feature_bundle)
+	if normalized == "minimal":
+		return ["x_t"], ["proxy_hc"], ["static_log_rgdpna", "static_log_ck"]
+	if normalized == "growth_aware":
+		return ["x_cap_deepening", "x_log_rgdpna_growth", "x_log_ck_growth"], ["proxy_hc_level", "proxy_hc_trend"], [
+			"static_log_rgdpna",
+			"static_log_ck",
+		]
+	raise AssertionError(f"Unhandled feature_bundle: {feature_bundle}")
+
+
+def _validate_loader_shape_contract(
+	cfg: CMDLConfig,
+	seq_features: int,
+	n_proxies: int,
+	static_dim: int,
+) -> None:
+	"""Ensure the economics loader output matches the provided runtime config."""
+
+	if cfg.seq_features != seq_features:
+		raise ValueError(
+			f"Economics loader emits {seq_features} sequential features, but cfg expects {cfg.seq_features}"
+		)
+	if cfg.n_proxies != n_proxies:
+		raise ValueError(f"Economics loader emits {n_proxies} proxies, but cfg expects {cfg.n_proxies}")
+	if cfg.static_dim != static_dim:
+		raise ValueError(f"Economics loader emits {static_dim} static features, but cfg expects {cfg.static_dim}")
+
+
+def _linear_trend(values: pd.Series) -> float:
+	"""Estimate a simple per-step linear trend on a 1D series."""
+
+	array = pd.to_numeric(values, errors="coerce").astype(float).to_numpy()
+	mask = np.isfinite(array)
+	if mask.sum() <= 1:
+		return 0.0
+	x = np.arange(array.shape[0], dtype=np.float64)[mask]
+	y = array[mask].astype(np.float64)
+	x_centered = x - x.mean()
+	denominator = float(np.dot(x_centered, x_centered))
+	if denominator < EPSILON:
+		return 0.0
+	y_centered = y - y.mean()
+	return float(np.dot(x_centered, y_centered) / denominator)
 
 
 def _looks_like_cleaned_economics_frame(frame: pd.DataFrame, target_column: str) -> bool:
@@ -135,7 +185,6 @@ def _looks_like_cleaned_economics_frame(frame: pd.DataFrame, target_column: str)
 		"hc",
 		"ck",
 		"rgdpna",
-		target_column,
 		"cap_deepening_raw",
 		"log_rgdpna_raw",
 		"log_ck_raw",
@@ -169,6 +218,11 @@ def _build_cleaned_from_exported_table(
 	_require_columns(dataframe, required_columns)
 
 	frame = dataframe.copy()
+	optional_export_columns = [
+		column_name
+		for column_name in OPTIONAL_ECONOMICS_EXPORT_COLUMNS
+		if column_name in frame.columns and column_name not in required_columns
+	]
 	frame["entity_code"] = frame["entity_code"].astype(str).str.strip()
 	frame["entity_name"] = frame["entity_name"].fillna(frame["entity_code"]).astype(str)
 	frame["year"] = pd.to_numeric(frame["year"], errors="coerce")
@@ -182,6 +236,8 @@ def _build_cleaned_from_exported_table(
 		"log_rgdpna_raw",
 		"log_ck_raw",
 	]
+	for column_name in optional_export_columns:
+		frame[column_name] = pd.to_numeric(frame[column_name], errors="coerce")
 	for column_name in numeric_columns:
 		frame[column_name] = pd.to_numeric(frame[column_name], errors="coerce")
 
@@ -214,6 +270,9 @@ def _build_cleaned_from_exported_table(
 		if not np.isfinite(entity_frame[numeric_columns].to_numpy(dtype=float)).all():
 			raise ValueError(f"Cleaned economics input contains non-finite numeric values for entity {entity_code}")
 
+		entity_frame["dlog_rgdpna_raw"] = entity_frame["log_rgdpna_raw"].diff().fillna(0.0)
+		entity_frame["dlog_ck_raw"] = entity_frame["log_ck_raw"].diff().fillna(0.0)
+
 		for column_name, default_value in optional_defaults.items():
 			if column_name not in entity_frame.columns:
 				entity_frame[column_name] = default_value
@@ -222,26 +281,34 @@ def _build_cleaned_from_exported_table(
 	cleaned_frame = pd.concat(retained_entities, ignore_index=True)
 	cleaned_frame = cleaned_frame.sort_values(["entity_code", "year"]).reset_index(drop=True)
 
-	return cleaned_frame[
-		[
-			"entity_code",
-			"entity_name",
-			"year",
-			"hc",
-			"ck",
-			"rgdpna",
-			target_column,
-			"cap_deepening_raw",
-			"log_rgdpna_raw",
-			"log_ck_raw",
-			"hc_was_missing",
-			"ck_was_missing",
-			"rgdpna_was_missing",
-			f"{target_column}_was_missing",
-			"row_was_missing",
-			"entity_missing_share",
-		]
+	output_columns = [
+		"entity_code",
+		"entity_name",
+		"year",
+		"hc",
+		"ck",
+		"rgdpna",
 	]
+	for column_name in ["ctfp", "rtfpna"]:
+		if column_name in cleaned_frame.columns and column_name not in output_columns:
+			output_columns.append(column_name)
+	for column_name in optional_export_columns:
+		if column_name not in output_columns:
+			output_columns.append(column_name)
+	output_columns.extend([
+		"cap_deepening_raw",
+		"log_rgdpna_raw",
+		"log_ck_raw",
+		"dlog_rgdpna_raw",
+		"dlog_ck_raw",
+		"hc_was_missing",
+		"ck_was_missing",
+		"rgdpna_was_missing",
+		f"{target_column}_was_missing",
+		"row_was_missing",
+		"entity_missing_share",
+	])
+	return cleaned_frame.loc[:, [column_name for column_name in output_columns if column_name in cleaned_frame.columns]]
 
 
 def build_cleaned_economics_dataframe(
@@ -275,7 +342,12 @@ def build_cleaned_economics_dataframe(
 	required_columns = {"countrycode", "year", "hc", "ck", "rgdpna", target_column}
 	_require_columns(dataframe, required_columns)
 
-	selected_columns = ["countrycode", "year", "hc", "ck", "rgdpna", target_column]
+	optional_export_columns = [
+		column_name
+		for column_name in OPTIONAL_ECONOMICS_EXPORT_COLUMNS
+		if column_name in dataframe.columns and column_name not in {"countrycode", "year", "hc", "ck", "rgdpna"}
+	]
+	selected_columns = ["countrycode", "year", "hc", "ck", "rgdpna", *optional_export_columns]
 	if "country" in dataframe.columns:
 		selected_columns.insert(1, "country")
 
@@ -287,8 +359,9 @@ def build_cleaned_economics_dataframe(
 	long_frame["country"] = long_frame["country"].fillna(long_frame["countrycode"]).astype(str)
 	long_frame["year"] = pd.to_numeric(long_frame["year"], errors="coerce")
 
-	base_columns = ["hc", "ck", "rgdpna", target_column]
-	for column_name in base_columns:
+	required_value_columns = ["hc", "ck", "rgdpna", target_column]
+	numeric_columns = [column_name for column_name in optional_export_columns if column_name not in {"countrycode", "year"}]
+	for column_name in sorted(set(required_value_columns + numeric_columns)):
 		long_frame[column_name] = pd.to_numeric(long_frame[column_name], errors="coerce")
 
 	long_frame = long_frame.dropna(subset=["countrycode", "year"])
@@ -301,7 +374,7 @@ def build_cleaned_economics_dataframe(
 
 	expected_years = list(range(year_start, year_end + 1))
 	retained_entities: list[pd.DataFrame] = []
-	missing_flag_columns = [f"{column_name}_was_missing" for column_name in base_columns]
+	missing_flag_columns = [f"{column_name}_was_missing" for column_name in required_value_columns]
 
 	for entity_code, group in long_frame.groupby("countrycode", sort=True):
 		group = group.sort_values("year").groupby("year", as_index=False).last()
@@ -312,26 +385,38 @@ def build_cleaned_economics_dataframe(
 		entity_frame["countrycode"] = str(entity_code)
 		entity_frame["country"] = entity_name
 
-		missing_share = float(entity_frame[base_columns].isna().mean().mean())
+		missing_share = float(entity_frame[required_value_columns].isna().mean().mean())
 		if missing_share > max_missing_share:
 			continue
 
-		for column_name in base_columns:
+		for column_name in required_value_columns:
 			entity_frame[f"{column_name}_was_missing"] = entity_frame[column_name].isna().astype(np.int8)
 		entity_frame["row_was_missing"] = entity_frame[missing_flag_columns].max(axis=1).astype(np.int8)
 		entity_frame["entity_missing_share"] = float(missing_share)
 
-		entity_frame[base_columns] = entity_frame[base_columns].interpolate(
+		entity_frame[required_value_columns] = entity_frame[required_value_columns].interpolate(
 			method="linear",
 			limit_direction="both",
 		)
-		if entity_frame[base_columns].isna().any().any():
+		if entity_frame[required_value_columns].isna().any().any():
 			continue
+		optional_numeric_columns = [
+			column_name
+			for column_name in numeric_columns
+			if column_name not in required_value_columns and column_name in entity_frame.columns
+		]
+		if optional_numeric_columns:
+			entity_frame[optional_numeric_columns] = entity_frame[optional_numeric_columns].interpolate(
+				method="linear",
+				limit_direction="both",
+			)
 
 		entity_frame["cap_deepening_raw"] = entity_frame["ck"] / entity_frame["rgdpna"]
 		entity_frame["log_rgdpna_raw"] = np.log(entity_frame["rgdpna"].clip(lower=EPSILON))
 		entity_frame["log_ck_raw"] = np.log(entity_frame["ck"].clip(lower=EPSILON))
-		derived_columns = ["cap_deepening_raw", "log_rgdpna_raw", "log_ck_raw"]
+		entity_frame["dlog_rgdpna_raw"] = entity_frame["log_rgdpna_raw"].diff().fillna(0.0)
+		entity_frame["dlog_ck_raw"] = entity_frame["log_ck_raw"].diff().fillna(0.0)
+		derived_columns = ["cap_deepening_raw", "log_rgdpna_raw", "log_ck_raw", "dlog_rgdpna_raw", "dlog_ck_raw"]
 		if not np.isfinite(entity_frame[derived_columns].to_numpy(dtype=float)).all():
 			continue
 
@@ -347,31 +432,43 @@ def build_cleaned_economics_dataframe(
 	cleaned_frame = cleaned_frame.rename(columns={"countrycode": "entity_code", "country": "entity_name"})
 	cleaned_frame = cleaned_frame.sort_values(["entity_code", "year"]).reset_index(drop=True)
 
-	return cleaned_frame[
-		[
-			"entity_code",
-			"entity_name",
-			"year",
-			"hc",
-			"ck",
-			"rgdpna",
-			target_column,
-			"cap_deepening_raw",
-			"log_rgdpna_raw",
-			"log_ck_raw",
-			"hc_was_missing",
-			"ck_was_missing",
-			"rgdpna_was_missing",
-			f"{target_column}_was_missing",
-			"row_was_missing",
-			"entity_missing_share",
-		]
+	output_columns = [
+		"entity_code",
+		"entity_name",
+		"year",
+		"hc",
+		"ck",
+		"rgdpna",
 	]
+	for column_name in ["ctfp", "rtfpna"]:
+		if column_name in cleaned_frame.columns and column_name not in output_columns:
+			output_columns.append(column_name)
+	for column_name in [
+		column_name
+		for column_name in optional_export_columns
+		if column_name not in {"ctfp", "rtfpna"} and column_name in cleaned_frame.columns
+	]:
+		output_columns.append(column_name)
+	output_columns.extend([
+		"cap_deepening_raw",
+		"log_rgdpna_raw",
+		"log_ck_raw",
+		"dlog_rgdpna_raw",
+		"dlog_ck_raw",
+		"hc_was_missing",
+		"ck_was_missing",
+		"rgdpna_was_missing",
+		f"{target_column}_was_missing",
+		"row_was_missing",
+		"entity_missing_share",
+	])
+	return cleaned_frame.loc[:, [column_name for column_name in output_columns if column_name in cleaned_frame.columns]]
 
 
 def build_economics_dataframe(
 	csv_path: str | Path | None = None,
 	target_column: str = "ctfp",
+	feature_bundle: str = DEFAULT_ECONOMICS_FEATURE_BUNDLE,
 	year_start: int = DEFAULT_YEAR_START,
 	year_end: int = DEFAULT_YEAR_END,
 	stats_end_year: int | None = None,
@@ -389,6 +486,7 @@ def build_economics_dataframe(
 		raise ValueError(
 			f"stats_end_year must be within [{year_start}, {year_end}], got {stats_end_year}"
 		)
+	feature_bundle = _validate_feature_bundle(feature_bundle)
 
 	cleaned_frame = build_cleaned_economics_dataframe(
 		csv_path=csv_path,
@@ -406,10 +504,19 @@ def build_economics_dataframe(
 			continue
 		reference_mask = entity_frame["year"].to_numpy() <= stats_end_year
 
-		entity_frame["proxy_hc_raw"] = float(stats_frame["hc"].mean())
 		entity_frame["static_log_rgdpna_raw"] = float(stats_frame["log_rgdpna_raw"].mean())
 		entity_frame["static_log_ck_raw"] = float(stats_frame["log_ck_raw"].mean())
-		entity_frame["x_t"] = _zscore_with_reference(entity_frame["cap_deepening_raw"], reference_mask)
+		if feature_bundle == "minimal":
+			entity_frame["proxy_hc_raw"] = float(stats_frame["hc"].mean())
+			entity_frame["x_t"] = _zscore_with_reference(entity_frame["cap_deepening_raw"], reference_mask)
+		elif feature_bundle == "growth_aware":
+			entity_frame["proxy_hc_level_raw"] = float(stats_frame["hc"].mean())
+			entity_frame["proxy_hc_trend_raw"] = _linear_trend(stats_frame["hc"])
+			entity_frame["x_cap_deepening"] = _zscore_with_reference(entity_frame["cap_deepening_raw"], reference_mask)
+			entity_frame["x_log_rgdpna_growth"] = _zscore_with_reference(entity_frame["dlog_rgdpna_raw"], reference_mask)
+			entity_frame["x_log_ck_growth"] = _zscore_with_reference(entity_frame["dlog_ck_raw"], reference_mask)
+		else:
+			raise AssertionError(f"Unhandled feature_bundle: {feature_bundle}")
 		entity_frame["y_t"] = _zscore_with_reference(entity_frame[target_column], reference_mask)
 		retained_entities.append(entity_frame)
 
@@ -420,36 +527,53 @@ def build_economics_dataframe(
 		)
 
 	cleaned_frame = pd.concat(retained_entities, ignore_index=True)
+	if feature_bundle == "minimal":
+		proxy_raw_columns = [("proxy_hc_raw", "proxy_hc")]
+		sequence_columns = ["x_t"]
+	elif feature_bundle == "growth_aware":
+		proxy_raw_columns = [("proxy_hc_level_raw", "proxy_hc_level"), ("proxy_hc_trend_raw", "proxy_hc_trend")]
+		sequence_columns = ["x_cap_deepening", "x_log_rgdpna_growth", "x_log_ck_growth"]
+	else:
+		raise AssertionError(f"Unhandled feature_bundle: {feature_bundle}")
+
 	static_frame = cleaned_frame.groupby("entity_code", as_index=False).agg(
-		entity_name=("entity_name", "first"),
-		proxy_hc_raw=("proxy_hc_raw", "first"),
-		static_log_rgdpna_raw=("static_log_rgdpna_raw", "first"),
-		static_log_ck_raw=("static_log_ck_raw", "first"),
+		{
+			"entity_name": "first",
+			**{raw_column: "first" for raw_column, _ in proxy_raw_columns},
+			"static_log_rgdpna_raw": "first",
+			"static_log_ck_raw": "first",
+		}
 	)
-	static_frame["proxy_hc"] = _zscore(static_frame["proxy_hc_raw"])
+	for raw_column, normalized_column in proxy_raw_columns:
+		static_frame[normalized_column] = _zscore(static_frame[raw_column])
 	static_frame["static_log_rgdpna"] = _zscore(static_frame["static_log_rgdpna_raw"])
 	static_frame["static_log_ck"] = _zscore(static_frame["static_log_ck_raw"])
 
+	merge_columns = [
+		"entity_code",
+		*[normalized_column for _, normalized_column in proxy_raw_columns],
+		"static_log_rgdpna",
+		"static_log_ck",
+	]
 	cleaned_frame = cleaned_frame.merge(
-		static_frame[
-			["entity_code", "proxy_hc", "static_log_rgdpna", "static_log_ck"]
-		],
+		static_frame[merge_columns],
 		on="entity_code",
 		how="left",
 	)
 	cleaned_frame = cleaned_frame.sort_values(["entity_code", "year"]).reset_index(drop=True)
 
-	return cleaned_frame[
+	return cleaned_frame.loc[
+		:,
 		[
 			"entity_code",
 			"entity_name",
 			"year",
-			"x_t",
+			*sequence_columns,
 			"y_t",
-			"proxy_hc",
+			*[normalized_column for _, normalized_column in proxy_raw_columns],
 			"static_log_rgdpna",
 			"static_log_ck",
-		]
+		],
 	]
 
 
@@ -457,6 +581,7 @@ def load_economics_panel(
 	csv_path: str | Path | None = None,
 	cfg: CMDLConfig | None = None,
 	target_column: str = "ctfp",
+	feature_bundle: str = DEFAULT_ECONOMICS_FEATURE_BUNDLE,
 	year_start: int = DEFAULT_YEAR_START,
 	year_end: int = DEFAULT_YEAR_END,
 	stats_end_year: int | None = None,
@@ -468,11 +593,13 @@ def load_economics_panel(
 	"""
 
 	runtime_cfg = CMDLConfig.from_domain("economics") if cfg is None else cfg
-	_validate_loader_shape_contract(runtime_cfg)
+	feature_bundle = _validate_feature_bundle(feature_bundle)
+	sequence_columns, proxy_columns, static_columns = _feature_bundle_columns(feature_bundle)
 
 	dataframe = build_economics_dataframe(
 		csv_path=csv_path,
 		target_column=target_column,
+		feature_bundle=feature_bundle,
 		year_start=year_start,
 		year_end=year_end,
 		stats_end_year=stats_end_year,
@@ -490,12 +617,14 @@ def load_economics_panel(
 		raise ValueError(
 			f"Economics panel length {seq_length} must be greater than max_lag {runtime_cfg.max_lag}"
 		)
+	if cfg is not None:
+		_validate_loader_shape_contract(runtime_cfg, len(sequence_columns), len(proxy_columns), len(static_columns))
 
 	entity_names: list[str] = []
-	X_it = np.zeros((n_entities, seq_length, 1), dtype=np.float32)
+	X_it = np.zeros((n_entities, seq_length, len(sequence_columns)), dtype=np.float32)
 	Y_it = np.zeros((n_entities, seq_length), dtype=np.float32)
-	p_i = np.zeros((n_entities, 1), dtype=np.float32)
-	s_i = np.zeros((n_entities, 2), dtype=np.float32)
+	p_i = np.zeros((n_entities, len(proxy_columns)), dtype=np.float32)
+	s_i = np.zeros((n_entities, len(static_columns)), dtype=np.float32)
 
 	for entity_index, entity_code in enumerate(entity_codes):
 		entity_frame = dataframe.loc[dataframe["entity_code"] == entity_code].sort_values("year")
@@ -503,11 +632,13 @@ def load_economics_panel(
 			raise ValueError(f"Entity {entity_code} does not have a balanced economics panel")
 
 		entity_names.append(str(entity_frame["entity_name"].iloc[0]))
-		X_it[entity_index, :, 0] = entity_frame["x_t"].to_numpy(dtype=np.float32)
+		for feature_index, column_name in enumerate(sequence_columns):
+			X_it[entity_index, :, feature_index] = entity_frame[column_name].to_numpy(dtype=np.float32)
 		Y_it[entity_index, :] = entity_frame["y_t"].to_numpy(dtype=np.float32)
-		p_i[entity_index, 0] = float(entity_frame["proxy_hc"].iloc[0])
-		s_i[entity_index, 0] = float(entity_frame["static_log_rgdpna"].iloc[0])
-		s_i[entity_index, 1] = float(entity_frame["static_log_ck"].iloc[0])
+		for proxy_index, column_name in enumerate(proxy_columns):
+			p_i[entity_index, proxy_index] = float(entity_frame[column_name].iloc[0])
+		for static_index, column_name in enumerate(static_columns):
+			s_i[entity_index, static_index] = float(entity_frame[column_name].iloc[0])
 
 	source_path = _resolve_csv_path(csv_path)
 	return EconomicsPanel(
@@ -523,9 +654,11 @@ def load_economics_panel(
 			"domain": "economics",
 			"source_path": str(source_path),
 			"target_column": target_column,
+			"feature_bundle": feature_bundle,
 			"treatment_column": "cap_deepening",
-			"proxy_columns": ["hc"],
-			"static_columns": ["log_rgdpna_base", "log_ck_base"],
+			"seq_feature_columns": list(sequence_columns),
+			"proxy_columns": list(proxy_columns),
+			"static_columns": list(static_columns),
 			"years": years,
 			"year_start": int(years[0]),
 			"year_end": int(years[-1]),
@@ -624,9 +757,11 @@ def get_prediction_years(panel: EconomicsPanel, max_lag: int) -> list[int]:
 
 
 __all__ = [
+	"DEFAULT_ECONOMICS_FEATURE_BUNDLE",
 	"DEFAULT_YEAR_END",
 	"DEFAULT_YEAR_START",
 	"EconomicsPanel",
+	"SUPPORTED_ECONOMICS_FEATURE_BUNDLES",
 	"build_economics_dataframe",
 	"build_cleaned_economics_dataframe",
 	"build_temporal_splits",

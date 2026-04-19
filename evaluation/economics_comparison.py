@@ -34,6 +34,10 @@ _IDENTITY_COLUMNS = [
     "scenario",
     "seed",
     "target_column",
+    "feature_bundle",
+    "seq_feature_names",
+    "proxy_feature_names",
+    "static_feature_names",
     "source_path",
     "stats_end_year",
     "year_start",
@@ -238,6 +242,10 @@ def _normalize_summary(summary_path: Path, output_root: Path, family: str) -> di
         "scenario": payload.get("scenario", config.get("scenario")),
         "seed": config.get("seed"),
         "target_column": data.get("target_column"),
+        "feature_bundle": data.get("feature_bundle"),
+        "seq_feature_names": ",".join(data.get("seq_feature_columns", [])),
+        "proxy_feature_names": ",".join(data.get("proxy_columns", [])),
+        "static_feature_names": ",".join(data.get("static_columns", [])),
         "source_path": data.get("source_path"),
         "stats_end_year": data.get("stats_end_year"),
         "year_start": data.get("year_start"),
@@ -348,7 +356,7 @@ def build_economics_comparison(
     combined = pd.DataFrame(rows)
     sort_columns = [
         column
-        for column in ["target_column", "family", "display_name", "seed", "experiment"]
+        for column in ["target_column", "feature_bundle", "family", "display_name", "seed", "experiment"]
         if column in combined.columns
     ]
     combined = combined.sort_values(sort_columns, na_position="last").reset_index(drop=True)
@@ -372,6 +380,7 @@ def build_task_table(comparison_frame: pd.DataFrame, split: str = "test") -> pd.
         "seed",
         "experiment",
         "target_column",
+        "feature_bundle",
         "best_epoch",
         "best_val_task_loss",
         f"{split}_r2",
@@ -383,8 +392,8 @@ def build_task_table(comparison_frame: pd.DataFrame, split: str = "test") -> pd.
         return task_table
 
     return task_table.sort_values(
-        ["target_column", f"{split}_r2", f"{split}_mae", "display_name", "seed"],
-        ascending=[True, False, True, True, True],
+            ["target_column", "feature_bundle", f"{split}_r2", f"{split}_mae", "display_name", "seed"],
+            ascending=[True, True, False, True, True, True],
         na_position="last",
     ).reset_index(drop=True)
 
@@ -402,6 +411,7 @@ def build_interpretability_table(comparison_frame: pd.DataFrame, split: str = "t
         "seed",
         "experiment",
         "target_column",
+        "feature_bundle",
         "lag_method",
         "proxy_refit_status",
         "proxy_metric_interpretable",
@@ -420,12 +430,13 @@ def build_interpretability_table(comparison_frame: pd.DataFrame, split: str = "t
     return interpretability.sort_values(
         [
             "target_column",
+            "feature_bundle",
             f"{split}_effective_kstar_proxy_spearman_rho",
             f"{split}_proxy_signal_r2",
             "display_name",
             "seed",
         ],
-        ascending=[True, False, False, True, True],
+            ascending=[True, True, False, False, True, True],
         na_position="last",
     ).reset_index(drop=True)
 
