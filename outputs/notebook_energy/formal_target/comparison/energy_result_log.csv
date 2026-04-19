@@ -1,0 +1,9 @@
+stage,question,result,evidence
+contract,Which energy contract is being audited?,renewables_share_energy -> co2_per_unit_energy,OWID carbon_intensity_elec standardized as co2_per_unit_energy
+forecast,Does CMDL beat the matched plain LSTM on mean test R2?,No clear forecast lift,"CMDL mean test_r2=-0.0282, Plain LSTM mean test_r2=-0.0331."
+mechanism,Does CMDL retain non-degenerate learned lag heterogeneity?,Yes,"CMDL mean effective k* std=0.1059; removing the AC encoder collapses it to 0.000000. Plain LSTM post-hoc spread is larger at 1.3567, but that is a different diagnostic."
+mechanism,Is lag-proxy alignment under CMDL already stable enough for a strong claim?,No,CMDL mean rho=-0.2350 versus Plain LSTM -0.0598; CMDL signs still flip across seeds.
+ablation,What happens when the AC encoder is removed?,Lag heterogeneity collapses,"No AC Encoder test effective k* std=0.000000, proxy refit status=skipped_rank_deficient."
+ablation,What happens under uniform lag?,Interpretability is fixed by construction,Uniform Lag entropy=2.3026 and effective k* std=0.000000.
+ablation,Does removing reconstruction regularization obviously help?,Not from the first formal run,"No Recon test_r2=-0.0265, proxy_signal_r2=0.4650."
+verdict,Current energy verdict,Energy supports the learned heterogeneity machinery more clearly than it supports a strong forecast or mechanism win.,"This is a viable second real-data domain with a clean ablation story, but the top-line predictive advantage remains marginal."
