@@ -1,0 +1,16 @@
+display_name,family,variant,seed,experiment,target_column,best_epoch,best_val_task_loss,test_r2,test_mae,test_mse
+Uniform Lag,ablation,uniform_lag,0,E4_economics_ablation_uniform_lag_seed0,ctfp,1,2.837034225463867,-0.045594476170657997,1.5719592748515978,4.335728612818728
+No Recon Regularization,ablation,no_recon_regularization,0,E4_economics_ablation_no_recon_regularization_seed0,ctfp,5,2.768782377243042,-0.057987678021997134,1.5673204570835861,4.385006187566281
+No AC Encoder,ablation,no_ac_encoder,0,E4_economics_ablation_no_ac_encoder_seed0,ctfp,5,2.7713639736175537,-0.058631559618452525,1.5676889903102917,4.3876222661259225
+CMDL,cmdl,,1,E4_economics_cmdl_seed1,ctfp,1,3.029675245285034,-0.06074732234429121,1.580844910795415,4.398144662624807
+CMDL,cmdl,,2,E4_economics_cmdl_seed2,ctfp,2,2.8936100006103516,-0.06976446966991041,1.597144046962009,4.4352735219990524
+Plain LSTM,plain_lstm,,2,E4_economics_lstm_seed2,ctfp,9,2.8595359325408936,-0.07476819314889631,1.6002361396527323,4.45598603045739
+Uniform Lag,ablation,uniform_lag,2,E4_economics_ablation_uniform_lag_seed2,ctfp,26,2.984247922897339,-0.0802400427157891,1.6130106397084143,4.469770483696395
+Plain LSTM,plain_lstm,,1,E4_economics_lstm_seed1,ctfp,1,2.853609561920166,-0.08752091617813111,1.6192663407214734,4.510214860646097
+No AC Encoder,ablation,no_ac_encoder,2,E4_economics_ablation_no_ac_encoder_seed2,ctfp,23,2.9632301330566406,-0.09013729528443135,1.6207733265740847,4.515943241983983
+No Recon Regularization,ablation,no_recon_regularization,2,E4_economics_ablation_no_recon_regularization_seed2,ctfp,8,2.959364175796509,-0.10411566174307647,1.6253690015635636,4.578958597775745
+CMDL,cmdl,,0,E4_economics_cmdl_seed0,ctfp,13,2.976566791534424,-0.1068223433067594,1.6331849317079814,4.583425786036219
+Plain LSTM,plain_lstm,,0,E4_economics_lstm_seed0,ctfp,4,2.9906105995178223,-0.11905162347636503,1.6366996694609128,4.637916639619629
+Uniform Lag,ablation,uniform_lag,1,E4_economics_ablation_uniform_lag_seed1,ctfp,1,2.946762800216675,-0.1281341169814404,1.6709445337760622,4.679003039527968
+No Recon Regularization,ablation,no_recon_regularization,1,E4_economics_ablation_no_recon_regularization_seed1,ctfp,1,2.9511070251464844,-0.13060572857971733,1.6723181448792734,4.689226052216125
+No AC Encoder,ablation,no_ac_encoder,1,E4_economics_ablation_no_ac_encoder_seed1,ctfp,1,2.949154853820801,-0.13064539193148456,1.6722923492804485,4.689353943100199

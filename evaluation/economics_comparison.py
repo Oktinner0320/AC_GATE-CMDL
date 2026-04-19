@@ -267,7 +267,10 @@ def build_economics_comparison(
     if not frames:
         return pd.DataFrame(columns=_IDENTITY_COLUMNS)
 
-    combined = pd.concat(frames, ignore_index=True, sort=False)
+    rows: list[dict[str, Any]] = []
+    for frame in frames:
+        rows.extend(frame.to_dict(orient="records"))
+    combined = pd.DataFrame(rows)
     sort_columns = [
         column
         for column in ["target_column", "family", "display_name", "seed", "experiment"]
