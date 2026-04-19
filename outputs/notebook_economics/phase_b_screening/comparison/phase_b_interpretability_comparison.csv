@@ -1,0 +1,9 @@
+display_name,family,variant,seed,experiment,target_column,feature_bundle,lag_method,proxy_refit_status,proxy_metric_interpretable,test_effective_kstar_proxy_spearman_rho,test_effective_kstar_proxy_metric_valid,test_effective_kstar_mean,test_effective_kstar_std,test_effective_lag_entropy_mean,test_proxy_signal_r2,test_proxy_signal_metric_valid
+CMDL,cmdl,,0,phase_b_cmdl_ctfp_growth_aware_seed0,ctfp,growth_aware,learned_omega,applied_ols,True,0.8987974289861083,True,4.807129859924316,0.08396933972835541,1.9164228439331055,0.45887494270095414,True
+Plain LSTM,plain_lstm,,0,phase_b_lstm_ctfp_growth_aware_seed0,ctfp,growth_aware,lag_occlusion,,,0.1067683240441443,,5.588688373565674,2.0620713233947754,1.8667802810668945,,
+Plain LSTM,plain_lstm,,0,phase_b_lstm_ctfp_minimal_seed0,ctfp,minimal,lag_occlusion,,,0.0025690549792460322,,5.400427341461182,1.2482284307479858,2.146393299102783,,
+CMDL,cmdl,,0,phase_b_cmdl_ctfp_minimal_seed0,ctfp,minimal,learned_omega,applied_ols,True,-0.47376114451586143,True,5.386937141418457,0.01822454109787941,1.8176125288009644,0.33944505547084547,True
+CMDL,cmdl,,0,phase_b_cmdl_rtfpna_growth_aware_seed0,rtfpna,growth_aware,learned_omega,applied_ols,True,0.9101181837030893,True,4.838705062866211,0.07564406096935272,1.9147424697875977,0.43662547202866503,True
+Plain LSTM,plain_lstm,,0,phase_b_lstm_rtfpna_growth_aware_seed0,rtfpna,growth_aware,lag_occlusion,,,-0.08894528709267618,,5.073703765869141,1.7388497591018677,1.9081792831420898,,
+Plain LSTM,plain_lstm,,0,phase_b_lstm_rtfpna_minimal_seed0,rtfpna,minimal,lag_occlusion,,,0.12083648341846129,,5.67059850692749,1.2260905504226685,2.1544859409332275,,
+CMDL,cmdl,,0,phase_b_cmdl_rtfpna_minimal_seed0,rtfpna,minimal,learned_omega,applied_ols,True,-0.49116732324279494,True,5.445160388946533,0.02219073288142681,1.8157532215118408,0.39520029483186947,True
