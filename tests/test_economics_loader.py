@@ -286,6 +286,28 @@ class EconomicsLoaderTest(unittest.TestCase):
             torch.testing.assert_close(base_panel.X_it[:, :8, :], shifted_panel.X_it[:, :8, :], atol=1e-6, rtol=1e-6)
             torch.testing.assert_close(base_panel.Y_it[:, :8], shifted_panel.Y_it[:, :8], atol=1e-6, rtol=1e-6)
 
+    def test_effective_labor_bundle_drops_entities_with_unrecoverable_emp_or_avh(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            csv_path = Path(temporary_dir) / "pwt_fixture_missing_optional.csv"
+            self._write_fixture_csv(csv_path, year_start=1980, year_end=1991)
+
+            dataframe = pd.read_csv(csv_path)
+            dataframe.loc[dataframe["countrycode"] == "BBB", "avh"] = np.nan
+            dataframe.to_csv(csv_path, index=False)
+
+            panel = load_economics_panel(
+                csv_path=csv_path,
+                feature_bundle="effective_labor_aware",
+                year_start=1980,
+                year_end=1991,
+                stats_end_year=1987,
+                max_missing_share=0.20,
+            )
+
+            self.assertEqual(panel.entity_codes, ["AAA", "CCC"])
+            self.assertTrue(torch.isfinite(panel.X_it).all().item())
+            self.assertTrue(torch.isfinite(panel.p_i).all().item())
+
     def test_download_utility_reads_excel_data_sheet_and_caches_csv(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_dir:
             temporary_root = Path(temporary_dir)

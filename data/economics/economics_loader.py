@@ -519,7 +519,25 @@ def build_economics_dataframe(
 	)
 	_require_bundle_input_columns(cleaned_frame, feature_bundle)
 	if feature_bundle == "effective_labor_aware":
-		cleaned_frame = cleaned_frame.copy()
+		prepared_entities: list[pd.DataFrame] = []
+		for _, group in cleaned_frame.groupby("entity_code", sort=True):
+			entity_frame = group.sort_values("year").copy()
+			entity_frame[["emp", "avh"]] = entity_frame[["emp", "avh"]].interpolate(
+				method="linear",
+				limit_direction="both",
+			)
+			if entity_frame[["emp", "avh"]].isna().any().any():
+				continue
+			if not np.isfinite(entity_frame[["emp", "avh"]].to_numpy(dtype=float)).all():
+				continue
+			if (entity_frame["emp"] <= 0.0).any() or (entity_frame["avh"] <= 0.0).any():
+				continue
+			prepared_entities.append(entity_frame)
+		if not prepared_entities:
+			raise ValueError(
+				"No economics entities remain after preparing emp/avh summaries for effective_labor_aware"
+			)
+		cleaned_frame = pd.concat(prepared_entities, ignore_index=True)
 		cleaned_frame["log_emp_raw"] = np.log(cleaned_frame["emp"].clip(lower=EPSILON))
 		cleaned_frame["log_emp_hours_raw"] = np.log((cleaned_frame["emp"] * cleaned_frame["avh"]).clip(lower=EPSILON))
 
