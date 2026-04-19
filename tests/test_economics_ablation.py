@@ -180,7 +180,13 @@ class EconomicsAblationTest(unittest.TestCase):
 
             self.assertEqual(len(summary_frame), 3)
             self.assertEqual(len(aggregated), 3)
-            self.assertTrue((summary_frame["feature_bundle"] == "effective_labor_aware").all())
+            for variant in ["no_ac_encoder", "uniform_lag", "no_recon_regularization"]:
+                summary = json.loads(
+                    (
+                        output_root / f"economics_ablation_effective_labor_{variant}_seed0" / "summary.json"
+                    ).read_text(encoding="utf-8")
+                )
+                self.assertEqual(summary["data"]["feature_bundle"], "effective_labor_aware")
 
 
 if __name__ == "__main__":
