@@ -83,7 +83,13 @@ def _normalize_summary(summary_path: Path, output_root: Path, family: str) -> di
         "run_dir": str(summary_path.parent),
         "output_root": str(output_root),
         "proxy_signal_r2": metrics.get("proxy_recon_r2"),
-        "z_signal_spearman_rho": metrics.get("z_spearman_rho"),
+        # z 是 sign-invariant 的隐变量（W·z 与 -W·-z 等价），跨 seed 时符号会随机翻转，
+        # 因此可识别性指标取 |Spearman ρ|，避免对带符号 ρ 求平均时正负相消。
+        # z is a sign-invariant latent (W·z and -W·-z are equivalent), so the sign of
+        # Spearman ρ flips across seeds; report |ρ| to avoid sign cancellation when averaged.
+        "z_signal_spearman_rho": (
+            abs(metrics["z_spearman_rho"]) if metrics.get("z_spearman_rho") is not None else None
+        ),
     }
 
     if family == "plain_lstm":
