@@ -1,0 +1,10 @@
+display_name,family,variant,seed,experiment,target_column,feature_bundle,lag_method,proxy_refit_status,proxy_metric_interpretable,test_effective_kstar_proxy_spearman_rho,test_effective_kstar_proxy_metric_valid,test_effective_kstar_mean,test_effective_kstar_std,test_effective_lag_entropy_mean,test_proxy_signal_r2,test_proxy_signal_metric_valid
+CMDL,cmdl,,1,E3_energy_cmdl_seed1,co2_per_unit_energy,minimal,learned_omega,applied_ols,True,0.877439016679523,True,3.7946667671203613,0.11216326802968979,1.886324405670166,0.8081346282876231,True
+Plain LSTM,plain_lstm,,2,E3_energy_lstm_seed2,co2_per_unit_energy,minimal,lag_occlusion,,,0.03936654150242589,True,5.457396030426025,1.1543892621994019,2.151947498321533,,
+Plain LSTM,plain_lstm,,0,E3_energy_lstm_seed0,co2_per_unit_energy,minimal,lag_occlusion,,,-0.017146967620939136,True,5.45845365524292,1.3046740293502808,2.103978157043457,,
+Plain LSTM,plain_lstm,,1,E3_energy_lstm_seed1,co2_per_unit_energy,minimal,lag_occlusion,,,-0.20170300279636233,True,5.6290812492370605,1.611143946647644,1.985951542854309,,
+No Recon Regularization,ablation,no_recon_regularization,0,E3_energy_ablation_no_recon_regularization_seed0,co2_per_unit_energy,minimal,learned_omega,applied_ols,True,-0.6631722707672075,True,4.731954574584961,0.06184504181146622,1.886400818824768,0.4649892933492266,True
+CMDL,cmdl,,0,E3_energy_cmdl_seed0,co2_per_unit_energy,minimal,learned_omega,applied_ols,True,-0.6631722707672075,True,4.731987953186035,0.06183774024248123,1.8864023685455322,0.4649518805390411,True
+CMDL,cmdl,,2,E3_energy_cmdl_seed2,co2_per_unit_energy,minimal,learned_omega,applied_ols,True,-0.9192200204858433,True,4.367868423461914,0.14358574151992798,1.739562749862671,0.8290050608447794,True
+Uniform Lag,ablation,uniform_lag,0,E3_energy_ablation_uniform_lag_seed0,co2_per_unit_energy,minimal,learned_omega,applied_ols,True,,False,5.5,0.0,2.3025851249694824,0.8666602138614058,True
+No AC Encoder,ablation,no_ac_encoder,0,E3_energy_ablation_no_ac_encoder_seed0,co2_per_unit_energy,minimal,learned_omega,skipped_rank_deficient,False,,False,3.492619514465332,0.0,1.717545509338379,,False
