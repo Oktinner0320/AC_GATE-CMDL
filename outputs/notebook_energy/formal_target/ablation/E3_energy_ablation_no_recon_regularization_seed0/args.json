@@ -1,9 +1,5 @@
 {
-  "variant": "all",
-  "seeds": [
-    0
-  ],
-  "csv_path": "data/energy/raw/energy_wgi_merged.csv",
+  "csv_path": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\energy\\raw\\energy_wgi_merged.csv",
   "year_start": 1996,
   "year_end": 2023,
   "train_end_year": 2011,
@@ -13,17 +9,21 @@
   "feature_bundle": "minimal",
   "max_missing_share": 0.15,
   "lr": 0.001,
-  "epochs": 120,
-  "patience": 20,
   "lambda_r": 0.1,
   "temperature": 1.0,
   "lag_bias_strength": 1.0,
   "grad_clip": 1.0,
-  "output_dir": "outputs/notebook_energy/formal_target/ablation",
-  "experiment_prefix": "E3_energy_ablation",
   "device": "auto",
   "disable_mlflow": true,
+  "epochs": 120,
+  "patience": 20,
   "log_every": 20,
+  "variant": "all",
+  "seeds": [
+    0
+  ],
+  "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\notebook_energy\\formal_target\\ablation",
+  "experiment_prefix": "E3_energy_ablation",
   "smoke": false,
   "seed": 0,
   "experiment_name": "E3_energy_ablation_no_recon_regularization_seed0"
