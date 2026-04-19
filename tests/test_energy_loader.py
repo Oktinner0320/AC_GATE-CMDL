@@ -143,6 +143,32 @@ class EnergyLoaderTest(unittest.TestCase):
 				}.issubset(merged_frame.columns)
 			)
 
+	def test_download_utility_accepts_carbon_intensity_electricity_fallback(self) -> None:
+		with tempfile.TemporaryDirectory() as temporary_dir:
+			temporary_root = Path(temporary_dir)
+			energy_source = temporary_root / "owid_energy_fallback_fixture.csv"
+			governance_source = temporary_root / "wgi_fixture.csv"
+			output_path = temporary_root / "merged" / "energy_wgi.csv"
+			self._write_energy_fixture(energy_source)
+			energy_frame = pd.read_csv(energy_source)
+			energy_frame["carbon_intensity_elec"] = energy_frame["co2_per_unit_energy"]
+			energy_frame = energy_frame.drop(columns=["co2_per_unit_energy"])
+			energy_frame.to_csv(energy_source, index=False)
+			self._write_governance_fixture(governance_source)
+
+			saved_path = download_energy_table(
+				energy_source=str(energy_source),
+				governance_source=str(governance_source),
+				output_path=output_path,
+				year_start=1996,
+				year_end=2004,
+				force=True,
+			)
+			merged_frame = pd.read_csv(saved_path)
+
+			self.assertIn("co2_per_unit_energy", merged_frame.columns)
+			self.assertTrue(merged_frame["co2_per_unit_energy"].notna().any())
+
 	def test_loader_returns_balanced_dense_panel(self) -> None:
 		with tempfile.TemporaryDirectory() as temporary_dir:
 			temporary_root = Path(temporary_dir)

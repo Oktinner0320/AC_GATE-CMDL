@@ -1,0 +1,22 @@
+{
+  "csv_path": "data/energy/raw/energy_wgi_merged.csv",
+  "year_start": 1996,
+  "year_end": 2023,
+  "train_end_year": 2011,
+  "val_end_year": 2017,
+  "treatment_column": "renewables_share_energy",
+  "target_column": "co2_per_unit_energy",
+  "feature_bundle": "minimal",
+  "max_missing_share": 0.15,
+  "seed": 0,
+  "lr": 0.001,
+  "epochs": 120,
+  "patience": 20,
+  "grad_clip": 1.0,
+  "output_dir": "outputs/notebook_energy/formal_target/plain_lstm",
+  "experiment_name": "E3_energy_lstm_seed0",
+  "device": "auto",
+  "disable_mlflow": true,
+  "log_every": 20,
+  "smoke": false
+}

@@ -23,12 +23,18 @@ DEFAULT_OWID_ENERGY_SOURCE = "https://raw.githubusercontent.com/owid/energy-data
 DEFAULT_ENERGY_OUTPUT_PATH = Path(__file__).resolve().parent / "raw" / "energy_wgi_merged.csv"
 DEFAULT_YEAR_START = 1996
 DEFAULT_YEAR_END = 2023
+_TARGET_SOURCE_CANDIDATES = ("co2_per_unit_energy", "carbon_intensity_elec")
 DEFAULT_WGI_INDICATORS = {
-	"GE.EST": "government_effectiveness",
-	"RQ.EST": "regulatory_quality",
-	"RL.EST": "rule_of_law",
+	"GOV_WGI_GE.EST": "government_effectiveness",
+	"GOV_WGI_RQ.EST": "regulatory_quality",
+	"GOV_WGI_RL.EST": "rule_of_law",
 }
 _WORLD_BANK_API_ROOT = "https://api.worldbank.org/v2/country/all/indicator"
+_WORLD_BANK_WGI_SOURCE_ID = 3
+_DEFAULT_REQUEST_HEADERS = {
+	"User-Agent": "CMDL-Energy-Downloader/1.0",
+	"Accept": "application/json",
+}
 
 
 def _looks_like_excel_source(source: str) -> bool:
@@ -73,11 +79,17 @@ def parse_args() -> argparse.Namespace:
 def _read_json_url(url: str) -> list[Any]:
 	"""Read one JSON payload from a URL."""
 
-	try:
-		with urllib.request.urlopen(url) as response:
-			return json.loads(response.read().decode("utf-8"))
-	except urllib.error.URLError as error:
-		raise RuntimeError(f"Failed to fetch URL: {url}") from error
+	request = urllib.request.Request(url, headers=_DEFAULT_REQUEST_HEADERS)
+	last_error: Exception | None = None
+	for _ in range(3):
+		try:
+			with urllib.request.urlopen(request, timeout=30) as response:
+				return json.loads(response.read().decode("utf-8"))
+		except (urllib.error.URLError, TimeoutError, ConnectionResetError) as error:
+			last_error = error
+	if last_error is None:
+		raise RuntimeError(f"Failed to fetch URL: {url}")
+	raise RuntimeError(f"Failed to fetch URL: {url}") from last_error
 
 
 def _load_table_source(source: str) -> pd.DataFrame:
@@ -98,12 +110,20 @@ def load_energy_source(
 	frame = _load_table_source(source).copy()
 	code_column = "iso_code" if "iso_code" in frame.columns else "entity_code"
 	name_column = "country" if "country" in frame.columns else "entity_name"
+	target_source_column = next(
+		(column_name for column_name in _TARGET_SOURCE_CANDIDATES if column_name in frame.columns),
+		None,
+	)
+	if target_source_column is None:
+		raise ValueError(
+			"Missing required energy target column. Expected one of: "
+			f"{list(_TARGET_SOURCE_CANDIDATES)}"
+		)
 	required_columns = {
 		code_column,
 		name_column,
 		"year",
 		"renewables_share_energy",
-		"co2_per_unit_energy",
 		"population",
 		"gdp",
 	}
@@ -116,11 +136,11 @@ def load_energy_source(
 	frame["year"] = pd.to_numeric(frame["year"], errors="coerce")
 	for column_name in [
 		"renewables_share_energy",
-		"co2_per_unit_energy",
 		"population",
 		"gdp",
 	]:
 		frame[column_name] = pd.to_numeric(frame[column_name], errors="coerce")
+	frame["co2_per_unit_energy"] = pd.to_numeric(frame[target_source_column], errors="coerce")
 
 	frame = frame.dropna(subset=["entity_code", "year"])
 	frame["year"] = frame["year"].astype(int)
@@ -151,6 +171,7 @@ def _world_bank_indicator_url(indicator: str, page: int, per_page: int) -> str:
 			"format": "json",
 			"per_page": per_page,
 			"page": page,
+			"source": _WORLD_BANK_WGI_SOURCE_ID,
 		}
 	)
 	return f"{_WORLD_BANK_API_ROOT}/{indicator}?{query}"
@@ -159,7 +180,7 @@ def _world_bank_indicator_url(indicator: str, page: int, per_page: int) -> str:
 def _fetch_wgi_indicator(indicator: str, alias: str, year_start: int, year_end: int) -> pd.DataFrame:
 	"""Fetch one WGI indicator panel from the World Bank API."""
 
-	per_page = 20000
+	per_page = 1000
 	first_page = _read_json_url(_world_bank_indicator_url(indicator=indicator, page=1, per_page=per_page))
 	if not isinstance(first_page, list) or len(first_page) != 2:
 		raise RuntimeError(f"Unexpected World Bank API response for indicator {indicator}")
