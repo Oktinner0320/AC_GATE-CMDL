@@ -1,6 +1,6 @@
 layer,question,answer,evidence
 forecast_calibration,Does CMDL beat the matched LSTM?,yes,"CMDL test_r2=-0.02653331806706675, Plain LSTM test_r2=-0.03246319255543051."
-simple_baseline_calibration,Is CMDL above the simple calibrated baselines?,no,"delta_vs_persistence=-0.7853723731944431, delta_vs_panel_ols=-0.659393145527331, delta_vs_grouped_ardl=None."
+simple_baseline_calibration,Is CMDL above the simple calibrated baselines?,no,"delta_vs_persistence=-0.7853723731944431, delta_vs_panel_ols=-0.659393145527331, delta_vs_grouped_ardl=-0.6336112955744004."
 ac_gate_mechanism,Does the anchor-adjusted lag-proxy direction support the expected sign?,yes,CMDL adjusted rho=0.644153315039391; positive means the expected anchor sign is satisfied.
 ac_gate_per_proxy,Are all named proxy adjusted correlations aligned?,yes,minimum named per-proxy adjusted rho=0.644153315039391.
 ac_gate_heterogeneity,Is the learned lag gate non-degenerate?,yes,"lag_gate_sensitivity_range=0.18298053741455078, z_std=0.09560143233261181."

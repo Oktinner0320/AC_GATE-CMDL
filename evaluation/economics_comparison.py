@@ -547,6 +547,33 @@ def build_task_table(comparison_frame: pd.DataFrame, split: str = "test") -> pd.
     if task_table.empty:
         return task_table
 
+    r2_column = f"{split}_r2"
+    grouped_r2_column = f"{split}_baseline_grouped_ardl_r2"
+    grouped_delta_column = f"{split}_r2_delta_vs_grouped_ardl"
+    grouped_rows = task_table[task_table["family"].eq("grouped_ardl")]
+    grouped_key_columns = [column for column in ["target_column", "feature_bundle"] if column in task_table.columns]
+    if not grouped_rows.empty and r2_column in task_table.columns:
+        grouped_means = grouped_rows.groupby(grouped_key_columns, dropna=False)[r2_column].mean().to_dict()
+        for row_index, row in task_table.iterrows():
+            if row.get("family") == "grouped_ardl":
+                continue
+            key = tuple(row.get(column) for column in grouped_key_columns)
+            if len(grouped_key_columns) == 1:
+                key = key[0]
+            grouped_r2 = grouped_means.get(key)
+            row_r2 = row.get(r2_column)
+            if grouped_r2 is None or pd.isna(grouped_r2):
+                continue
+            if grouped_r2_column in task_table.columns and pd.isna(row.get(grouped_r2_column)):
+                task_table.at[row_index, grouped_r2_column] = grouped_r2
+            if (
+                grouped_delta_column in task_table.columns
+                and pd.isna(row.get(grouped_delta_column))
+                and row_r2 is not None
+                and not pd.isna(row_r2)
+            ):
+                task_table.at[row_index, grouped_delta_column] = float(row_r2) - float(grouped_r2)
+
     return task_table.sort_values(
             ["target_column", "feature_bundle", f"{split}_r2", f"{split}_mae", "display_name", "seed"],
             ascending=[True, True, False, True, True, True],
