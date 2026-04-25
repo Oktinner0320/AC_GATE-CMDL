@@ -13,6 +13,9 @@ import pandas as pd
 from evaluation.economics_comparison import (
     build_economics_comparison,
     build_interpretability_table as _build_interpretability_table,
+    build_mechanism_result_log as _build_mechanism_result_log,
+    build_mechanism_summary_table as _build_mechanism_summary_table,
+    build_per_proxy_alignment_table as _build_per_proxy_alignment_table,
     build_task_table as _build_task_table,
 )
 
@@ -43,8 +46,37 @@ def build_interpretability_table(comparison_frame: pd.DataFrame, split: str = "t
     return _build_interpretability_table(comparison_frame, split=split)
 
 
+def build_per_proxy_alignment_table(
+    comparison_frame: pd.DataFrame,
+    split: str = "test",
+    display_names: list[str] | tuple[str, ...] | None = ("CMDL",),
+) -> pd.DataFrame:
+    """Build a long-form per-proxy adjusted-rho table for anchor audits."""
+
+    return _build_per_proxy_alignment_table(
+        comparison_frame,
+        split=split,
+        display_names=display_names,
+    )
+
+
+def build_mechanism_summary_table(comparison_frame: pd.DataFrame, split: str = "test") -> pd.DataFrame:
+    """Aggregate task and mechanism diagnostics across seeds."""
+
+    return _build_mechanism_summary_table(comparison_frame, split=split)
+
+
+def build_mechanism_result_log(comparison_frame: pd.DataFrame, split: str = "test") -> pd.DataFrame:
+    """Build a compact mechanism-first yes/partial/no result log."""
+
+    return _build_mechanism_result_log(comparison_frame, split=split)
+
+
 __all__ = [
     "build_energy_comparison",
     "build_interpretability_table",
+    "build_mechanism_result_log",
+    "build_mechanism_summary_table",
+    "build_per_proxy_alignment_table",
     "build_task_table",
 ]

@@ -21,6 +21,9 @@ if WORKSPACE_ROOT not in sys.path:
 from evaluation.economics_comparison import (  # noqa: E402
     build_economics_comparison,
     build_interpretability_table,
+    build_mechanism_result_log,
+    build_mechanism_summary_table,
+    build_per_proxy_alignment_table,
     build_task_table,
 )
 
@@ -39,6 +42,11 @@ class EconomicsComparisonTest(unittest.TestCase):
             "feature_bundle": "minimal",
             "seq_feature_columns": ["x_t"],
             "proxy_columns": ["proxy_hc"],
+            "anchor_proxy_name": "proxy_hc",
+            "anchor_proxy_index": 0,
+            "anchor_expected_sign": -1.0,
+            "auxiliary_proxy_names": [],
+            "proxy_aggregate_name": "mean_proxy",
             "static_columns": ["static_log_rgdpna", "static_log_ck"],
             "stats_end_year": 2007,
             "year_start": 1980,
@@ -103,12 +111,24 @@ class EconomicsComparisonTest(unittest.TestCase):
                             "mse": 0.13,
                             "mae": 0.24,
                             "r2": 0.70,
+                            "baseline_persistence_r2": 0.65,
+                            "baseline_panel_ols_r2": 0.68,
+                            "baseline_best_simple_r2": 0.68,
+                            "r2_delta_vs_persistence": 0.05,
+                            "r2_delta_vs_panel_ols": 0.02,
                             "proxy_recon_r2": 0.91,
                             "kstar_proxy_spearman_rho": 0.85,
                             "kstar_proxy_spearman_p": 0.01,
+                            "kstar_proxy_spearman_adjusted_rho": 0.85,
+                            "kstar_proxy_mean_spearman_adjusted_rho": 0.84,
+                            "kstar_proxy_hc_spearman_adjusted_rho": 0.86,
                             "kstar_mean": 5.7,
                             "kstar_std": 1.2,
                             "omega_entropy_mean": 1.7,
+                            "omega_top1_share": 0.40,
+                            "z_std": 0.30,
+                            "z_proxy_spearman_adjusted_rho": 0.70,
+                            "lag_gate_sensitivity_range": 0.50,
                         },
                     },
                 },
@@ -151,6 +171,11 @@ class EconomicsComparisonTest(unittest.TestCase):
                             "mse": 0.17,
                             "mae": 0.29,
                             "r2": 0.66,
+                            "baseline_persistence_r2": 0.65,
+                            "baseline_panel_ols_r2": 0.68,
+                            "baseline_best_simple_r2": 0.68,
+                            "r2_delta_vs_persistence": 0.01,
+                            "r2_delta_vs_panel_ols": -0.02,
                             "posthoc_kstar_proxy_spearman_rho": 0.42,
                             "posthoc_kstar_proxy_spearman_p": 0.05,
                             "posthoc_kstar_mean": 6.3,
@@ -217,6 +242,11 @@ class EconomicsComparisonTest(unittest.TestCase):
                             "mse": 0.35,
                             "mae": 0.41,
                             "r2": 0.18,
+                            "baseline_persistence_r2": 0.65,
+                            "baseline_panel_ols_r2": 0.68,
+                            "baseline_best_simple_r2": 0.68,
+                            "r2_delta_vs_persistence": -0.47,
+                            "r2_delta_vs_panel_ols": -0.50,
                             "proxy_recon_r2": float("nan"),
                             "proxy_metric_valid": 0.0,
                             "kstar_proxy_spearman_rho": float("nan"),
@@ -225,6 +255,7 @@ class EconomicsComparisonTest(unittest.TestCase):
                             "kstar_std": 0.0,
                             "kstar_proxy_metric_valid": 0.0,
                             "omega_entropy_mean": 2.1,
+                            "omega_top1_share": 1.0,
                         },
                     },
                 },
@@ -271,14 +302,35 @@ class EconomicsComparisonTest(unittest.TestCase):
             self.assertEqual(len(interpretability_table), 3)
             self.assertEqual(interpretability_table.iloc[0]["display_name"], "CMDL")
 
+            per_proxy_table = build_per_proxy_alignment_table(comparison)
+            mechanism_summary = build_mechanism_summary_table(comparison)
+            result_log = build_mechanism_result_log(comparison)
+
+            self.assertEqual(len(per_proxy_table), 1)
+            self.assertEqual(per_proxy_table.iloc[0]["proxy_name"], "hc")
+            self.assertAlmostEqual(per_proxy_table.iloc[0]["adjusted_rho"], 0.86)
+            self.assertIn("test_effective_kstar_std_mean", mechanism_summary.columns)
+            self.assertEqual(int(mechanism_summary.loc[mechanism_summary["display_name"] == "CMDL", "n_seeds"].iloc[0]), 1)
+            answers = dict(zip(result_log["layer"], result_log["answer"]))
+            self.assertEqual(answers["forecast_calibration"], "yes")
+            self.assertEqual(answers["simple_baseline_calibration"], "yes")
+            self.assertEqual(answers["ac_gate_mechanism"], "yes")
+            self.assertEqual(answers["ablation_guard"], "yes")
+
     def test_empty_roots_return_empty_tables_with_stable_columns(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_dir:
             empty_root = Path(temporary_dir) / "missing"
             comparison = build_economics_comparison(cmdl_root=empty_root)
             task_table = build_task_table(comparison)
             interpretability_table = build_interpretability_table(comparison)
+            per_proxy_table = build_per_proxy_alignment_table(comparison)
+            mechanism_summary = build_mechanism_summary_table(comparison)
+            result_log = build_mechanism_result_log(comparison)
 
             self.assertTrue(comparison.empty)
+            self.assertTrue(per_proxy_table.empty)
+            self.assertTrue(mechanism_summary.empty)
+            self.assertTrue(result_log.empty)
             self.assertEqual(
                 task_table.columns.tolist(),
                 [

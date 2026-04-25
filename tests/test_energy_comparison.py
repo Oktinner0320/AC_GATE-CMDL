@@ -21,6 +21,9 @@ if WORKSPACE_ROOT not in sys.path:
 from evaluation.energy_comparison import (  # noqa: E402
     build_energy_comparison,
     build_interpretability_table,
+    build_mechanism_result_log,
+    build_mechanism_summary_table,
+    build_per_proxy_alignment_table,
     build_task_table,
 )
 
@@ -41,6 +44,11 @@ class EnergyComparisonTest(unittest.TestCase):
                 "proxy_regulatory_quality",
                 "proxy_rule_of_law",
             ],
+            "anchor_proxy_name": "proxy_government_effectiveness",
+            "anchor_proxy_index": 0,
+            "anchor_expected_sign": -1.0,
+            "auxiliary_proxy_names": ["proxy_regulatory_quality", "proxy_rule_of_law"],
+            "proxy_aggregate_name": "mean_wgi_proxy",
             "static_columns": ["static_log_population", "static_log_gdp_per_capita"],
             "stats_end_year": 2011,
             "year_start": 1996,
@@ -105,14 +113,28 @@ class EnergyComparisonTest(unittest.TestCase):
                             "mse": 0.13,
                             "mae": 0.24,
                             "r2": 0.70,
+                            "baseline_persistence_r2": 0.60,
+                            "baseline_panel_ols_r2": 0.68,
+                            "baseline_best_simple_r2": 0.68,
+                            "r2_delta_vs_persistence": 0.10,
+                            "r2_delta_vs_panel_ols": 0.02,
                             "proxy_recon_r2": 0.91,
                             "proxy_metric_valid": 1.0,
                             "kstar_proxy_spearman_rho": 0.85,
                             "kstar_proxy_spearman_p": 0.01,
+                            "kstar_proxy_spearman_adjusted_rho": 0.85,
+                            "kstar_proxy_mean_spearman_adjusted_rho": 0.84,
+                            "kstar_proxy_government_effectiveness_spearman_adjusted_rho": 0.86,
+                            "kstar_proxy_regulatory_quality_spearman_adjusted_rho": 0.83,
+                            "kstar_proxy_rule_of_law_spearman_adjusted_rho": 0.82,
                             "kstar_mean": 5.7,
                             "kstar_std": 1.2,
                             "kstar_proxy_metric_valid": 1.0,
                             "omega_entropy_mean": 1.7,
+                            "omega_top1_share": 0.40,
+                            "z_std": 0.30,
+                            "z_proxy_spearman_adjusted_rho": 0.70,
+                            "lag_gate_sensitivity_range": 0.50,
                         },
                     },
                 },
@@ -155,6 +177,11 @@ class EnergyComparisonTest(unittest.TestCase):
                             "mse": 0.17,
                             "mae": 0.29,
                             "r2": 0.66,
+                            "baseline_persistence_r2": 0.60,
+                            "baseline_panel_ols_r2": 0.68,
+                            "baseline_best_simple_r2": 0.68,
+                            "r2_delta_vs_persistence": 0.06,
+                            "r2_delta_vs_panel_ols": -0.02,
                             "posthoc_kstar_proxy_spearman_rho": 0.42,
                             "posthoc_kstar_proxy_spearman_p": 0.05,
                             "posthoc_kstar_mean": 6.3,
@@ -222,6 +249,11 @@ class EnergyComparisonTest(unittest.TestCase):
                             "mse": 0.35,
                             "mae": 0.41,
                             "r2": 0.18,
+                            "baseline_persistence_r2": 0.60,
+                            "baseline_panel_ols_r2": 0.68,
+                            "baseline_best_simple_r2": 0.68,
+                            "r2_delta_vs_persistence": -0.42,
+                            "r2_delta_vs_panel_ols": -0.50,
                             "proxy_recon_r2": float("nan"),
                             "proxy_metric_valid": 0.0,
                             "kstar_proxy_spearman_rho": float("nan"),
@@ -230,6 +262,7 @@ class EnergyComparisonTest(unittest.TestCase):
                             "kstar_std": 0.0,
                             "kstar_proxy_metric_valid": 0.0,
                             "omega_entropy_mean": 2.1,
+                            "omega_top1_share": 1.0,
                         },
                     },
                 },
@@ -276,14 +309,36 @@ class EnergyComparisonTest(unittest.TestCase):
             self.assertEqual(len(interpretability_table), 3)
             self.assertEqual(interpretability_table.iloc[0]["display_name"], "CMDL")
 
+            per_proxy_table = build_per_proxy_alignment_table(comparison)
+            mechanism_summary = build_mechanism_summary_table(comparison)
+            result_log = build_mechanism_result_log(comparison)
+
+            self.assertEqual(len(per_proxy_table), 3)
+            self.assertEqual(
+                per_proxy_table["proxy_name"].tolist(),
+                ["government_effectiveness", "regulatory_quality", "rule_of_law"],
+            )
+            self.assertAlmostEqual(float(per_proxy_table["adjusted_rho"].min()), 0.82)
+            self.assertIn("test_lag_gate_sensitivity_range_mean", mechanism_summary.columns)
+            answers = dict(zip(result_log["layer"], result_log["answer"]))
+            self.assertEqual(answers["forecast_calibration"], "yes")
+            self.assertEqual(answers["simple_baseline_calibration"], "yes")
+            self.assertEqual(answers["ac_gate_per_proxy"], "yes")
+
     def test_empty_roots_return_empty_tables_with_stable_columns(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_dir:
             empty_root = Path(temporary_dir) / "missing"
             comparison = build_energy_comparison(cmdl_root=empty_root)
             task_table = build_task_table(comparison)
             interpretability_table = build_interpretability_table(comparison)
+            per_proxy_table = build_per_proxy_alignment_table(comparison)
+            mechanism_summary = build_mechanism_summary_table(comparison)
+            result_log = build_mechanism_result_log(comparison)
 
             self.assertTrue(comparison.empty)
+            self.assertTrue(per_proxy_table.empty)
+            self.assertTrue(mechanism_summary.empty)
+            self.assertTrue(result_log.empty)
             self.assertEqual(
                 task_table.columns.tolist(),
                 [

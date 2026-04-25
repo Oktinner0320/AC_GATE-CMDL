@@ -385,6 +385,44 @@ def _ensure_columns(frame: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
     return result.loc[:, columns]
 
 
+def _first_numeric(frame: pd.DataFrame, display_name: str, column: str) -> float | None:
+    if frame.empty or column not in frame.columns:
+        return None
+    rows = frame.loc[frame["display_name"] == display_name]
+    if rows.empty:
+        return None
+    values = pd.to_numeric(rows[column], errors="coerce").dropna()
+    if values.empty:
+        return None
+    return float(values.iloc[0])
+
+
+def _delta_answer(*deltas: float | None) -> str:
+    observed = [value for value in deltas if value is not None]
+    if not observed:
+        return "unknown"
+    positive_count = sum(value > 0.0 for value in observed)
+    if positive_count == len(observed):
+        return "yes"
+    if positive_count > 0:
+        return "partial"
+    return "no"
+
+
+def _named_proxy_columns(comparison_frame: pd.DataFrame, split: str, metric_prefix: str) -> list[str]:
+    prefix = f"{split}_{metric_prefix}_proxy_"
+    suffix = "_spearman_adjusted_rho"
+    columns: list[str] = []
+    for column in comparison_frame.columns:
+        if not column.startswith(prefix) or not column.endswith(suffix):
+            continue
+        proxy_name = column.removeprefix(prefix).removesuffix(suffix)
+        if proxy_name == "mean" or proxy_name.isdigit():
+            continue
+        columns.append(column)
+    return sorted(columns)
+
+
 def build_economics_comparison(
     cmdl_root: Path | str | None = None,
     baseline_root: Path | str | None = None,
@@ -511,8 +549,230 @@ def build_interpretability_table(comparison_frame: pd.DataFrame, split: str = "t
     ).reset_index(drop=True)
 
 
+def build_per_proxy_alignment_table(
+    comparison_frame: pd.DataFrame,
+    split: str = "test",
+    display_names: list[str] | tuple[str, ...] | None = ("CMDL",),
+) -> pd.DataFrame:
+    """Build a long-form per-proxy adjusted-rho table for anchor audits.
+
+    生成逐 proxy 的 adjusted rho 长表，避免 notebook 手写列名解析。
+    """
+
+    columns = [
+        "display_name",
+        "family",
+        "variant",
+        "seed",
+        "experiment",
+        "target_column",
+        "feature_bundle",
+        "anchor_proxy_name",
+        "anchor_expected_sign",
+        "proxy_name",
+        "adjusted_rho",
+    ]
+    if comparison_frame.empty:
+        return pd.DataFrame(columns=columns)
+
+    named_columns = _named_proxy_columns(comparison_frame, split, "kstar")
+    if not named_columns:
+        return pd.DataFrame(columns=columns)
+
+    allowed_names = set(display_names) if display_names is not None else None
+    rows: list[dict[str, Any]] = []
+    for _, source_row in comparison_frame.iterrows():
+        display_name = source_row.get("display_name")
+        if allowed_names is not None and display_name not in allowed_names:
+            continue
+        for column in named_columns:
+            adjusted_rho = _finite_or_none(source_row.get(column))
+            if adjusted_rho is None:
+                continue
+            proxy_name = column.removeprefix(f"{split}_kstar_proxy_").removesuffix(
+                "_spearman_adjusted_rho"
+            )
+            rows.append(
+                {
+                    "display_name": display_name,
+                    "family": source_row.get("family"),
+                    "variant": source_row.get("variant"),
+                    "seed": source_row.get("seed"),
+                    "experiment": source_row.get("experiment"),
+                    "target_column": source_row.get("target_column"),
+                    "feature_bundle": source_row.get("feature_bundle"),
+                    "anchor_proxy_name": source_row.get("anchor_proxy_name"),
+                    "anchor_expected_sign": source_row.get("anchor_expected_sign"),
+                    "proxy_name": proxy_name,
+                    "adjusted_rho": adjusted_rho,
+                }
+            )
+
+    result = pd.DataFrame(rows, columns=columns)
+    if result.empty:
+        return result
+    return result.sort_values(
+        ["target_column", "feature_bundle", "display_name", "seed", "proxy_name"],
+        na_position="last",
+    ).reset_index(drop=True)
+
+
+def build_mechanism_summary_table(comparison_frame: pd.DataFrame, split: str = "test") -> pd.DataFrame:
+    """Aggregate task and mechanism diagnostics across seeds.
+
+    汇总多 seed 的预测校准与 AC-GATE 机制指标，用于论文表格草稿。
+    """
+
+    group_columns = [
+        "display_name",
+        "family",
+        "variant",
+        "target_column",
+        "feature_bundle",
+        "anchor_proxy_name",
+        "anchor_expected_sign",
+    ]
+    value_columns = [
+        f"{split}_r2",
+        f"{split}_r2_delta_vs_persistence",
+        f"{split}_r2_delta_vs_panel_ols",
+        f"{split}_effective_kstar_proxy_spearman_adjusted_rho",
+        f"{split}_effective_kstar_proxy_mean_spearman_adjusted_rho",
+        f"{split}_effective_kstar_std",
+        f"{split}_effective_lag_entropy_mean",
+        f"{split}_effective_lag_top1_share",
+        f"{split}_z_std",
+        f"{split}_z_proxy_spearman_adjusted_rho",
+        f"{split}_lag_gate_sensitivity_range",
+        f"{split}_proxy_signal_r2",
+    ]
+    columns = [*group_columns, "n_seeds"]
+    for column in value_columns:
+        columns.extend([f"{column}_mean", f"{column}_std"])
+
+    if comparison_frame.empty:
+        return pd.DataFrame(columns=columns)
+
+    existing_group_columns = [column for column in group_columns if column in comparison_frame.columns]
+    existing_value_columns = [column for column in value_columns if column in comparison_frame.columns]
+    if not existing_group_columns or not existing_value_columns:
+        return pd.DataFrame(columns=columns)
+
+    working = comparison_frame.loc[:, [*existing_group_columns, "seed", *existing_value_columns]].copy()
+    for column in existing_value_columns:
+        working[column] = pd.to_numeric(working[column], errors="coerce")
+
+    grouped = working.groupby(existing_group_columns, dropna=False)
+    summary = grouped[existing_value_columns].agg(["mean", "std"])
+    summary.columns = [f"{metric}_{stat}" for metric, stat in summary.columns]
+    summary = summary.reset_index()
+    n_seeds = grouped["seed"].nunique(dropna=True).reset_index(name="n_seeds")
+    summary = summary.merge(n_seeds, on=existing_group_columns, how="left")
+
+    for column in columns:
+        if column not in summary.columns:
+            summary[column] = None
+    return summary.loc[:, columns].sort_values(
+        ["target_column", "feature_bundle", "display_name"],
+        na_position="last",
+    ).reset_index(drop=True)
+
+
+def build_mechanism_result_log(comparison_frame: pd.DataFrame, split: str = "test") -> pd.DataFrame:
+    """Build a compact mechanism-first yes/partial/no result log.
+
+    生成机制优先的结论日志，把 forecast 当作校准证据而不是唯一 scoreboard。
+    """
+
+    columns = ["layer", "question", "answer", "evidence"]
+    if comparison_frame.empty:
+        return pd.DataFrame(columns=columns)
+
+    cmdl_r2 = _first_numeric(comparison_frame, "CMDL", f"{split}_r2")
+    plain_r2 = _first_numeric(comparison_frame, "Plain LSTM", f"{split}_r2")
+    cmdl_adjusted_rho = _first_numeric(
+        comparison_frame,
+        "CMDL",
+        f"{split}_effective_kstar_proxy_spearman_adjusted_rho",
+    )
+    cmdl_lag_range = _first_numeric(comparison_frame, "CMDL", f"{split}_lag_gate_sensitivity_range")
+    cmdl_z_std = _first_numeric(comparison_frame, "CMDL", f"{split}_z_std")
+    cmdl_delta_persistence = _first_numeric(
+        comparison_frame,
+        "CMDL",
+        f"{split}_r2_delta_vs_persistence",
+    )
+    cmdl_delta_panel_ols = _first_numeric(
+        comparison_frame,
+        "CMDL",
+        f"{split}_r2_delta_vs_panel_ols",
+    )
+    no_ac_kstar_std = _first_numeric(
+        comparison_frame,
+        "No AC Encoder",
+        f"{split}_effective_kstar_std",
+    )
+    uniform_top1_share = _first_numeric(
+        comparison_frame,
+        "Uniform Lag",
+        f"{split}_effective_lag_top1_share",
+    )
+    per_proxy_table = build_per_proxy_alignment_table(comparison_frame, split=split)
+    per_proxy_min = None
+    if not per_proxy_table.empty:
+        per_proxy_values = pd.to_numeric(per_proxy_table["adjusted_rho"], errors="coerce").dropna()
+        if not per_proxy_values.empty:
+            per_proxy_min = float(per_proxy_values.min())
+
+    rows = [
+        {
+            "layer": "forecast_calibration",
+            "question": "Does CMDL beat the matched LSTM?",
+            "answer": "yes" if cmdl_r2 is not None and plain_r2 is not None and cmdl_r2 > plain_r2 else "no",
+            "evidence": f"CMDL {split}_r2={cmdl_r2}, Plain LSTM {split}_r2={plain_r2}.",
+        },
+        {
+            "layer": "simple_baseline_calibration",
+            "question": "Is CMDL above the simple calibrated baselines?",
+            "answer": _delta_answer(cmdl_delta_persistence, cmdl_delta_panel_ols),
+            "evidence": (
+                f"delta_vs_persistence={cmdl_delta_persistence}, "
+                f"delta_vs_panel_ols={cmdl_delta_panel_ols}."
+            ),
+        },
+        {
+            "layer": "ac_gate_mechanism",
+            "question": "Does the anchor-adjusted lag-proxy direction support the expected sign?",
+            "answer": "yes" if cmdl_adjusted_rho is not None and cmdl_adjusted_rho > 0.0 else "no",
+            "evidence": f"CMDL adjusted rho={cmdl_adjusted_rho}; positive means the expected anchor sign is satisfied.",
+        },
+        {
+            "layer": "ac_gate_per_proxy",
+            "question": "Are all named proxy adjusted correlations aligned?",
+            "answer": "yes" if per_proxy_min is not None and per_proxy_min > 0.0 else "no",
+            "evidence": f"minimum named per-proxy adjusted rho={per_proxy_min}.",
+        },
+        {
+            "layer": "ac_gate_heterogeneity",
+            "question": "Is the learned lag gate non-degenerate?",
+            "answer": "yes" if (cmdl_lag_range or 0.0) > 0.0 and (cmdl_z_std or 0.0) > 0.0 else "no",
+            "evidence": f"lag_gate_sensitivity_range={cmdl_lag_range}, z_std={cmdl_z_std}.",
+        },
+        {
+            "layer": "ablation_guard",
+            "question": "Do degenerate controls expose the heterogeneity boundary?",
+            "answer": "yes" if no_ac_kstar_std == 0.0 or uniform_top1_share == 1.0 else "no",
+            "evidence": f"No AC kstar_std={no_ac_kstar_std}, Uniform Lag top1_share={uniform_top1_share}.",
+        },
+    ]
+    return pd.DataFrame(rows, columns=columns)
+
+
 __all__ = [
     "build_economics_comparison",
     "build_interpretability_table",
+    "build_mechanism_result_log",
+    "build_mechanism_summary_table",
+    "build_per_proxy_alignment_table",
     "build_task_table",
 ]
