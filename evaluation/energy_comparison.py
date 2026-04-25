@@ -24,6 +24,7 @@ def build_energy_comparison(
     cmdl_root: Path | str | None = None,
     baseline_root: Path | str | None = None,
     ablation_root: Path | str | None = None,
+    grouped_ardl_root: Path | str | None = None,
 ) -> pd.DataFrame:
     """Combine energy CMDL, baseline, and ablation runs into one table."""
 
@@ -31,6 +32,7 @@ def build_energy_comparison(
         cmdl_root=cmdl_root,
         baseline_root=baseline_root,
         ablation_root=ablation_root,
+        grouped_ardl_root=grouped_ardl_root,
     )
 
 

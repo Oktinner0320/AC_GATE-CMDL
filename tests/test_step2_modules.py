@@ -102,6 +102,18 @@ class ScaleInvariantLagGateTest(unittest.TestCase):
         self.assertIsNotNone(z_i.grad)
         self.assertGreater(z_i.grad.abs().sum().item(), 0.0)
 
+    def test_sparsemax_transform_outputs_sparse_distribution(self) -> None:
+        """sparsemax 选项应保持概率合法，并允许精确零权重。"""
+
+        gate = ScaleInvariantLagGate(max_lag=5, d_model=4, omega_transform="sparsemax", dropout=0.0)
+        z_i = torch.tensor([[-3.0], [0.0], [3.0]])
+
+        output = gate(z_i)
+
+        self.assertEqual(tuple(output.omega.shape), (3, 5))
+        torch.testing.assert_close(output.omega.sum(dim=-1), torch.ones(3), atol=1e-5, rtol=1e-5)
+        self.assertTrue(torch.any(output.omega == 0.0))
+
 
 class Step2IntegrationTest(unittest.TestCase):
     """在合成数据上验证编码器和门控器的最小集成链路。

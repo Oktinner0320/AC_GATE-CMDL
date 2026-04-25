@@ -226,12 +226,18 @@ def compute_latent_proxy_metrics(z_values: Any, proxies: Any, metadata: dict[str
     anchor_index = int(proxy_meta["anchor_proxy_index"])
     anchor_sign = float(proxy_meta["anchor_expected_sign"])
     rho, p_value, valid = _safe_spearman(z_array, proxy_array[:, anchor_index])
+    adjusted_rho = anchor_sign * rho if valid else float("nan")
     return {
         "z_std": _population_std(z_array),
         "z_proxy_spearman_rho": rho,
         "z_proxy_spearman_p": p_value,
-        "z_proxy_spearman_adjusted_rho": anchor_sign * rho if valid else float("nan"),
+        "z_proxy_spearman_adjusted_rho": adjusted_rho,
         "z_proxy_metric_valid": float(valid),
+        "z_anchor_spearman_rho": rho,
+        "z_anchor_spearman_p": p_value,
+        "z_anchor_expected_sign": anchor_sign,
+        "z_anchor_adjusted_rho": adjusted_rho,
+        "z_anchor_metric_valid": float(valid),
     }
 
 

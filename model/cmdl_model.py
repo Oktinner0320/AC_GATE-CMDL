@@ -63,6 +63,7 @@ class CMDLModel(nn.Module):
 			temperature=cfg.temperature,
 			dropout=cfg.dropout,
 			lag_bias_strength=cfg.lag_bias_strength,
+			omega_transform=getattr(cfg, "omega_transform", "softmax"),
 		)
 		self.backbone = UniversalPanelBackbone(
 			d_model=cfg.d_model,

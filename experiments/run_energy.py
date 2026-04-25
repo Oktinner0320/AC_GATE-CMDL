@@ -159,6 +159,12 @@ def parse_args() -> argparse.Namespace:
 	parser.add_argument("--patience", type=int, default=20)
 	parser.add_argument("--lambda-r", dest="lambda_r", type=float, default=energy_defaults.lambda_r)
 	parser.add_argument("--temperature", type=float, default=energy_defaults.temperature)
+	parser.add_argument("--omega-transform", choices=["softmax", "sparsemax"], default=energy_defaults.omega_transform)
+	parser.add_argument("--lambda-omega-entropy", type=float, default=energy_defaults.lambda_omega_entropy)
+	parser.add_argument("--omega-entropy-min", type=float, default=energy_defaults.omega_entropy_min)
+	parser.add_argument("--omega-entropy-max", type=float, default=energy_defaults.omega_entropy_max)
+	parser.add_argument("--lambda-z-anchor", type=float, default=energy_defaults.lambda_z_anchor)
+	parser.add_argument("--z-anchor-target-sign", type=float, default=energy_defaults.z_anchor_target_sign)
 	parser.add_argument("--lag-bias-strength", type=float, default=energy_defaults.lag_bias_strength)
 	parser.add_argument("--grad-clip", type=float, default=1.0)
 	parser.add_argument("--grad-clip-mode", choices=GRAD_CLIP_MODE_CHOICES, default="global")
@@ -500,7 +506,7 @@ def train_one_epoch(
 	optimizer.zero_grad(set_to_none=True)
 
 	output = model(entity_ids=panel.entity_ids, X_it=panel.X_it, p_i=panel.p_i, s_i=panel.s_i)
-	losses = criterion(output.y_pred, panel.Y_it, output.p_hat_i, panel.p_i)
+	losses = criterion(output.y_pred, panel.Y_it, output.p_hat_i, panel.p_i, output.omega, output.z_i)
 	if not torch.isfinite(losses.total_loss):
 		raise FloatingPointError("Encountered a non-finite total loss during energy training")
 
@@ -513,6 +519,9 @@ def train_one_epoch(
 		"task_loss": float(losses.task_loss.item()),
 		"recon_loss": float(losses.recon_loss.item()),
 		"anchor_recon_loss": float(losses.anchor_recon_loss.item()),
+		"omega_entropy_penalty": float(losses.omega_entropy_penalty.item()),
+		"omega_entropy_band_violation_share": float(losses.omega_entropy_band_violation_share.item()),
+		"z_anchor_loss": float(losses.z_anchor_loss.item()),
 	}
 	metrics.update(grad_metrics)
 	return metrics
@@ -533,7 +542,7 @@ def evaluate(
 	model.eval()
 	with torch.no_grad():
 		output = model(entity_ids=panel.entity_ids, X_it=panel.X_it, p_i=panel.p_i, s_i=panel.s_i)
-		losses = criterion(output.y_pred, panel.Y_it, output.p_hat_i, panel.p_i)
+		losses = criterion(output.y_pred, panel.Y_it, output.p_hat_i, panel.p_i, output.omega, output.z_i)
 
 	aligned_y_true = panel.Y_it[:, model.cfg.max_lag :]
 	proxy_metric_valid = True if proxy_refit_result is None else proxy_refit_result.metrics_interpretable
@@ -554,6 +563,9 @@ def evaluate(
 		"task_loss": float(losses.task_loss.item()),
 		"recon_loss": float(losses.recon_loss.item()),
 		"anchor_recon_loss": float(losses.anchor_recon_loss.item()),
+		"omega_entropy_penalty": float(losses.omega_entropy_penalty.item()),
+		"omega_entropy_band_violation_share": float(losses.omega_entropy_band_violation_share.item()),
+		"z_anchor_loss": float(losses.z_anchor_loss.item()),
 		"mse": float(compute_mse(output.y_pred, aligned_y_true)),
 		"mae": float(compute_mae(output.y_pred, aligned_y_true)),
 		"r2": float(compute_r2(output.y_pred, aligned_y_true)),
@@ -679,6 +691,12 @@ def summarize_run(
 			"proxy_refit": None if proxy_refit_result is None else proxy_refit_result.to_dict(),
 			"training_controls": {
 				"grad_clip_mode": getattr(args, "grad_clip_mode", "global"),
+				"omega_transform": getattr(args, "omega_transform", "softmax"),
+				"lambda_omega_entropy": float(getattr(args, "lambda_omega_entropy", 0.0)),
+				"omega_entropy_min": getattr(args, "omega_entropy_min", None),
+				"omega_entropy_max": getattr(args, "omega_entropy_max", None),
+				"lambda_z_anchor": float(getattr(args, "lambda_z_anchor", 0.0)),
+				"z_anchor_target_sign": float(getattr(args, "z_anchor_target_sign", 1.0)),
 			},
 		},
 	}
@@ -713,6 +731,12 @@ def setup_experiment(args: argparse.Namespace) -> EnergyExperimentSetup:
 		lambda_r=args.lambda_r,
 		temperature=args.temperature,
 		lag_bias_strength=args.lag_bias_strength,
+		omega_transform=getattr(args, "omega_transform", "softmax"),
+		lambda_omega_entropy=getattr(args, "lambda_omega_entropy", 0.0),
+		omega_entropy_min=getattr(args, "omega_entropy_min", None),
+		omega_entropy_max=getattr(args, "omega_entropy_max", None),
+		lambda_z_anchor=getattr(args, "lambda_z_anchor", 0.0),
+		z_anchor_target_sign=getattr(args, "z_anchor_target_sign", 1.0),
 		n_entities=full_panel_cpu.X_it.shape[0],
 		seq_length=full_panel_cpu.X_it.shape[1],
 		seq_features=full_panel_cpu.X_it.shape[2],
@@ -734,7 +758,16 @@ def setup_experiment(args: argparse.Namespace) -> EnergyExperimentSetup:
 	test_panel = move_panel_to_device(test_panel_cpu, device)
 
 	model = CMDLModel(cfg).to(device)
-	criterion = DomainAgnosticLoss(lambda_r=cfg.lambda_r, warmup_steps=cfg.max_lag)
+	criterion = DomainAgnosticLoss(
+		lambda_r=cfg.lambda_r,
+		warmup_steps=cfg.max_lag,
+		anchor_proxy_index=int(full_panel_cpu.metadata.get("anchor_proxy_index", 0)),
+		lambda_omega_entropy=cfg.lambda_omega_entropy,
+		omega_entropy_min=cfg.omega_entropy_min,
+		omega_entropy_max=cfg.omega_entropy_max,
+		lambda_z_anchor=cfg.lambda_z_anchor,
+		z_anchor_target_sign=cfg.z_anchor_target_sign,
+	)
 	optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
 	run_dir = Path(args.output_dir).resolve() / args.experiment_name

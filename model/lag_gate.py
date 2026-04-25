@@ -21,6 +21,22 @@ from torch import nn
 from model.backbone import GatedLinearUnit, TimeDistributed
 
 
+def sparsemax(logits: torch.Tensor, dim: int = -1) -> torch.Tensor:
+    """Project logits onto the probability simplex with sparse support."""
+
+    shifted = logits - logits.max(dim=dim, keepdim=True).values
+    sorted_logits = torch.sort(shifted, descending=True, dim=dim).values
+    cumulative = sorted_logits.cumsum(dim)
+    support_index = torch.arange(1, logits.size(dim) + 1, device=logits.device, dtype=logits.dtype)
+    view_shape = [1] * logits.dim()
+    view_shape[dim] = -1
+    support_index = support_index.view(view_shape)
+    support = 1 + support_index * sorted_logits > cumulative
+    support_size = support.sum(dim=dim, keepdim=True).clamp_min(1)
+    tau = (cumulative.gather(dim, support_size - 1) - 1) / support_size.to(logits.dtype)
+    return torch.clamp(shifted - tau, min=0.0)
+
+
 
 @dataclass(slots=True)
 class LagGateOutput:
@@ -153,7 +169,8 @@ class ScaleInvariantLagGate(nn.Module):
         temperature:float = 1.0,
         hidden_dim:int = 16,
         dropout:float = 0.05,
-        lag_bias_strength:float = 1.0) -> None:
+        lag_bias_strength:float = 1.0,
+        omega_transform: str = "softmax") -> None:
         super().__init__()
         if max_lag < 1:
             raise ValueError("max_lag must be at least 1")
@@ -165,11 +182,14 @@ class ScaleInvariantLagGate(nn.Module):
             raise ValueError("hidden_dim must be positive")
         if lag_bias_strength < 0.0:
             raise ValueError("lag_bias_strength must be non-negative")
+        if omega_transform not in {"softmax", "sparsemax"}:
+            raise ValueError("omega_transform must be one of: softmax, sparsemax")
 
         self.max_lag = max_lag
         self.d_model = d_model
         self.temperature = temperature
         self.lag_bias_strength = lag_bias_strength
+        self.omega_transform = omega_transform
         # logit_network 负责从标量 z_i 产生长度为 K 的原始打分。
         # The logit network produces K raw lag scores from scalar z_i.
         self.logit_network = ScalarGatedResidualNetwork(input_dim=1, hidden_dim=hidden_dim, output_dim=max_lag, dropout=dropout)
@@ -197,9 +217,13 @@ class ScaleInvariantLagGate(nn.Module):
         logits = self.logit_network(z_i)
         logits = logits - self.lag_bias_strength * self.relative_positions.unsqueeze(0)
 
-        # 第二步：经温度缩放 softmax 得到合法概率分布 omega。
-        # Step 2: apply temperature-scaled softmax to obtain a valid probability distribution omega.
-        omega = F.softmax(logits / self.temperature, dim=-1)
+        # 第二步：经可选概率映射得到合法 lag distribution。
+        # Step 2: apply the selected probability mapping to obtain a valid lag distribution.
+        scaled_logits = logits / self.temperature
+        if self.omega_transform == "sparsemax":
+            omega = sparsemax(scaled_logits, dim=-1)
+        else:
+            omega = F.softmax(scaled_logits, dim=-1)
 
         # 第三步：把离散分布映射成期望滞后位置，作为可解释输出 k_star。
         # Step 3: map the discrete distribution into an expected lag position as interpretable k_star.
@@ -233,4 +257,5 @@ __all__ = [
     "GatedResidualNetwork",
     "ScalarGatedResidualNetwork",
     "ScaleInvariantLagGate",
+    "sparsemax",
 ]

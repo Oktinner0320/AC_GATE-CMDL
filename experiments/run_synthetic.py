@@ -105,6 +105,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--patience", type=int, default=20)
     parser.add_argument("--lambda-r", dest="lambda_r", type=float, default=synthetic_defaults.lambda_r)
     parser.add_argument("--temperature", type=float, default=synthetic_defaults.temperature)
+    parser.add_argument("--omega-transform", choices=["softmax", "sparsemax"], default=synthetic_defaults.omega_transform)
+    parser.add_argument("--lambda-omega-entropy", type=float, default=synthetic_defaults.lambda_omega_entropy)
+    parser.add_argument("--omega-entropy-min", type=float, default=synthetic_defaults.omega_entropy_min)
+    parser.add_argument("--omega-entropy-max", type=float, default=synthetic_defaults.omega_entropy_max)
+    parser.add_argument("--lambda-z-anchor", type=float, default=synthetic_defaults.lambda_z_anchor)
+    parser.add_argument("--z-anchor-target-sign", type=float, default=synthetic_defaults.z_anchor_target_sign)
     parser.add_argument(
         "--lag-bias-strength",
         type=float,
@@ -335,6 +341,12 @@ def setup_experiment(
         lambda_r=args.lambda_r,
         temperature=args.temperature,
         lag_bias_strength=args.lag_bias_strength,
+        omega_transform=args.omega_transform,
+        lambda_omega_entropy=args.lambda_omega_entropy,
+        omega_entropy_min=args.omega_entropy_min,
+        omega_entropy_max=args.omega_entropy_max,
+        lambda_z_anchor=args.lambda_z_anchor,
+        z_anchor_target_sign=args.z_anchor_target_sign,
     )
     set_seed(cfg.seed)
 
@@ -347,7 +359,15 @@ def setup_experiment(
     val_panel = move_panel_to_device(subset_panel(full_panel_cpu, val_indices), device)
 
     model = CMDLModel(cfg).to(device)
-    criterion = DomainAgnosticLoss(lambda_r=cfg.lambda_r, warmup_steps=cfg.max_lag)
+    criterion = DomainAgnosticLoss(
+        lambda_r=cfg.lambda_r,
+        warmup_steps=cfg.max_lag,
+        lambda_omega_entropy=cfg.lambda_omega_entropy,
+        omega_entropy_min=cfg.omega_entropy_min,
+        omega_entropy_max=cfg.omega_entropy_max,
+        lambda_z_anchor=cfg.lambda_z_anchor,
+        z_anchor_target_sign=cfg.z_anchor_target_sign,
+    )
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
     run_dir = Path(args.output_dir).resolve() / experiment_name
@@ -426,7 +446,7 @@ def train_one_epoch(
     optimizer.zero_grad(set_to_none=True)
 
     output = model(entity_ids=panel.entity_ids, X_it=panel.X_it, p_i=panel.p_i, s_i=panel.s_i)
-    losses = criterion(output.y_pred, panel.Y_it, output.p_hat_i, panel.p_i)
+    losses = criterion(output.y_pred, panel.Y_it, output.p_hat_i, panel.p_i, output.omega, output.z_i)
     if not torch.isfinite(losses.total_loss):
         raise FloatingPointError("Encountered a non-finite total loss during training")
 
@@ -438,6 +458,9 @@ def train_one_epoch(
         "total_loss": float(losses.total_loss.item()),
         "task_loss": float(losses.task_loss.item()),
         "recon_loss": float(losses.recon_loss.item()),
+        "omega_entropy_penalty": float(losses.omega_entropy_penalty.item()),
+        "omega_entropy_band_violation_share": float(losses.omega_entropy_band_violation_share.item()),
+        "z_anchor_loss": float(losses.z_anchor_loss.item()),
         "grad_norm": float(grad_norm),
     }
 
@@ -456,12 +479,15 @@ def evaluate(
     model.eval()
     with torch.no_grad():
         output = model(entity_ids=panel.entity_ids, X_it=panel.X_it, p_i=panel.p_i, s_i=panel.s_i)
-        losses = criterion(output.y_pred, panel.Y_it, output.p_hat_i, panel.p_i)
+        losses = criterion(output.y_pred, panel.Y_it, output.p_hat_i, panel.p_i, output.omega, output.z_i)
 
     metrics = {
         "total_loss": float(losses.total_loss.item()),
         "task_loss": float(losses.task_loss.item()),
         "recon_loss": float(losses.recon_loss.item()),
+        "omega_entropy_penalty": float(losses.omega_entropy_penalty.item()),
+        "omega_entropy_band_violation_share": float(losses.omega_entropy_band_violation_share.item()),
+        "z_anchor_loss": float(losses.z_anchor_loss.item()),
     }
     metrics.update({f"kstar_{key}": value for key, value in evaluate_kstar(output.k_star, panel.kstar_true).items()})
     metrics.update(evaluate_z_identification(output.z_i, panel.z_true, output.p_hat_i, panel.p_i))
@@ -571,6 +597,12 @@ def run_experiment(
             "lambda_r": args.lambda_r,
             "temperature": args.temperature,
             "lag_bias_strength": args.lag_bias_strength,
+            "omega_transform": args.omega_transform,
+            "lambda_omega_entropy": args.lambda_omega_entropy,
+            "omega_entropy_min": args.omega_entropy_min,
+            "omega_entropy_max": args.omega_entropy_max,
+            "lambda_z_anchor": args.lambda_z_anchor,
+            "z_anchor_target_sign": args.z_anchor_target_sign,
             "grad_clip": args.grad_clip,
             "val_fraction": args.val_fraction,
         },

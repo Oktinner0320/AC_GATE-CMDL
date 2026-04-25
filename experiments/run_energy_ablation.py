@@ -98,6 +98,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--patience", type=int, default=20)
     parser.add_argument("--lambda-r", dest="lambda_r", type=float, default=energy_defaults.lambda_r)
     parser.add_argument("--temperature", type=float, default=energy_defaults.temperature)
+    parser.add_argument("--omega-transform", choices=["softmax", "sparsemax"], default=energy_defaults.omega_transform)
+    parser.add_argument("--lambda-omega-entropy", type=float, default=energy_defaults.lambda_omega_entropy)
+    parser.add_argument("--omega-entropy-min", type=float, default=energy_defaults.omega_entropy_min)
+    parser.add_argument("--omega-entropy-max", type=float, default=energy_defaults.omega_entropy_max)
+    parser.add_argument("--lambda-z-anchor", type=float, default=energy_defaults.lambda_z_anchor)
+    parser.add_argument("--z-anchor-target-sign", type=float, default=energy_defaults.z_anchor_target_sign)
     parser.add_argument("--lag-bias-strength", type=float, default=energy_defaults.lag_bias_strength)
     parser.add_argument("--grad-clip", type=float, default=1.0)
     parser.add_argument("--grad-clip-mode", choices=GRAD_CLIP_MODE_CHOICES, default="global")
@@ -149,7 +155,16 @@ def prepare_variant_setup(
         model, effective_lambda_r = build_variant_model(variant, setup.cfg)
         matched_init_to_full_cmdl = False
     setup.model = model.to(setup.device)
-    setup.criterion = DomainAgnosticLoss(lambda_r=effective_lambda_r, warmup_steps=setup.cfg.max_lag)
+    setup.criterion = DomainAgnosticLoss(
+        lambda_r=effective_lambda_r,
+        warmup_steps=setup.cfg.max_lag,
+        anchor_proxy_index=int(setup.full_panel.metadata.get("anchor_proxy_index", 0)),
+        lambda_omega_entropy=getattr(variant_args, "lambda_omega_entropy", 0.0),
+        omega_entropy_min=getattr(variant_args, "omega_entropy_min", None),
+        omega_entropy_max=getattr(variant_args, "omega_entropy_max", None),
+        lambda_z_anchor=getattr(variant_args, "lambda_z_anchor", 0.0),
+        z_anchor_target_sign=getattr(variant_args, "z_anchor_target_sign", 1.0),
+    )
     setup.optimizer = torch.optim.Adam(setup.model.parameters(), lr=variant_args.lr)
     return setup, variant_args, effective_lambda_r, _ablation_diagnostics(variant, matched_init_to_full_cmdl)
 
@@ -184,6 +199,12 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
             "matched_init_to_full_cmdl": ablation_diagnostics["matched_init_to_full_cmdl"],
             "causal_ablation_validity": ablation_diagnostics["causal_ablation_validity"],
             "temperature": variant_args.temperature,
+            "omega_transform": getattr(variant_args, "omega_transform", "softmax"),
+            "lambda_omega_entropy": getattr(variant_args, "lambda_omega_entropy", 0.0),
+            "omega_entropy_min": getattr(variant_args, "omega_entropy_min", None),
+            "omega_entropy_max": getattr(variant_args, "omega_entropy_max", None),
+            "lambda_z_anchor": getattr(variant_args, "lambda_z_anchor", 0.0),
+            "z_anchor_target_sign": getattr(variant_args, "z_anchor_target_sign", 1.0),
             "lag_bias_strength": variant_args.lag_bias_strength,
             "grad_clip": variant_args.grad_clip,
             "grad_clip_mode": getattr(variant_args, "grad_clip_mode", "global"),

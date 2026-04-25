@@ -8,6 +8,7 @@ from typing import Any, Literal
 
 DomainLiteral = Literal["synthetic", "shadow", "energy", "economics"]
 ScenarioLiteral = Literal["linear", "nonlinear"]
+OmegaTransformLiteral = Literal["softmax", "sparsemax"]
 
 
 @dataclass(slots=True)
@@ -31,6 +32,12 @@ class CMDLConfig:
 	dropout: float = 0.05                  # 通用 dropout 比例 | Shared dropout rate for Step 3 blocks.
 	noise_std: float = 0.15                 # 合成数据噪声强度 | Noise level used in synthetic generation.
 	reconstruction_detach: bool = True      # proxy 重构是否截断 z 梯度 | Whether proxy reconstruction detaches z.
+	omega_transform: OmegaTransformLiteral = "softmax"  # lag logits 到 omega 的映射 | Mapping from lag logits to omega.
+	lambda_omega_entropy: float = 0.0       # omega 熵区间正则权重 | Entropy-band penalty weight for omega.
+	omega_entropy_min: float | None = None  # omega 熵下界 | Lower entropy bound for omega.
+	omega_entropy_max: float | None = None  # omega 熵上界 | Upper entropy bound for omega.
+	lambda_z_anchor: float = 0.0            # z-anchor 方向弱约束权重 | Weak z-anchor alignment weight.
+	z_anchor_target_sign: float = 1.0       # z 与 anchor proxy 的预期方向 | Expected z-anchor direction.
 	seed: int = 42                          # 随机种子 | Random seed for reproducibility.
 	scenario: ScenarioLiteral = "linear"    # 合成场景类型 | Synthetic scenario type.
 
@@ -49,6 +56,8 @@ class CMDLConfig:
 			raise ValueError(f"Unsupported domain: {self.domain}")
 		if self.scenario not in valid_scenarios:
 			raise ValueError(f"Unsupported synthetic scenario: {self.scenario}")
+		if self.omega_transform not in {"softmax", "sparsemax"}:
+			raise ValueError(f"Unsupported omega_transform: {self.omega_transform}")
 		# 序列长度必须大于滞后窗口，否则无法构造有效历史上下文。
 		if self.max_lag < 1:
 			raise ValueError("max_lag must be at least 1")
@@ -76,6 +85,22 @@ class CMDLConfig:
 			raise ValueError("lag_bias_strength must be non-negative")
 		if self.noise_std < 0.0:
 			raise ValueError("noise_std must be non-negative")
+		if self.lambda_omega_entropy < 0.0:
+			raise ValueError("lambda_omega_entropy must be non-negative")
+		if self.omega_entropy_min is not None and self.omega_entropy_min < 0.0:
+			raise ValueError("omega_entropy_min must be non-negative when provided")
+		if self.omega_entropy_max is not None and self.omega_entropy_max < 0.0:
+			raise ValueError("omega_entropy_max must be non-negative when provided")
+		if (
+			self.omega_entropy_min is not None
+			and self.omega_entropy_max is not None
+			and self.omega_entropy_min > self.omega_entropy_max
+		):
+			raise ValueError("omega_entropy_min cannot exceed omega_entropy_max")
+		if self.lambda_z_anchor < 0.0:
+			raise ValueError("lambda_z_anchor must be non-negative")
+		if self.z_anchor_target_sign == 0.0:
+			raise ValueError("z_anchor_target_sign must be non-zero")
 
 	@classmethod
 	def from_domain(cls, domain: DomainLiteral, **overrides: Any) -> "CMDLConfig":
@@ -177,4 +202,4 @@ class CMDLConfig:
 		return asdict(self)
 
 
-__all__ = ["CMDLConfig", "DomainLiteral", "ScenarioLiteral"]
+__all__ = ["CMDLConfig", "DomainLiteral", "OmegaTransformLiteral", "ScenarioLiteral"]

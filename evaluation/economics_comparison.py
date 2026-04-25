@@ -65,6 +65,12 @@ _IDENTITY_COLUMNS = [
     "lambda_r",
     "effective_lambda_r",
     "temperature",
+    "omega_transform",
+    "lambda_omega_entropy",
+    "omega_entropy_min",
+    "omega_entropy_max",
+    "lambda_z_anchor",
+    "z_anchor_target_sign",
     "lag_bias_strength",
     "lstm_layers",
     "dropout",
@@ -77,6 +83,8 @@ _IDENTITY_COLUMNS = [
     "recon_loss_mode",
     "anchor_recon_weight",
     "reconstruction_detach",
+    "omega_entropy_control",
+    "z_anchor_control",
     "proxy_refit_status",
     "proxy_refit_applied",
     "proxy_metric_interpretable",
@@ -114,6 +122,8 @@ def _summary_paths(output_root: Path | str | None) -> list[Path]:
 
 
 def _display_name(family: str, experiment: str, variant: str | None) -> str:
+    if family == "grouped_ardl":
+        return "Grouped ARDL"
     if family == "plain_lstm":
         return "Plain LSTM"
     if family == "ablation":
@@ -130,6 +140,8 @@ def _year_bounds(years: Any) -> tuple[int | None, int | None]:
 def _family_model_name(payload: dict[str, Any], family: str) -> str:
     if payload.get("model"):
         return str(payload["model"])
+    if family == "grouped_ardl":
+        return "grouped_ardl"
     if family == "plain_lstm":
         return "plain_lstm"
     if family == "ablation":
@@ -138,6 +150,8 @@ def _family_model_name(payload: dict[str, Any], family: str) -> str:
 
 
 def _lag_method(payload: dict[str, Any], family: str) -> str:
+    if family == "grouped_ardl":
+        return "grouped_distributed_lag_ols"
     if family == "plain_lstm":
         return str(payload.get("posthoc_lag_method", "lag_occlusion"))
     return "learned_omega"
@@ -213,6 +227,29 @@ def _normalize_split_metrics(
         )
         return row
 
+    if family == "grouped_ardl":
+        row.update(
+            {
+                f"{split}_proxy_signal_r2": None,
+                f"{split}_proxy_signal_metric_valid": None,
+                f"{split}_effective_kstar_proxy_spearman_rho": None,
+                f"{split}_effective_kstar_proxy_spearman_p": None,
+                f"{split}_effective_kstar_proxy_spearman_adjusted_rho": None,
+                f"{split}_effective_kstar_proxy_mean_spearman_rho": None,
+                f"{split}_effective_kstar_proxy_mean_spearman_adjusted_rho": None,
+                f"{split}_effective_kstar_mean": _finite_or_none(metrics.get("effective_lag_mean")),
+                f"{split}_effective_kstar_std": None,
+                f"{split}_effective_lag_entropy_mean": None,
+                f"{split}_effective_lag_entropy_std": None,
+                f"{split}_effective_lag_top1_share": None,
+                f"{split}_effective_kstar_proxy_metric_valid": None,
+                f"{split}_grouped_ardl_best_lag_mean": _finite_or_none(metrics.get("best_lag_mean")),
+                f"{split}_grouped_ardl_effective_lag_mean": _finite_or_none(metrics.get("effective_lag_mean")),
+                f"{split}_grouped_ardl_group_count": _finite_or_none(metrics.get("group_count")),
+            }
+        )
+        return row
+
     proxy_metric_valid = _bool_flag(metrics.get("proxy_metric_valid"))
     if proxy_metric_interpretable is False:
         proxy_metric_valid = False
@@ -251,6 +288,12 @@ def _normalize_split_metrics(
             f"{split}_z_proxy_spearman_adjusted_rho": _finite_or_none(
                 metrics.get("z_proxy_spearman_adjusted_rho")
             ),
+            f"{split}_z_anchor_adjusted_rho": _finite_or_none(metrics.get("z_anchor_adjusted_rho")),
+            f"{split}_omega_entropy_penalty": _finite_or_none(metrics.get("omega_entropy_penalty")),
+            f"{split}_omega_entropy_band_violation_share": _finite_or_none(
+                metrics.get("omega_entropy_band_violation_share")
+            ),
+            f"{split}_z_anchor_loss": _finite_or_none(metrics.get("z_anchor_loss")),
             f"{split}_lag_gate_sensitivity_slope": _finite_or_none(metrics.get("lag_gate_sensitivity_slope")),
             f"{split}_lag_gate_sensitivity_range": _finite_or_none(metrics.get("lag_gate_sensitivity_range")),
         }
@@ -316,6 +359,12 @@ def _normalize_summary(summary_path: Path, output_root: Path, family: str) -> di
         "lambda_r": config.get("lambda_r"),
         "effective_lambda_r": payload.get("effective_lambda_r", config.get("lambda_r")),
         "temperature": config.get("temperature"),
+        "omega_transform": config.get("omega_transform", training_controls.get("omega_transform")),
+        "lambda_omega_entropy": config.get("lambda_omega_entropy", training_controls.get("lambda_omega_entropy")),
+        "omega_entropy_min": config.get("omega_entropy_min", training_controls.get("omega_entropy_min")),
+        "omega_entropy_max": config.get("omega_entropy_max", training_controls.get("omega_entropy_max")),
+        "lambda_z_anchor": config.get("lambda_z_anchor", training_controls.get("lambda_z_anchor")),
+        "z_anchor_target_sign": config.get("z_anchor_target_sign", training_controls.get("z_anchor_target_sign")),
         "lag_bias_strength": config.get("lag_bias_strength"),
         "lstm_layers": config.get("lstm_layers"),
         "dropout": config.get("dropout"),
@@ -328,6 +377,8 @@ def _normalize_summary(summary_path: Path, output_root: Path, family: str) -> di
         "recon_loss_mode": training_controls.get("recon_loss_mode"),
         "anchor_recon_weight": training_controls.get("anchor_recon_weight"),
         "reconstruction_detach": training_controls.get("reconstruction_detach"),
+        "omega_entropy_control": training_controls.get("lambda_omega_entropy", config.get("lambda_omega_entropy")),
+        "z_anchor_control": training_controls.get("lambda_z_anchor", config.get("lambda_z_anchor")),
         "proxy_refit_status": proxy_refit.get("status"),
         "proxy_refit_applied": proxy_refit.get("applied"),
         "proxy_metric_interpretable": proxy_refit.get("metrics_interpretable"),
@@ -431,6 +482,7 @@ def build_economics_comparison(
     cmdl_root: Path | str | None = None,
     baseline_root: Path | str | None = None,
     ablation_root: Path | str | None = None,
+    grouped_ardl_root: Path | str | None = None,
 ) -> pd.DataFrame:
     """Combine economics CMDL, baseline, and ablation runs into one table.
 
@@ -441,6 +493,7 @@ def build_economics_comparison(
         _load_summary_runs(cmdl_root, family="cmdl"),
         _load_summary_runs(baseline_root, family="plain_lstm"),
         _load_summary_runs(ablation_root, family="ablation"),
+        _load_summary_runs(grouped_ardl_root, family="grouped_ardl"),
     ]
     frames = [frame for frame in frames if not frame.empty]
     if not frames:
@@ -482,9 +535,11 @@ def build_task_table(comparison_frame: pd.DataFrame, split: str = "test") -> pd.
         f"{split}_r2",
         f"{split}_baseline_persistence_r2",
         f"{split}_baseline_panel_ols_r2",
+        f"{split}_baseline_grouped_ardl_r2",
         f"{split}_baseline_best_simple_r2",
         f"{split}_r2_delta_vs_persistence",
         f"{split}_r2_delta_vs_panel_ols",
+        f"{split}_r2_delta_vs_grouped_ardl",
         f"{split}_mae",
         f"{split}_mse",
     ]
@@ -530,10 +585,20 @@ def build_interpretability_table(comparison_frame: pd.DataFrame, split: str = "t
         f"{split}_effective_lag_top1_share",
         f"{split}_z_std",
         f"{split}_z_proxy_spearman_adjusted_rho",
+        f"{split}_z_anchor_adjusted_rho",
+        f"{split}_omega_entropy_penalty",
+        f"{split}_omega_entropy_band_violation_share",
+        f"{split}_z_anchor_loss",
         f"{split}_lag_gate_sensitivity_slope",
         f"{split}_lag_gate_sensitivity_range",
         f"{split}_proxy_signal_r2",
         f"{split}_proxy_signal_metric_valid",
+        "omega_transform",
+        "lambda_omega_entropy",
+        "omega_entropy_min",
+        "omega_entropy_max",
+        "lambda_z_anchor",
+        "z_anchor_target_sign",
     ]
     interpretability = _ensure_columns(comparison_frame, columns)
     if interpretability.empty:
@@ -640,6 +705,7 @@ def build_mechanism_summary_table(comparison_frame: pd.DataFrame, split: str = "
         f"{split}_r2",
         f"{split}_r2_delta_vs_persistence",
         f"{split}_r2_delta_vs_panel_ols",
+        f"{split}_r2_delta_vs_grouped_ardl",
         f"{split}_effective_kstar_proxy_spearman_adjusted_rho",
         f"{split}_effective_kstar_proxy_mean_spearman_adjusted_rho",
         f"{split}_effective_kstar_std",
@@ -647,6 +713,10 @@ def build_mechanism_summary_table(comparison_frame: pd.DataFrame, split: str = "
         f"{split}_effective_lag_top1_share",
         f"{split}_z_std",
         f"{split}_z_proxy_spearman_adjusted_rho",
+        f"{split}_z_anchor_adjusted_rho",
+        f"{split}_omega_entropy_penalty",
+        f"{split}_omega_entropy_band_violation_share",
+        f"{split}_z_anchor_loss",
         f"{split}_lag_gate_sensitivity_range",
         f"{split}_proxy_signal_r2",
     ]
@@ -711,6 +781,15 @@ def build_mechanism_result_log(comparison_frame: pd.DataFrame, split: str = "tes
         "CMDL",
         f"{split}_r2_delta_vs_panel_ols",
     )
+    cmdl_delta_grouped_ardl = _first_numeric(
+        comparison_frame,
+        "CMDL",
+        f"{split}_r2_delta_vs_grouped_ardl",
+    )
+    if cmdl_delta_grouped_ardl is None and cmdl_r2 is not None:
+        grouped_ardl_r2 = _first_numeric(comparison_frame, "Grouped ARDL", f"{split}_r2")
+        if grouped_ardl_r2 is not None:
+            cmdl_delta_grouped_ardl = cmdl_r2 - grouped_ardl_r2
     no_ac_kstar_std = _first_numeric(
         comparison_frame,
         "No AC Encoder",
@@ -738,10 +817,11 @@ def build_mechanism_result_log(comparison_frame: pd.DataFrame, split: str = "tes
         {
             "layer": "simple_baseline_calibration",
             "question": "Is CMDL above the simple calibrated baselines?",
-            "answer": _delta_answer(cmdl_delta_persistence, cmdl_delta_panel_ols),
+            "answer": _delta_answer(cmdl_delta_persistence, cmdl_delta_panel_ols, cmdl_delta_grouped_ardl),
             "evidence": (
                 f"delta_vs_persistence={cmdl_delta_persistence}, "
-                f"delta_vs_panel_ols={cmdl_delta_panel_ols}."
+                f"delta_vs_panel_ols={cmdl_delta_panel_ols}, "
+                f"delta_vs_grouped_ardl={cmdl_delta_grouped_ardl}."
             ),
         },
         {

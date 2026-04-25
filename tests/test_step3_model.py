@@ -110,6 +110,28 @@ class CMDLModelIntegrationTest(unittest.TestCase):
         self.assertEqual(losses.recon_loss.ndim, 0)
         self.assertGreaterEqual(losses.total_loss.item(), losses.task_loss.item())
 
+    def test_optional_entropy_and_z_anchor_losses_are_reported(self) -> None:
+        cfg, entity_ids, X_it, p_i, s_i, y_true = self._build_small_batch()
+        model = CMDLModel(cfg)
+        criterion = DomainAgnosticLoss(
+            lambda_r=cfg.lambda_r,
+            warmup_steps=cfg.max_lag,
+            lambda_omega_entropy=0.5,
+            omega_entropy_min=1.0,
+            omega_entropy_max=1.2,
+            lambda_z_anchor=0.1,
+            z_anchor_target_sign=1.0,
+        )
+
+        output = model(entity_ids=entity_ids, X_it=X_it, p_i=p_i, s_i=s_i)
+        losses = criterion(output.y_pred, y_true, output.p_hat_i, p_i, output.omega, output.z_i)
+
+        self.assertEqual(losses.omega_entropy_penalty.ndim, 0)
+        self.assertEqual(losses.omega_entropy_band_violation_share.ndim, 0)
+        self.assertEqual(losses.z_anchor_loss.ndim, 0)
+        self.assertGreaterEqual(losses.omega_entropy_penalty.item(), 0.0)
+        self.assertGreaterEqual(losses.z_anchor_loss.item(), 0.0)
+
     def test_end_to_end_optimization_reduces_loss(self) -> None:
         torch.manual_seed(7)
         cfg, entity_ids, X_it, p_i, s_i, y_true = self._build_small_batch()
