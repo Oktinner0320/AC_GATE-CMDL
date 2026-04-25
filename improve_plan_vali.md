@@ -1,159 +1,195 @@
-# 潜在改进方法记录
+# 当前问题解决方案与后续改进计划
 
-更新时间：2026-04-19
+更新时间：2026-04-25
 
-## 一、总体策略
+## 一、总策略：围绕 AC-GATE 机制，而不是单纯追逐预测 SOTA
 
-后续改进不应再围绕 synthetic 做大规模调参，而应集中处理真实域中的两类核心问题：
+`plan.md` 在论文撰写部分已经给出关键定位：模型价值在于发现异质滞后结构 `omega/k*`，而不是只压低 MSE。结合最新 Phase4/Phase6 验证，后续改进应围绕以下原则推进：
 
-1. forecast 收益弱或不稳定；
-2. mechanism diagnostics 与当前训练目标、评价 anchor 之间可能存在错位。
+1. 主贡献聚焦于 **AC-conditioned heterogeneous lag discovery**。
+2. Forecast 指标作为公平性、实用性和 sanity check，而不是唯一成功标准。
+3. 真实域必须与 Plain LSTM、persistence、Panel OLS 等基线比较，但不必承诺在所有数据集上全面优于它们。
+4. 若强简单基线持续领先，应降低预测性能 claim，转而强调机制诊断、异质性发现和适用边界。
+5. 所有真实域修改都必须回查 synthetic，确保不破坏已验证的机制恢复能力。
 
-总体策略应遵循以下原则：
+一句话策略：
 
-1. 先做低成本诊断和公平性控制，再做目标函数修改。
-2. 先解决 economics，因为该域已有更清晰的 feature bundle、假设链和诊断线索。
-3. energy 在证据不足前，不应过早投入复杂模型升级。
-4. 所有真实域修改都必须回查 synthetic，确保不破坏已确认的机制结论。
+> 先证明 AC-GATE 能稳定识别和解释滞后异质性，再用 forecast calibration 证明它没有为解释性付出不可接受的预测代价。
 
-## 二、优先级最高的改进方向
+## 二、已完成的关键改进
 
-### 方向 1：先补齐 economics 的公平性与因果对比控制
+相比 2026-04-19 版本，当前已经完成以下改进：
 
-目标：先确认当前 no_recon 与 full CMDL 之间的差距，究竟来自 reconstruction objective、initialization，还是优化副作用。
+1. 增加真实域统一机制诊断：anchor-aware、sign-adjusted rho、per-proxy rho、z_std、lag gate sensitivity。
+2. 增加 Phase6 forecast calibration：train mean、entity mean、persistence、Panel OLS、best simple baseline。
+3. economics / energy loader 已输出 anchor proxy metadata 和 expected sign。
+4. CMDL objective 已支持 `anchor_weighted`、`anchor_only`、`reconstruction_detach` 控制。
+5. economics / energy CMDL、Plain LSTM、ablation runners 已接入新诊断与新基线。
+6. comparison table 已包含 Phase4/Phase6 关键字段。
+7. 单元测试已通过：`56 passed, 0 failed`。
+8. economics 和 energy notebook 已新增 Phase4/Phase6 upgraded formal validation section，并完成单 seed focused formal validation。
 
-建议动作：
+这些改进说明：当前问题已经不再是“缺少诊断工具”，而是“如何根据诊断结果收束论文 claim 和后续实验”。
 
-1. 继续使用 matched-init no_recon 对照，避免把初始化差异误判成 reconstruction 正负效应。
-2. 补做 split_clip 与 global_clip 对照，检验 global gradient clipping 是否放大了 no_recon 与 full CMDL 的差异。
-3. 将这些控制实验纳入 economics formal suite 的固定比较项。
+## 三、当前问题与解决方案
 
-预期收益：
+### 问题 1：真实域 forecast 不能支撑全面性能优越性
 
-1. 将“重构项到底有没有帮助”从混杂状态里分离出来。
-2. 避免基于脏对照得出错误的机制结论。
+现象：
 
-### 方向 2：增加 anchor-aligned diagnostics，而不是立刻改模型
+1. Economics：CMDL `test_r2=0.0445`，高于 Plain LSTM `0.0084`，也略高于 Panel OLS，但低于 persistence。
+2. Energy：CMDL `test_r2=-0.0265`，略高于 Plain LSTM `-0.0325`，但低于 persistence 和 Panel OLS。
 
-目标：先判断当前负 rho 是否来自真实反向关系，还是来自评价口径与训练目标不一致。
+判断：
 
-建议动作：
+1. AC-GATE 可以说在 focused run 中超过 matched Plain LSTM。
+2. 不能说 AC-GATE 在真实域预测上全面优于简单强基线。
+3. persistence 在真实面板中非常强，若强行以预测 SOTA 为主目标，会削弱论文说服力。
 
-1. 在 notebook 和 comparison 导出中显式记录 anchor_proxy_name。
-2. 显式记录 anchor_sign_convention，避免不同 proxy 定义下的符号误判。
-3. 同时汇报 anchor-only readout quality 和 all-proxy readout quality。
-4. 将 anchor proxy 与 auxiliary proxies 分开输出对应的 mechanism diagnostics，而不是压缩成单一 rho。
+解决方案：
 
-预期收益：
+1. 论文中把 forecast 作为 calibration evidence，而不是主贡献。
+2. 保留 `delta_vs_persistence`、`delta_vs_panel_ols`，明确说明模型是否超过强简单基线。
+3. 若未来补 TFT / grouped ARDL，需将其作为强 baseline 或 appendix robustness，而不是把所有工作都改成追逐预测榜单。
+4. 真实域 claim 改为“competitive with matched LSTM and diagnostically informative”，而不是“dominates forecasting baselines”。
 
-1. 可以区分“模型确实学反了”和“训练-评价口径错位”两种情况。
-2. 为后续 objective 修改提供更明确的依据。
+### 问题 2：economics 机制方向仍未被支持
 
-### 方向 3：只有在诊断仍失败时，才升级 economics 的 reconstruction objective
+现象：
 
-目标：在确认问题来自 objective mismatch 后，再最小幅度修改训练目标。
+1. Economics anchor-adjusted rho 为 `-0.1590`。
+2. 这意味着当前 effective-labor anchor 下，k* 与预期方向没有对齐。
+3. 但 `lag_gate_sensitivity_range=0.1046`、`z_std=0.1704`，说明模型不是简单退化。
 
-建议动作按顺序推进：
+判断：
 
-1. anchor-weighted reconstruction：保留当前多 proxy 合同，但给 anchor proxy 更高重构权重。
-2. anchor-only reconstruction：只对机制 anchor 计算 reconstruction loss，辅助 proxies 只作为输入或诊断项。
-3. two-head reconstruction：将 anchor 与 auxiliary proxies 分成两个重构头，只在前两步都说明存在真实目标冲突时再上。
+1. economics 的问题不是模型完全学不到结构，而是结构方向与当前理论 anchor 不一致。
+2. 不应为了让 rho 变正而盲目加复杂结构，否则可能变成结果导向调参。
+3. 需要把 economics 写成限制性证据或机制失败案例，除非多 seed 和 anchor audit 后能稳定修复。
 
-预期收益：
+解决方案：
 
-1. 更直接地把训练目标对齐到机制评价目标。
-2. 有机会在不牺牲 forecast 的情况下，提高 sign consistency 与 anchor-aligned mechanism quality。
+1. 先做多 seed 复核，判断负方向是否稳定。
+2. 审查 economics anchor 的理论符号：effective labor、人力资本、TFP 之间是否真的应对应更短滞后。
+3. 分开报告 anchor proxy 与 auxiliary proxies，不再用单一聚合 rho 掩盖方向差异。
+4. 若多 seed 后仍为负，将 economics 降级为 limitation / boundary case，而不是继续强推为机制支持域。
+5. 只有当 anchor audit 证明目标函数错位时，才继续尝试 anchor-only 或 two-head reconstruction。
 
-## 三、Economics 的具体判断标准
+### 问题 3：energy 机制证据强，但预测校准不足
 
-后续任何 economics 改进版本，至少需要同时满足以下三条，才可视为真正改善：
+现象：
 
-1. mechanism sign consistency 提升，不再以负号主导。
-2. effective k* 标准差不再接近塌缩水平，说明异质性确实被展开。
-3. forecast 指标不低于 plain LSTM，至少不能用机制改善换来明显更差的预测表现。
+1. Energy anchor-adjusted rho 为 `0.6442`。
+2. WGI 三个 proxy 的 adjusted rho 都为正：government effectiveness `0.6442`，regulatory quality `0.6444`，rule of law `0.6820`。
+3. `lag_gate_sensitivity_range=0.1830`，`z_std=0.0956`，说明 learned heterogeneity 非退化。
+4. 但 CMDL 预测低于 persistence 和 Panel OLS。
 
-如果只能改善其中一条，则不能宣称 economics 已成为强机制验证域。
+判断：
 
-## 四、Energy 的建议路线
+1. energy 是当前更好的真实域机制诊断证据。
+2. 但它不能支持“预测性能优越”主张。
+3. 它适合作为“AC-GATE 在真实域能输出与治理 proxy 对齐的滞后异质性”的案例。
 
-### 方向 4：先补证据，不先改大模型
+解决方案：
 
-目标：先确认 energy 当前的微弱优势和负 rho 结论是否稳健。
+1. 将 energy 的主叙事从 forecast superiority 改为 mechanism alignment。
+2. 保留 Phase6 calibration，诚实说明简单强基线预测更强。
+3. 后续可尝试目标变换、异常值处理、按国家类型分组报告，以检查 forecast 劣势是否由极端国家 / 极端年份驱动。
+4. 若多 seed 机制方向仍稳定，则 energy 可作为真实域主机制展示图表。
 
-建议动作：
+### 问题 4：单 seed notebook validation 还不够论文级
 
-1. 将 current energy ablation 扩展到至少 3 seeds。
-2. 导出按 proxy 分解的 diagnostics，而不是只给聚合 rho。
-3. 检查不同 seeds 下 sign 是否一致、k* spread 是否稳定，以及 CMDL 是否持续优于 plain LSTM。
+现象：
 
-预期收益：
+1. 当前 notebook 正式验证是 seed `[0]` 的 focused run。
+2. 它足以证明改进 pipeline 可运行，并给出当前诊断方向。
+3. 但不足以支撑最终论文表格。
 
-1. 判断当前结论到底是稳定事实，还是单次随机结果。
-2. 决定 energy 是否值得继续作为主验证域投入。
+解决方案：
 
-### 方向 5：若 energy 仍然弱，则优先收缩 claim，而不是继续加复杂度
+1. 将 Phase4/Phase6 notebook 或 runner 扩展到 seeds `[0, 1, 2]`。
+2. 对 task metrics、adjusted rho、z_std、lag sensitivity 做 mean ± std。
+3. 对 CMDL vs Plain LSTM、CMDL vs ablation 做 paired comparison。
+4. 若真实域多 seed 仍不稳，在论文中明确标注为 exploratory real-data evidence。
 
-目标：避免在弱证据域里不断堆模型复杂度。
+### 问题 5：需要把 ablation 从“附属实验”提升为核心证据
 
-建议动作：
+现象：
 
-1. 若多 seed 后仍只有边际 forecast 优势且 mechanism sign 不稳，则将 energy 下调为 generalization appendix。
-2. 只保留最小修改尝试，例如更合适的 proxy anchor、目标变换或更合理的 treatment-target 配对。
-3. 在没有明确证据表明 domain contract 有问题前，不做大规模结构改造。
+1. `no_ac_encoder` 在真实域会让 kstar_std 退化为 0。
+2. `uniform_lag` 会让 lag 分布退化为固定峰值。
+3. 这些结果直接证明 AC-GATE 的异质滞后结构不是自然出现的，而是由核心模块产生的。
 
-预期收益：
+解决方案：
 
-1. 控制研究范围，避免 energy 吸走过多时间。
-2. 让主线聚焦于更有希望做出强结论的 economics。
+1. 在论文表格中固定报告 full CMDL、Plain LSTM、no_ac_encoder、uniform_lag、no_recon。
+2. 将 ablation 作为机制必要性的主证据，而不是仅作为 robustness。
+3. 对真实域也报告 `z_std`、`kstar_std`、`lag_gate_sensitivity_range`、`omega_top1_share`，避免只看 R2。
 
-## 五、Synthetic 的使用方式
+## 四、下一阶段推荐推进顺序
 
-synthetic 后续的作用不是继续主攻，而是作为所有真实域修改的回归护栏。
+### Phase A：先收束研究问题与 claim
 
-具体要求：
+1. 明确主问题：AC-GATE 是否能学习实体级异质滞后结构？
+2. 明确副问题：这种结构是否在真实域保持合理预测能力？
+3. 明确不主张：不承诺真实域全面预测 SOTA。
+4. 修改论文叙事：把 forecast baseline 写成 calibration，不写成唯一 scoreboard。
 
-1. 任何对 AC encoder、lag gate、reconstruction objective 的改动，都要回查 synthetic formal_target。
-2. 必须继续保持以下结论不被破坏：
-	1. full CMDL 明显优于 plain LSTM 的 k* 恢复；
-	2. no_ac_encoder 与 uniform_lag 会显著退化；
-	3. no_recon 与 full CMDL 基本接近。
-3. 如果真实域修复破坏了 synthetic 上的这些已知结论，则该改动不应直接进入主线。
+### Phase B：补多 seed formal validation
 
-## 六、当前最推荐的推进顺序
+1. economics Phase4/Phase6 seeds `[0, 1, 2]`。
+2. energy Phase4/Phase6 seeds `[0, 1, 2]`。
+3. 输出 mean ± std result logs。
+4. 若资源允许，再扩到 5 seeds 用于最终统计检验。
 
-### Phase 1：先补 diagnostics
+### Phase C：补强 Plan.md 中 Step 6 的强 baseline
 
-1. economics 做 matched-init no_recon 与 clip control。
-2. economics 增加 anchor-aligned diagnostics。
-3. energy 扩到多 seed ablation，并增加分 proxy diagnostics。
+优先级建议：
 
-### Phase 2：再做最小 objective 调整
+1. persistence 和 Panel OLS 已完成，应保留为最小强校准。
+2. grouped ARDL 是最重要的下一 baseline，因为它是“人工分组版 AC-GATE”，最能检验异质滞后发现是否有增量价值。
+3. TFT baseline 可作为 appendix 或后续扩展；若时间紧，不应让 TFT 抢走机制论文主线。
 
-1. economics 先试 anchor-weighted reconstruction。
-2. 若仍无改善，再试 anchor-only reconstruction。
-3. two-head reconstruction 只作为最后升级项。
+### Phase D：针对 economics 做 anchor audit，而不是先改复杂模型
 
-### Phase 3：最后决定论文口径
+1. 检查 effective labor anchor 与 TFP lag 的理论方向。
+2. 分开看 human capital、employment、hours worked 等 proxy 的 adjusted rho。
+3. 若不同 proxy 方向冲突，则说明 economics 不适合作为强机制支持域。
+4. 若只有当前 anchor 错位，再考虑重定义 anchor 或切换 target。
 
-1. 若 economics 成功提升 sign consistency 且 forecast 不输 baseline，则可把 economics 升格为机制支持域。
-2. 若 energy 仍然只有弱收益，则将其降级为 generalization 或 feasibility 域。
-3. synthetic 持续作为主要机制证明域。
+### Phase E：把 energy 做成机制展示域
 
-## 七、当前最推荐的论文叙事
+1. 多 seed 验证 WGI per-proxy adjusted rho 是否稳定。
+2. 画 k* vs WGI proxy 分位数组图。
+3. 报告 lag distribution heatmap 和 proxy quartile k* summary。
+4. 同时在表中说明 forecast 没有超过 persistence / Panel OLS。
 
-如果短期内不继续改代码，只依据现有结果，最稳妥的写法应为：
+### Phase F：保持 synthetic 为机制回归护栏
 
-1. synthetic 负责强机制证明；
-2. economics 负责展示真实域中的潜力和当前瓶颈；
-3. energy 负责展示跨域可运行性，而不是强机制支持；
-4. 论文中明确区分 forecast evidence 与 mechanism evidence，不将两者混为一谈。
+所有真实域改动必须回查 synthetic：
 
-## 八、结论
+1. full CMDL 的 k* recovery 不能被破坏。
+2. no_ac_encoder 和 uniform_lag 必须继续明显退化。
+3. no_recon 与 full 的关系应继续用于说明 reconstruction 不是核心增益来源。
 
-当前最值得投入的方法方向不是“继续盲目提升模型复杂度”，而是：
+## 五、论文最终建议口径
 
-1. 先让真实域中的训练目标、诊断指标和机制评价 anchor 对齐；
-2. 先用低成本控制实验把混杂因素拆掉；
-3. 只有在确认 objective mismatch 后，才做有针对性的 loss 修改。
+建议主线：
 
-也就是说，下一阶段的重点不是证明 AC-GATE 在 synthetic 上还能更强，而是让 economics 与 energy 中“已经可见的结构优势”真正变成稳定、可解释、可报告的真实域收益。
+1. Method：提出 AC-GATE，将实体级 proxy 映射为滞后权重分布。
+2. Synthetic：在有 ground truth 的环境下证明能恢复异质滞后，并通过消融证明模块必要。
+3. Real data：展示该机制在真实面板上可运行、非退化，并在部分域与理论 proxy 对齐。
+4. Forecast：报告 matched LSTM 与强简单 baseline 的校准结果，说明模型预测能力的边界。
+5. Limitation：真实域预测不一定超过 persistence / Panel OLS，economics anchor alignment 仍是未解决问题。
+
+## 六、当前最重要的结论
+
+当前改进方向不应再是“继续加模型复杂度以追求 R2”，而应是：
+
+1. 明确 AC-GATE 的研究目标是滞后异质性机制，而不是纯预测榜单；
+2. 用 synthetic 和 ablation 证明机制有效；
+3. 用 real data 证明机制能在真实域产生非退化、可诊断的结构；
+4. 用 forecast calibration 诚实报告适用边界；
+5. 对 economics 保持克制，对 energy 强化机制展示。
+
+也就是说，性能优于其他方法是有价值的加分项，但不是本文唯一的成败标准。本文真正需要守住的是：AC-GATE 是否提供了传统 forecasting baseline 无法直接给出的、可解释的实体级滞后异质性证据。

@@ -1,100 +1,116 @@
-# 当前结论与问题记录
+# 当前问题、证据与研究定位记录
 
-更新时间：2026-04-19
+更新时间：2026-04-25
 
-## 一、总体结论
+## 一、先回答核心定位问题
 
+结合 `plan.md` 的研究设计，本项目的核心目的不是提出一个在所有真实数据集上都必须压过所有 forecasting baseline 的通用预测器，而是提出并验证 **AC-GATE 机制**：用吸收能力 / 治理质量 / 人力资本等实体级 proxy 去条件化滞后权重，从而研究不同实体之间的 **滞后异质性**。
 
-1. 在 synthetic 合成数据上，AC-GATE 不仅验证了机制可行，而且在结构恢复和任务指标上都明显优于 plain LSTM。
-2. 在 economics 和 energy 两个真实数据域上，AC-GATE 的模块必要性和异质滞后学习迹象是存在的，但这种结构优势尚未稳定转化为更好的预测性能。
-3. 因此，当前真正的问题不是“AC-GATE 机制无效”，而是“真实域中的机制优势尚未稳定兑现为 forecast 优势，且机制解释证据仍不够稳”。
+因此，性能比较的地位应当这样界定：
 
-## 二、分域发现
+1. **预测性能不是唯一核心贡献**：AC-GATE 的主要贡献是让模型输出实体级 lag distribution、effective k* 和与 proxy 对齐的机制诊断。
+2. **预测性能仍是必要约束**：如果模型预测明显差于 matched LSTM 或简单强基线，就很难说明学到的滞后结构具有实用意义。
+3. **不需要宣称全面 SOTA**：真实面板数据中 persistence、Panel OLS 或 ARDL 可能天然很强，AC-GATE 不必在所有域都超过它们，尤其不应把论文主张写成“预测性能全面优于传统方法”。
+4. **需要证明机制不是装饰**：AC-GATE 至少要在 synthetic 与消融实验中证明 AC conditioning 和 adaptive lag gate 对滞后恢复是必要的；在真实域中则要展示非退化的 lag heterogeneity 和可解释的 proxy alignment。
 
-### 1. Synthetic：机制已验证，不是当前瓶颈
+最稳妥的研究口径是：
 
-当前 synthetic 结果已经说明：
+> AC-GATE is a mechanism-oriented neural panel model for discovering AC-conditioned heterogeneous lag structures. Forecasting performance is used as a calibration and sanity check, not as the sole contribution.
 
-1. full CMDL 相比 plain LSTM，在 linear 和 nonlinear 场景下的 k* 恢复明显更好。
-2. no_ac_encoder 与 uniform_lag 会系统性破坏 k* 排序恢复，说明 AC conditioning 和 adaptive lag gating 是必要模块。
-3. no_recon_regularization 与 full CMDL 基本重合，说明 reconstruction regularization 不是 synthetic 主增益来源。
+## 二、当前最新证据概览
 
-由此可得：
+### 1. Synthetic：机制主张已经成立
 
-1. synthetic 已经承担了主要机制证明任务。
-2. 当前不应继续把 synthetic 当作主调参战场，而应把它作为后续真实域修改的回归护栏。
+synthetic 仍是最强的机制证明域：
 
-### 2. Economics：预测增益很弱，机制符号不稳甚至反向
+1. full CMDL 在 linear / nonlinear synthetic 场景下明显优于 matched plain LSTM 的 k* 恢复。
+2. `no_ac_encoder` 和 `uniform_lag` 会系统性破坏 k* 恢复，说明 AC conditioning 与 adaptive lag gating 是必要模块。
+3. `no_recon_regularization` 与 full CMDL 接近，说明主要增益来自 AC-GATE 的条件化滞后结构，而不是单纯 reconstruction regularization。
 
-当前 economics 域暴露出两个层面的问题：
+这说明当前问题不是 AC-GATE 机制本身无效，而是真实域中的证据强度、评估 anchor、简单基线校准和论文口径需要进一步收束。
 
-#### 2.1 Forecast 层面
+### 2. Economics：forecast 有局部改善，机制方向仍不支持
 
-1. formal_target 下，CMDL 的平均 test R2 只比 plain LSTM 略好一点，但两者整体仍处于负 R2 区间。
-2. 这说明 AC-GATE 在 economics 上并非完全无效，但现阶段预测收益非常有限，尚不足以构成强有力优势。
+最新 Phase4/Phase6 notebook focused formal validation 使用 seed `[0]`、`smoke=False`、30 epochs。结果显示：
 
-#### 2.2 Mechanism 层面
+1. Forecast 层面：CMDL `test_r2=0.0445`，高于 Plain LSTM `test_r2=0.0084`。
+2. Phase6 calibration：CMDL 高于 Panel OLS，`delta_vs_panel_ols=+0.0235`，但明显低于 persistence，`delta_vs_persistence=-0.8923`，因此只能判为 partial。
+3. Phase4 mechanism：anchor-adjusted rho 为 `-0.1590`，没有满足预期机制方向。
+4. Heterogeneity：`lag_gate_sensitivity_range=0.1046`，`z_std=0.1704`，说明 lag gate 和 latent 表征不是常数退化。
+5. Ablation guard：`no_ac_encoder` 的 `kstar_std=0.0`，`uniform_lag` 的 `top1_share=1.0`，退化对照能暴露异质性边界。
 
-1. formal_target 下，CMDL 的 lag-proxy Spearman rho 明显为负，而 plain LSTM 反而接近零。
-2. growth_aware 与 effective_labor_aware 虽然改善了部分 forecast 表现，但并没有稳定修复机制符号问题。
-3. effective_labor_aware 相比 growth_aware 更有利于 forecast，但 CMDL 的机制相关指标仍以负号或符号不一致为主。
-4. 当前 CMDL 的 effective k* 标准差普遍偏小，说明模型虽未完全塌缩，但异质滞后展开仍不充分。
+由此可得：economics 可以支持“AC-GATE 在真实经济面板上具备一定 forecast signal 和非退化滞后结构”，但不能支持“economics 已经提供强机制方向证据”。当前 economics 的主要问题仍是机制 anchor 与学到的 k* 方向不一致。
 
-由此可得：
+### 3. Energy：机制证据明显增强，但预测仍输给简单强基线
 
-1. economics 的核心问题不是“模型学不到任何结构”，而是“学到的结构与当前 proxy anchor 的评估方向不一致”。
-2. 当前还不能把 economics 写成 AC-GATE 的强机制验证域。
+最新 Phase4/Phase6 notebook focused formal validation 同样使用 seed `[0]`、`smoke=False`、30 epochs。结果显示：
 
-### 3. Energy：只有边际预测优势，机制证据不足
+1. Forecast 层面：CMDL `test_r2=-0.0265`，略高于 Plain LSTM `test_r2=-0.0325`。
+2. Phase6 calibration：CMDL 低于 persistence 和 Panel OLS，`delta_vs_persistence=-0.7854`，`delta_vs_panel_ols=-0.6594`，因此不能宣称预测优于简单强基线。
+3. Phase4 mechanism：anchor-adjusted rho 为 `0.6442`，满足预期机制方向。
+4. Per-proxy WGI：三组 proxy 均为正，`government_effectiveness=0.6442`，`regulatory_quality=0.6444`，`rule_of_law=0.6820`。
+5. Heterogeneity：`lag_gate_sensitivity_range=0.1830`，`z_std=0.0956`，说明 learned lag gate 非退化。
 
-当前 energy 域的主要现象是：
+由此可得：energy 当前更适合作为真实域机制可解释性和跨域可运行性的支持证据，但它不是强 forecasting superiority 证据。
 
-1. CMDL 对 plain LSTM 只有很小的平均 test R2 优势。
-2. lag-proxy Spearman rho 的均值为负，且 seed 间波动非常大，说明机制符号不稳定。
-3. effective k* 标准差明显小于 plain LSTM 的 post-hoc k* spread，说明 learned heterogeneity 仍偏弱。
-4. 现有 energy ablation 证据强度不足，仍偏接近单 seed 结论，无法支持强机制主张。
+## 三、当前真正的问题
 
-由此可得：
+### 问题 1：论文主张需要从“预测优越性”转向“机制识别 + 合理预测”
 
-1. energy 当前最多能支持“AC-GATE 在该域可运行且有轻微 forecast 改善”。
-2. 还不能支持“AC-GATE 在 energy 上稳定优于 LSTM”这一强表述。
+如果把项目写成预测模型论文，就会被 persistence、Panel OLS、TFT、ARDL 等强基线直接挑战。更合理的主张是：AC-GATE 提供传统方法难以直接给出的实体级异质滞后分布，并通过机制诊断解释不同 proxy 条件下的传导速度差异。
 
-## 三、当前已确认的问题
+### 问题 2：真实域 forecast 只能作为校准证据，不能单独支撑主贡献
 
-### 问题 1：真实域里 forecast 优势不稳定
+economics 和 energy 都能在 focused run 中超过 matched Plain LSTM，但都没有稳定压过最强简单 baseline。尤其 persistence 在真实面板中非常强，这说明当前模型不能被包装成通用预测 SOTA。
 
-1. synthetic 上 CMDL 明确优于 LSTM。
-2. 但在 economics 和 energy 上，forecast 优势要么很弱，要么只在少量配置下成立。
-3. 这说明当前 AC-GATE 的结构收益跨域迁移能力仍不足。
+### 问题 3：economics 机制方向仍是主要短板
 
-### 问题 2：真实域 mechanism 指标与 forecast 指标脱节
+economics 的 adjusted rho 仍为负，说明当前 effective-labor anchor 下，学到的滞后结构没有按预期方向排列。可能原因包括：
 
-1. 在 economics 和 energy 上，模型并非完全没有预测能力。
-2. 但 lag-proxy rho、k* spread、sign consistency 等 mechanism 证据不稳。
-3. 因此当前出现了“预测还能跑，但机制解释不成立或不稳”的割裂状态。
+1. 经济机制假设本身过于简化；
+2. anchor proxy 的符号或含义与 k* 预期关系不完全匹配；
+3. 训练目标虽然已 anchor-weighted，但真实数据中的 proxy 关系仍不支持该方向；
+4. 单 seed focused run 仍不足以判断稳定性。
 
-### 问题 3：当前真实域的评估口径可能与训练目标不完全对齐
+### 问题 4：energy 的机制结果好，但 forecast 口径必须克制
 
-1. 经济域当前训练时重构多个 proxies，但 notebook 机制判断往往只盯一个 anchor proxy。
-2. 这可能导致模型优化目标和最终机制评价目标不一致。
-3. 现有负 rho 结果不能直接解释为 AC-GATE 机制失败，也可能是 objective 与 evaluation anchor 错位。
+energy 的 WGI proxy alignment 很强，但 test R2 不及 persistence / Panel OLS。该域应写成“机制诊断支持 + 可运行性证据”，而不是“预测性能优势证据”。
 
-### 问题 4：reconstruction 分支的解释需要谨慎
+### 问题 5：当前 notebook 正式验证仍是单 seed
 
-1. 当前 AC encoder 中 proxy reconstruction 使用了 detached z 表示。
-2. economics 和 energy 的 proxy 指标又依赖训练后 OLS refit。
-3. 因此真实域里的 proxy_recon_r2 和 lag-proxy rho，更接近“冻结后 latent 的可读性诊断”，而不完全等同于“端到端联合学习是否成功”。
+这轮 notebook 验证是必要且有价值的 focused formal validation，但还不是论文级 3-seed 或 5-seed 聚合。所有结论都应标注为 focused run evidence，最终表格需要多 seed 复核。
 
-### 问题 5：energy 目前证据强度不够
+## 四、当前最稳妥的研究结论
 
-1. 当前 energy 的多 seed 机制结论仍然很弱。
-2. 若不先补强证据，就继续做复杂建模修改，风险很高。
+1. AC-GATE 的核心机制在 synthetic 上已经被清楚验证：它能恢复 AC-conditioned heterogeneous lags，且关键模块消融会退化。
+2. 在真实域中，AC-GATE 已经能输出非退化的 lag heterogeneity，并在 economics / energy 上都略优于 matched Plain LSTM。
+3. 但真实域中的 forecast superiority 不能作为主结论，因为简单强基线仍然很难被稳定超过。
+4. economics 的机制方向仍不成立，应作为限制、反例或待修复域处理。
+5. energy 的机制方向较好，可以作为真实域机制诊断的主要支持案例，但仍需承认预测校准不足。
 
-## 四、当前最稳妥的研究口径
+## 五、建议论文口径
 
-现阶段最稳妥的总结应为：
+当前论文不应写成：
 
-1. AC-GATE 已在 synthetic 上强力验证了异质滞后机制本身是有效且优于 plain LSTM 的。
-2. 在 economics 和 energy 上，AC-GATE 已显示出一定的结构学习迹象和局部 forecast 收益。
-3. 但真实域中的机制证据仍不稳定，尚不足以支持“AC-GATE 在真实数据上稳定优于 LSTM”的强结论。
-4. 因而当前论文叙事应把 synthetic 作为主要机制证明域，把 economics 和 energy 暂时视为 generalization 或 feasibility 域，而不是同强度的机制验证域。
+1. AC-GATE universally outperforms all baselines in forecasting.
+2. Real-data domains already prove stable predictive superiority.
+3. Economics already validates the expected mechanism.
+
+当前论文更适合写成：
+
+1. AC-GATE proposes a learnable mechanism for entity-level heterogeneous lag discovery.
+2. Synthetic experiments identify and validate the mechanism under known ground truth.
+3. Real-data experiments test whether the mechanism remains non-degenerate and diagnostically meaningful.
+4. Forecasting metrics are reported as calibration evidence: the model should remain competitive, but full forecasting dominance is not the central claim.
+5. The strongest current real-data mechanism evidence appears in energy; economics reveals important limitations of proxy-anchor alignment.
+
+## 六、当前判断
+
+当前项目仍然成立，但需要把主轴从“我要证明预测性能优于其他方法”调整为“我要证明 AC-GATE 能研究滞后异质性，并在预测上保持合理竞争力”。
+
+性能优于其他方法是加分项，不是唯一成败标准；但若模型长期显著弱于 matched LSTM 或简单强基线，则必须降低真实域 claim 强度。最合理的评价层级应为：
+
+1. synthetic 证明机制可恢复；
+2. ablation 证明模块必要；
+3. real data 证明 lag gate 非退化且部分域 proxy alignment 成立；
+4. forecast baseline 证明模型没有为了解释性付出不可接受的预测代价。
