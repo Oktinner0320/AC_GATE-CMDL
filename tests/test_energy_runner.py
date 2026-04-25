@@ -21,8 +21,11 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 
 from data.energy.download import download_energy_table  # noqa: E402
-from experiments.run_energy import run_experiment  # noqa: E402
-from experiments.run_energy_lstm_baseline import run_experiment as run_baseline_experiment  # noqa: E402
+from experiments.run_energy import run_experiment, run_suite as run_cmdl_suite  # noqa: E402
+from experiments.run_energy_lstm_baseline import (  # noqa: E402
+    run_experiment as run_baseline_experiment,
+    run_suite as run_baseline_suite,
+)
 from tests.test_energy_loader import EnergyLoaderTest  # noqa: E402
 
 
@@ -134,6 +137,85 @@ class EnergyRunnerTest(unittest.TestCase):
             self.assertTrue((run_dir / "predictions.csv").exists())
             self.assertTrue((run_dir / "history.csv").exists())
             self.assertTrue((run_dir / "best_model.pt").exists())
+
+    def test_multiseed_cmdl_and_baseline_suites_write_aggregates(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            temporary_root = Path(temporary_dir)
+            csv_path = self._build_merged_fixture(temporary_root)
+
+            cmdl_output_root = temporary_root / "cmdl_suite"
+            cmdl_args = Namespace(
+                csv_path=str(csv_path),
+                year_start=1996,
+                year_end=2023,
+                train_end_year=2011,
+                val_end_year=2017,
+                treatment_column="renewables_share_energy",
+                target_column="co2_per_unit_energy",
+                feature_bundle="minimal",
+                max_missing_share=0.15,
+                seed=0,
+                seeds=[0, 1],
+                lr=1e-3,
+                epochs=1,
+                patience=1,
+                lambda_r=0.1,
+                temperature=1.0,
+                lag_bias_strength=1.0,
+                grad_clip=1.0,
+                grad_clip_mode="global",
+                output_dir=str(cmdl_output_root),
+                experiment_name="energy_cmdl_suite",
+                device="cpu",
+                disable_mlflow=True,
+                log_every=1,
+                smoke=True,
+            )
+
+            cmdl_summary, cmdl_aggregated = run_cmdl_suite(cmdl_args)
+
+            self.assertEqual(len(cmdl_summary), 2)
+            self.assertEqual(int(cmdl_aggregated.iloc[0]["n_seeds"]), 2)
+            self.assertTrue((cmdl_output_root / "cmdl_results.csv").exists())
+            self.assertTrue((cmdl_output_root / "cmdl_results_aggregated.csv").exists())
+            self.assertTrue((cmdl_output_root / "cmdl_mechanism_summary.csv").exists())
+            for seed in [0, 1]:
+                self.assertTrue((cmdl_output_root / f"energy_cmdl_suite_seed{seed}" / "summary.json").exists())
+
+            baseline_output_root = temporary_root / "baseline_suite"
+            baseline_args = Namespace(
+                csv_path=str(csv_path),
+                year_start=1996,
+                year_end=2023,
+                train_end_year=2011,
+                val_end_year=2017,
+                treatment_column="renewables_share_energy",
+                target_column="co2_per_unit_energy",
+                feature_bundle="minimal",
+                max_missing_share=0.15,
+                seed=0,
+                seeds=[0, 1],
+                lr=1e-3,
+                epochs=1,
+                patience=1,
+                grad_clip=1.0,
+                output_dir=str(baseline_output_root),
+                experiment_name="energy_lstm_suite",
+                device="cpu",
+                disable_mlflow=True,
+                log_every=1,
+                smoke=True,
+            )
+
+            baseline_summary, baseline_aggregated = run_baseline_suite(baseline_args)
+
+            self.assertEqual(len(baseline_summary), 2)
+            self.assertEqual(int(baseline_aggregated.iloc[0]["n_seeds"]), 2)
+            self.assertTrue((baseline_output_root / "baseline_results.csv").exists())
+            self.assertTrue((baseline_output_root / "baseline_results_aggregated.csv").exists())
+            self.assertTrue((baseline_output_root / "baseline_mechanism_summary.csv").exists())
+            for seed in [0, 1]:
+                self.assertTrue((baseline_output_root / f"energy_lstm_suite_seed{seed}" / "summary.json").exists())
 
 
 if __name__ == "__main__":

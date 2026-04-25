@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 from pathlib import Path
 from typing import Any
 
@@ -37,6 +38,7 @@ _IDENTITY_COLUMNS = [
     "feature_bundle",
     "seq_feature_names",
     "proxy_feature_names",
+    "proxy_expected_signs",
     "anchor_proxy_name",
     "anchor_proxy_index",
     "anchor_expected_sign",
@@ -169,6 +171,29 @@ def _finite_or_none(value: Any) -> Any:
     return value
 
 
+def _slug(name: str) -> str:
+    normalized = re.sub(r"[^0-9a-zA-Z]+", "_", str(name).strip().lower()).strip("_")
+    return normalized or "proxy"
+
+
+def _split_csv(value: Any) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [str(item) for item in value]
+    return [part.strip() for part in str(value).split(",") if part.strip()]
+
+
+def _split_float_csv(value: Any) -> list[float]:
+    values: list[float] = []
+    for part in _split_csv(value):
+        try:
+            values.append(float(part))
+        except (TypeError, ValueError):
+            values.append(float("nan"))
+    return values
+
+
 def _bool_flag(value: Any) -> bool | None:
     normalized = _finite_or_none(value)
     if normalized is None:
@@ -228,26 +253,32 @@ def _normalize_split_metrics(
         return row
 
     if family == "grouped_ardl":
-        row.update(
-            {
-                f"{split}_proxy_signal_r2": None,
-                f"{split}_proxy_signal_metric_valid": None,
-                f"{split}_effective_kstar_proxy_spearman_rho": None,
-                f"{split}_effective_kstar_proxy_spearman_p": None,
-                f"{split}_effective_kstar_proxy_spearman_adjusted_rho": None,
-                f"{split}_effective_kstar_proxy_mean_spearman_rho": None,
-                f"{split}_effective_kstar_proxy_mean_spearman_adjusted_rho": None,
-                f"{split}_effective_kstar_mean": _finite_or_none(metrics.get("effective_lag_mean")),
-                f"{split}_effective_kstar_std": None,
-                f"{split}_effective_lag_entropy_mean": None,
-                f"{split}_effective_lag_entropy_std": None,
-                f"{split}_effective_lag_top1_share": None,
-                f"{split}_effective_kstar_proxy_metric_valid": None,
-                f"{split}_grouped_ardl_best_lag_mean": _finite_or_none(metrics.get("best_lag_mean")),
-                f"{split}_grouped_ardl_effective_lag_mean": _finite_or_none(metrics.get("effective_lag_mean")),
-                f"{split}_grouped_ardl_group_count": _finite_or_none(metrics.get("group_count")),
-            }
-        )
+        grouped_metrics = {
+            f"{split}_proxy_signal_r2": None,
+            f"{split}_proxy_signal_metric_valid": None,
+            f"{split}_effective_kstar_proxy_spearman_rho": None,
+            f"{split}_effective_kstar_proxy_spearman_p": None,
+            f"{split}_effective_kstar_proxy_spearman_adjusted_rho": None,
+            f"{split}_effective_kstar_proxy_mean_spearman_rho": None,
+            f"{split}_effective_kstar_proxy_mean_spearman_adjusted_rho": None,
+            f"{split}_effective_kstar_mean": _finite_or_none(metrics.get("effective_lag_mean")),
+            f"{split}_effective_kstar_std": None,
+            f"{split}_effective_lag_entropy_mean": None,
+            f"{split}_effective_lag_entropy_std": None,
+            f"{split}_effective_lag_top1_share": None,
+            f"{split}_effective_kstar_proxy_metric_valid": None,
+            f"{split}_grouped_ardl_best_lag_mean": _finite_or_none(metrics.get("best_lag_mean")),
+            f"{split}_grouped_ardl_effective_lag_mean": _finite_or_none(metrics.get("effective_lag_mean")),
+            f"{split}_grouped_ardl_group_count": _finite_or_none(metrics.get("group_count")),
+        }
+        for label in ("low", "mid", "high"):
+            grouped_metrics[f"{split}_grouped_ardl_{label}_best_lag"] = _finite_or_none(
+                metrics.get(f"{label}_best_lag")
+            )
+            grouped_metrics[f"{split}_grouped_ardl_{label}_effective_lag"] = _finite_or_none(
+                metrics.get(f"{label}_effective_lag")
+            )
+        row.update(grouped_metrics)
         return row
 
     proxy_metric_valid = _bool_flag(metrics.get("proxy_metric_valid"))
@@ -331,6 +362,7 @@ def _normalize_summary(summary_path: Path, output_root: Path, family: str) -> di
         "feature_bundle": data.get("feature_bundle"),
         "seq_feature_names": ",".join(data.get("seq_feature_columns", [])),
         "proxy_feature_names": ",".join(data.get("proxy_columns", [])),
+        "proxy_expected_signs": ",".join(str(value) for value in data.get("proxy_expected_signs", [])),
         "anchor_proxy_name": data.get("anchor_proxy_name"),
         "anchor_proxy_index": data.get("anchor_proxy_index"),
         "anchor_expected_sign": data.get("anchor_expected_sign"),
@@ -448,6 +480,27 @@ def _first_numeric(frame: pd.DataFrame, display_name: str, column: str) -> float
     return float(values.iloc[0])
 
 
+def _mean_numeric(frame: pd.DataFrame, display_name: str, column: str) -> float | None:
+    if frame.empty or column not in frame.columns:
+        return None
+    rows = frame.loc[frame["display_name"] == display_name]
+    if rows.empty:
+        return None
+    values = pd.to_numeric(rows[column], errors="coerce").dropna()
+    if values.empty:
+        return None
+    return float(values.mean())
+
+
+def _positive_share_for(frame: pd.DataFrame, display_name: str, column: str) -> float | None:
+    if frame.empty or column not in frame.columns:
+        return None
+    rows = frame.loc[frame["display_name"] == display_name]
+    if rows.empty:
+        return None
+    return _positive_share(rows[column])
+
+
 def _delta_answer(*deltas: float | None) -> str:
     observed = [value for value in deltas if value is not None]
     if not observed:
@@ -461,21 +514,31 @@ def _delta_answer(*deltas: float | None) -> str:
 
 
 def _named_proxy_columns(comparison_frame: pd.DataFrame, split: str, metric_prefix: str) -> list[str]:
-    prefix = f"{split}_{metric_prefix}_proxy_"
+    metric_base = f"{split}_{metric_prefix}_"
+    proxy_prefix = f"{split}_{metric_prefix}_proxy_"
     suffix = "_spearman_adjusted_rho"
     columns: list[str] = []
     for column in comparison_frame.columns:
-        if not column.startswith(prefix) or not column.endswith(suffix):
+        if not column.startswith(metric_base) or not column.endswith(suffix):
             continue
         if column == f"{split}_{metric_prefix}_proxy_spearman_adjusted_rho":
             continue
         if column == f"{split}_{metric_prefix}_proxy_mean_spearman_adjusted_rho":
             continue
-        proxy_name = column.removeprefix(prefix).removesuffix(suffix)
-        if proxy_name == "mean" or proxy_name.isdigit():
+        proxy_name = column.removeprefix(metric_base).removesuffix(suffix)
+        if column.startswith(proxy_prefix):
+            proxy_name = column.removeprefix(proxy_prefix).removesuffix(suffix)
+        if proxy_name in {"proxy", "proxy_mean", "mean"} or proxy_name.isdigit():
             continue
         columns.append(column)
     return sorted(columns)
+
+
+def _proxy_name_from_metric_column(column: str, split: str, metric_prefix: str) -> str:
+    base = column.removeprefix(f"{split}_{metric_prefix}_").removesuffix("_spearman_adjusted_rho")
+    if base.startswith("proxy_"):
+        base = base.removeprefix("proxy_")
+    return base
 
 
 def build_economics_comparison(
@@ -665,8 +728,13 @@ def build_per_proxy_alignment_table(
         "feature_bundle",
         "anchor_proxy_name",
         "anchor_expected_sign",
+        "proxy_index",
         "proxy_name",
+        "expected_sign",
+        "rho",
+        "p_value",
         "adjusted_rho",
+        "metric_valid",
     ]
     if comparison_frame.empty:
         return pd.DataFrame(columns=columns)
@@ -681,13 +749,29 @@ def build_per_proxy_alignment_table(
         display_name = source_row.get("display_name")
         if allowed_names is not None and display_name not in allowed_names:
             continue
+        proxy_names = _split_csv(source_row.get("proxy_feature_names"))
+        proxy_expected_signs = _split_float_csv(source_row.get("proxy_expected_signs"))
         for column in named_columns:
             adjusted_rho = _finite_or_none(source_row.get(column))
             if adjusted_rho is None:
                 continue
-            proxy_name = column.removeprefix(f"{split}_kstar_proxy_").removesuffix(
-                "_spearman_adjusted_rho"
-            )
+            proxy_name = _proxy_name_from_metric_column(column, split, "kstar")
+            proxy_index: int | None = None
+            for candidate_index, candidate_name in enumerate(proxy_names, start=1):
+                candidate_slug = _slug(candidate_name)
+                if candidate_slug == proxy_name or candidate_slug.removeprefix("proxy_") == proxy_name:
+                    proxy_index = candidate_index
+                    break
+            rho = None
+            p_value = None
+            metric_valid = None
+            expected_sign = None
+            if proxy_index is not None:
+                rho = _finite_or_none(source_row.get(f"{split}_kstar_proxy_{proxy_index}_spearman_rho"))
+                p_value = _finite_or_none(source_row.get(f"{split}_kstar_proxy_{proxy_index}_spearman_p"))
+                metric_valid = _bool_flag(source_row.get(f"{split}_kstar_proxy_{proxy_index}_metric_valid"))
+                if proxy_index - 1 < len(proxy_expected_signs):
+                    expected_sign = _finite_or_none(proxy_expected_signs[proxy_index - 1])
             rows.append(
                 {
                     "display_name": display_name,
@@ -699,8 +783,13 @@ def build_per_proxy_alignment_table(
                     "feature_bundle": source_row.get("feature_bundle"),
                     "anchor_proxy_name": source_row.get("anchor_proxy_name"),
                     "anchor_expected_sign": source_row.get("anchor_expected_sign"),
+                    "proxy_index": proxy_index,
                     "proxy_name": proxy_name,
+                    "expected_sign": expected_sign,
+                    "rho": rho,
+                    "p_value": p_value,
                     "adjusted_rho": adjusted_rho,
+                    "metric_valid": metric_valid,
                 }
             )
 
@@ -709,6 +798,183 @@ def build_per_proxy_alignment_table(
         return result
     return result.sort_values(
         ["target_column", "feature_bundle", "display_name", "seed", "proxy_name"],
+        na_position="last",
+    ).reset_index(drop=True)
+
+
+def _positive_share(values: pd.Series) -> float | None:
+    numeric = pd.to_numeric(values, errors="coerce").dropna()
+    if numeric.empty:
+        return None
+    return float((numeric > 0.0).mean())
+
+
+def build_per_proxy_audit_summary_table(
+    comparison_frame: pd.DataFrame,
+    split: str = "test",
+    display_names: list[str] | tuple[str, ...] | None = ("CMDL",),
+) -> pd.DataFrame:
+    """Aggregate named per-proxy mechanism alignment across seeds."""
+
+    columns = [
+        "display_name",
+        "family",
+        "variant",
+        "target_column",
+        "feature_bundle",
+        "anchor_proxy_name",
+        "proxy_index",
+        "proxy_name",
+        "expected_sign",
+        "n_seeds",
+        "n_valid",
+        "rho_mean",
+        "rho_std",
+        "adjusted_rho_mean",
+        "adjusted_rho_std",
+        "adjusted_rho_min",
+        "adjusted_rho_max",
+        "positive_seed_share",
+        "p_value_median",
+        "mechanism_status",
+    ]
+    per_proxy = build_per_proxy_alignment_table(
+        comparison_frame,
+        split=split,
+        display_names=display_names,
+    )
+    if per_proxy.empty:
+        return pd.DataFrame(columns=columns)
+
+    group_columns = [
+        "display_name",
+        "family",
+        "variant",
+        "target_column",
+        "feature_bundle",
+        "anchor_proxy_name",
+        "proxy_index",
+        "proxy_name",
+        "expected_sign",
+    ]
+    working = per_proxy.copy()
+    for column in ["rho", "adjusted_rho", "p_value"]:
+        working[column] = pd.to_numeric(working[column], errors="coerce")
+    grouped = working.groupby(group_columns, dropna=False)
+    summary = grouped.agg(
+        n_seeds=("seed", lambda values: int(pd.Series(values).dropna().nunique())),
+        n_valid=("adjusted_rho", lambda values: int(pd.to_numeric(values, errors="coerce").dropna().shape[0])),
+        rho_mean=("rho", "mean"),
+        rho_std=("rho", "std"),
+        adjusted_rho_mean=("adjusted_rho", "mean"),
+        adjusted_rho_std=("adjusted_rho", "std"),
+        adjusted_rho_min=("adjusted_rho", "min"),
+        adjusted_rho_max=("adjusted_rho", "max"),
+        positive_seed_share=("adjusted_rho", _positive_share),
+        p_value_median=("p_value", "median"),
+    ).reset_index()
+    summary["mechanism_status"] = summary.apply(
+        lambda row: "candidate_positive"
+        if (not pd.isna(row.get("adjusted_rho_mean")))
+        and float(row.get("adjusted_rho_mean")) > 0.0
+        and (not pd.isna(row.get("positive_seed_share")))
+        and float(row.get("positive_seed_share")) >= (2.0 / 3.0)
+        else "mixed_or_negative",
+        axis=1,
+    )
+    for column in columns:
+        if column not in summary.columns:
+            summary[column] = None
+    return summary.loc[:, columns].sort_values(
+        ["target_column", "feature_bundle", "display_name", "proxy_index", "proxy_name"],
+        na_position="last",
+    ).reset_index(drop=True)
+
+
+def _first_present(row: pd.Series, names: list[str]) -> Any:
+    for name in names:
+        if name in row and row.get(name) is not None and not pd.isna(row.get(name)):
+            return row.get(name)
+    return None
+
+
+def build_grouped_ardl_lag_trend_table(comparison_frame: pd.DataFrame, split: str = "test") -> pd.DataFrame:
+    """Build low/mid/high grouped-ARDL lag trend rows for mechanism audits."""
+
+    columns = [
+        "display_name",
+        "family",
+        "seed",
+        "experiment",
+        "target_column",
+        "feature_bundle",
+        "anchor_proxy_name",
+        "anchor_expected_sign",
+        "group",
+        "group_order",
+        "best_lag",
+        "effective_lag",
+        "deterministic_baseline",
+    ]
+    if comparison_frame.empty:
+        return pd.DataFrame(columns=columns)
+
+    source = comparison_frame.loc[comparison_frame.get("family").eq("grouped_ardl")].copy()
+    if source.empty:
+        required_prefix = f"{split}_baseline_grouped_ardl_"
+        baseline_columns = [column for column in comparison_frame.columns if column.startswith(required_prefix)]
+        if not baseline_columns:
+            return pd.DataFrame(columns=columns)
+        source = comparison_frame.copy()
+
+    rows: list[dict[str, Any]] = []
+    for _, source_row in source.iterrows():
+        for group_order, group_name in enumerate(("low", "mid", "high"), start=1):
+            best_lag = _finite_or_none(
+                _first_present(
+                    source_row,
+                    [
+                        f"{split}_grouped_ardl_{group_name}_best_lag",
+                        f"{split}_{group_name}_best_lag",
+                        f"{split}_baseline_grouped_ardl_{group_name}_best_lag",
+                    ],
+                )
+            )
+            effective_lag = _finite_or_none(
+                _first_present(
+                    source_row,
+                    [
+                        f"{split}_grouped_ardl_{group_name}_effective_lag",
+                        f"{split}_{group_name}_effective_lag",
+                        f"{split}_baseline_grouped_ardl_{group_name}_effective_lag",
+                    ],
+                )
+            )
+            if best_lag is None and effective_lag is None:
+                continue
+            rows.append(
+                {
+                    "display_name": source_row.get("display_name"),
+                    "family": source_row.get("family"),
+                    "seed": source_row.get("seed"),
+                    "experiment": source_row.get("experiment"),
+                    "target_column": source_row.get("target_column"),
+                    "feature_bundle": source_row.get("feature_bundle"),
+                    "anchor_proxy_name": source_row.get("anchor_proxy_name"),
+                    "anchor_expected_sign": source_row.get("anchor_expected_sign"),
+                    "group": group_name,
+                    "group_order": group_order,
+                    "best_lag": best_lag,
+                    "effective_lag": effective_lag,
+                    "deterministic_baseline": True,
+                }
+            )
+
+    result = pd.DataFrame(rows, columns=columns)
+    if result.empty:
+        return result
+    return result.sort_values(
+        ["target_column", "feature_bundle", "seed", "group_order"],
         na_position="last",
     ).reset_index(drop=True)
 
@@ -750,6 +1016,15 @@ def build_mechanism_summary_table(comparison_frame: pd.DataFrame, split: str = "
     columns = [*group_columns, "n_seeds"]
     for column in value_columns:
         columns.extend([f"{column}_mean", f"{column}_std"])
+    positive_share_columns = [
+        f"{split}_effective_kstar_proxy_spearman_adjusted_rho",
+        f"{split}_effective_kstar_proxy_mean_spearman_adjusted_rho",
+        f"{split}_z_proxy_spearman_adjusted_rho",
+        f"{split}_z_anchor_adjusted_rho",
+    ]
+    for column in positive_share_columns:
+        columns.append(f"{column}_positive_share")
+    columns.append("mechanism_positive_seed_share")
 
     if comparison_frame.empty:
         return pd.DataFrame(columns=columns)
@@ -770,6 +1045,15 @@ def build_mechanism_summary_table(comparison_frame: pd.DataFrame, split: str = "
     n_seeds = grouped["seed"].nunique(dropna=True).reset_index(name="n_seeds")
     summary = summary.merge(n_seeds, on=existing_group_columns, how="left")
 
+    for column in positive_share_columns:
+        if column not in existing_value_columns:
+            continue
+        shares = grouped[column].apply(_positive_share).reset_index(name=f"{column}_positive_share")
+        summary = summary.merge(shares, on=existing_group_columns, how="left")
+    kstar_share_column = f"{split}_effective_kstar_proxy_spearman_adjusted_rho_positive_share"
+    if kstar_share_column in summary.columns:
+        summary["mechanism_positive_seed_share"] = summary[kstar_share_column]
+
     for column in columns:
         if column not in summary.columns:
             summary[column] = None
@@ -789,57 +1073,82 @@ def build_mechanism_result_log(comparison_frame: pd.DataFrame, split: str = "tes
     if comparison_frame.empty:
         return pd.DataFrame(columns=columns)
 
-    cmdl_r2 = _first_numeric(comparison_frame, "CMDL", f"{split}_r2")
-    plain_r2 = _first_numeric(comparison_frame, "Plain LSTM", f"{split}_r2")
-    cmdl_adjusted_rho = _first_numeric(
+    cmdl_r2 = _mean_numeric(comparison_frame, "CMDL", f"{split}_r2")
+    plain_r2 = _mean_numeric(comparison_frame, "Plain LSTM", f"{split}_r2")
+    cmdl_adjusted_rho = _mean_numeric(
         comparison_frame,
         "CMDL",
         f"{split}_effective_kstar_proxy_spearman_adjusted_rho",
     )
-    cmdl_lag_range = _first_numeric(comparison_frame, "CMDL", f"{split}_lag_gate_sensitivity_range")
-    cmdl_z_std = _first_numeric(comparison_frame, "CMDL", f"{split}_z_std")
-    cmdl_delta_persistence = _first_numeric(
+    cmdl_adjusted_share = _positive_share_for(
+        comparison_frame,
+        "CMDL",
+        f"{split}_effective_kstar_proxy_spearman_adjusted_rho",
+    )
+    cmdl_lag_range = _mean_numeric(comparison_frame, "CMDL", f"{split}_lag_gate_sensitivity_range")
+    cmdl_z_std = _mean_numeric(comparison_frame, "CMDL", f"{split}_z_std")
+    cmdl_delta_persistence = _mean_numeric(
         comparison_frame,
         "CMDL",
         f"{split}_r2_delta_vs_persistence",
     )
-    cmdl_delta_panel_ols = _first_numeric(
+    cmdl_delta_panel_ols = _mean_numeric(
         comparison_frame,
         "CMDL",
         f"{split}_r2_delta_vs_panel_ols",
     )
-    cmdl_delta_grouped_ardl = _first_numeric(
+    cmdl_delta_grouped_ardl = _mean_numeric(
         comparison_frame,
         "CMDL",
         f"{split}_r2_delta_vs_grouped_ardl",
     )
     if cmdl_delta_grouped_ardl is None and cmdl_r2 is not None:
-        grouped_ardl_r2 = _first_numeric(comparison_frame, "Grouped ARDL", f"{split}_r2")
+        grouped_ardl_r2 = _mean_numeric(comparison_frame, "Grouped ARDL", f"{split}_r2")
         if grouped_ardl_r2 is not None:
             cmdl_delta_grouped_ardl = cmdl_r2 - grouped_ardl_r2
-    no_ac_kstar_std = _first_numeric(
+    no_ac_kstar_std = _mean_numeric(
         comparison_frame,
         "No AC Encoder",
         f"{split}_effective_kstar_std",
     )
-    uniform_top1_share = _first_numeric(
+    uniform_top1_share = _mean_numeric(
         comparison_frame,
         "Uniform Lag",
         f"{split}_effective_lag_top1_share",
     )
-    per_proxy_table = build_per_proxy_alignment_table(comparison_frame, split=split)
-    per_proxy_min = None
-    if not per_proxy_table.empty:
-        per_proxy_values = pd.to_numeric(per_proxy_table["adjusted_rho"], errors="coerce").dropna()
-        if not per_proxy_values.empty:
-            per_proxy_min = float(per_proxy_values.min())
+    per_proxy_audit = build_per_proxy_audit_summary_table(comparison_frame, split=split)
+    per_proxy_min_mean = None
+    per_proxy_min_share = None
+    per_proxy_candidate_count = 0
+    if not per_proxy_audit.empty:
+        per_proxy_means = pd.to_numeric(per_proxy_audit["adjusted_rho_mean"], errors="coerce").dropna()
+        per_proxy_shares = pd.to_numeric(per_proxy_audit["positive_seed_share"], errors="coerce").dropna()
+        per_proxy_candidate_count = int((per_proxy_audit["mechanism_status"] == "candidate_positive").sum())
+        if not per_proxy_means.empty:
+            per_proxy_min_mean = float(per_proxy_means.min())
+        if not per_proxy_shares.empty:
+            per_proxy_min_share = float(per_proxy_shares.min())
+
+    mechanism_answer = "no"
+    if cmdl_adjusted_rho is not None and cmdl_adjusted_share is not None:
+        if cmdl_adjusted_rho > 0.0 and cmdl_adjusted_share >= (2.0 / 3.0):
+            mechanism_answer = "yes"
+        elif cmdl_adjusted_rho > 0.0 or cmdl_adjusted_share > 0.0:
+            mechanism_answer = "partial"
+
+    per_proxy_answer = "no"
+    if not per_proxy_audit.empty:
+        if per_proxy_candidate_count == len(per_proxy_audit):
+            per_proxy_answer = "yes"
+        elif per_proxy_candidate_count > 0:
+            per_proxy_answer = "partial"
 
     rows = [
         {
             "layer": "forecast_calibration",
             "question": "Does CMDL beat the matched LSTM?",
             "answer": "yes" if cmdl_r2 is not None and plain_r2 is not None and cmdl_r2 > plain_r2 else "no",
-            "evidence": f"CMDL {split}_r2={cmdl_r2}, Plain LSTM {split}_r2={plain_r2}.",
+            "evidence": f"mean CMDL {split}_r2={cmdl_r2}, mean Plain LSTM {split}_r2={plain_r2}.",
         },
         {
             "layer": "simple_baseline_calibration",
@@ -854,14 +1163,20 @@ def build_mechanism_result_log(comparison_frame: pd.DataFrame, split: str = "tes
         {
             "layer": "ac_gate_mechanism",
             "question": "Does the anchor-adjusted lag-proxy direction support the expected sign?",
-            "answer": "yes" if cmdl_adjusted_rho is not None and cmdl_adjusted_rho > 0.0 else "no",
-            "evidence": f"CMDL adjusted rho={cmdl_adjusted_rho}; positive means the expected anchor sign is satisfied.",
+            "answer": mechanism_answer,
+            "evidence": (
+                f"CMDL mean adjusted rho={cmdl_adjusted_rho}, "
+                f"positive_seed_share={cmdl_adjusted_share}; positive means the expected anchor sign is satisfied."
+            ),
         },
         {
             "layer": "ac_gate_per_proxy",
             "question": "Are all named proxy adjusted correlations aligned?",
-            "answer": "yes" if per_proxy_min is not None and per_proxy_min > 0.0 else "no",
-            "evidence": f"minimum named per-proxy adjusted rho={per_proxy_min}.",
+            "answer": per_proxy_answer,
+            "evidence": (
+                f"candidate_positive_proxies={per_proxy_candidate_count}/{len(per_proxy_audit)}, "
+                f"min_adjusted_rho_mean={per_proxy_min_mean}, min_positive_seed_share={per_proxy_min_share}."
+            ),
         },
         {
             "layer": "ac_gate_heterogeneity",
@@ -881,9 +1196,11 @@ def build_mechanism_result_log(comparison_frame: pd.DataFrame, split: str = "tes
 
 __all__ = [
     "build_economics_comparison",
+    "build_grouped_ardl_lag_trend_table",
     "build_interpretability_table",
     "build_mechanism_result_log",
     "build_mechanism_summary_table",
+    "build_per_proxy_audit_summary_table",
     "build_per_proxy_alignment_table",
     "build_task_table",
 ]

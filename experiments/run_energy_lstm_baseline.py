@@ -51,6 +51,7 @@ from evaluation.realdata_diagnostics import build_realdata_diagnostics, proxy_me
 from experiments.run_energy import (
     build_sqlite_tracking_uri,
     move_panel_to_device,
+    prefix_metrics,
     save_json,
     select_device,
     set_seed,
@@ -113,6 +114,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--max-missing-share", type=float, default=0.15)
     parser.add_argument("--seed", type=int, default=energy_defaults.seed)
+    parser.add_argument("--seeds", nargs="+", type=int, default=None)
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--epochs", type=int, default=120)
     parser.add_argument("--patience", type=int, default=20)
@@ -638,10 +640,127 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
         )
 
 
+def _resolve_seeds(args: argparse.Namespace) -> list[int]:
+    seeds = getattr(args, "seeds", None)
+    if seeds is None:
+        return [int(args.seed)]
+    return [int(seed) for seed in seeds]
+
+
+def _positive_share(values: pd.Series) -> float:
+    numeric = pd.to_numeric(values, errors="coerce").dropna()
+    if numeric.empty:
+        return float("nan")
+    return float((numeric > 0.0).mean())
+
+
+def aggregate_results(rows: list[dict[str, Any]]) -> pd.DataFrame:
+    """Aggregate repeated-seed energy plain-LSTM results into mean/std tables."""
+
+    if not rows:
+        return pd.DataFrame()
+
+    frame = pd.DataFrame(rows)
+    group_columns = [
+        column
+        for column in ["model", "treatment_column", "target_column", "feature_bundle"]
+        if column in frame.columns
+    ]
+    non_numeric_columns = {
+        "experiment",
+        "model",
+        "treatment_column",
+        "target_column",
+        "feature_bundle",
+        "seed",
+        "run_dir",
+        "source_path",
+    }
+    numeric_columns = [
+        column
+        for column in frame.columns
+        if column not in non_numeric_columns and pd.api.types.is_numeric_dtype(frame[column])
+    ]
+    grouped = frame.groupby(group_columns, dropna=False)
+    aggregated = grouped[numeric_columns].agg(["mean", "std"]).reset_index()
+    aggregated.columns = [
+        column if isinstance(column, str) else "_".join(part for part in column if part)
+        for column in aggregated.columns.to_flat_index()
+    ]
+    n_seeds = grouped["seed"].nunique(dropna=True).reset_index(name="n_seeds")
+    aggregated = aggregated.merge(n_seeds, on=group_columns, how="left")
+    positive_columns = [
+        column
+        for column in numeric_columns
+        if column.endswith("spearman_adjusted_rho") or column.endswith("adjusted_rho")
+    ]
+    for column in positive_columns:
+        shares = grouped[column].apply(_positive_share).reset_index(name=f"{column}_positive_share")
+        aggregated = aggregated.merge(shares, on=group_columns, how="left")
+    return aggregated
+
+
+def run_suite(args: argparse.Namespace) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Execute energy plain-LSTM for one or more seeds and write suite summaries."""
+
+    output_root = Path(args.output_dir).resolve()
+    output_root.mkdir(parents=True, exist_ok=True)
+
+    seeds = _resolve_seeds(args)
+    base_experiment_name = args.experiment_name
+    multi_seed_run = getattr(args, "seeds", None) is not None or len(seeds) > 1
+    summary_rows: list[dict[str, Any]] = []
+    for seed in seeds:
+        run_args = copy.deepcopy(args)
+        run_args.seed = int(seed)
+        run_args.seeds = None
+        if multi_seed_run:
+            run_args.experiment_name = f"{base_experiment_name}_seed{seed}"
+        summary = run_experiment(run_args)
+        summary_rows.append(
+            {
+                "experiment": summary["experiment"],
+                "model": "plain_lstm",
+                "treatment_column": summary["data"].get("treatment_column"),
+                "target_column": summary["data"]["target_column"],
+                "feature_bundle": summary["data"].get("feature_bundle"),
+                "source_path": summary["data"]["source_path"],
+                "seed": summary["config"]["seed"],
+                "best_epoch": summary["best_epoch"],
+                "best_val_task_loss": summary["best_val_task_loss"],
+                "run_dir": str(output_root / summary["experiment"]),
+                **prefix_metrics("train", summary["metrics"]["train"]),
+                **prefix_metrics("val", summary["metrics"]["val"]),
+                **prefix_metrics("test", summary["metrics"]["test"]),
+            }
+        )
+
+    summary_frame = pd.DataFrame(summary_rows)
+    summary_frame.to_csv(output_root / "baseline_results.csv", index=False)
+    save_json(output_root / "baseline_results.json", summary_rows)
+
+    aggregated = aggregate_results(summary_rows)
+    if not aggregated.empty:
+        aggregated.to_csv(output_root / "baseline_results_aggregated.csv", index=False)
+        aggregated.to_csv(output_root / "baseline_mechanism_summary.csv", index=False)
+
+    return summary_frame, aggregated
+
+
 def main() -> None:
     """Execute the energy real-data plain-LSTM baseline."""
 
     args = parse_args()
+    if getattr(args, "seeds", None) is not None:
+        summary_frame, aggregated = run_suite(args)
+        print("Energy plain-LSTM multi-seed baseline complete.")
+        if not summary_frame.empty:
+            print(summary_frame.to_string(index=False))
+        if not aggregated.empty:
+            print("\nAggregated across seeds:")
+            print(aggregated.to_string(index=False))
+        return
+
     summary = run_experiment(args)
     test_metrics = summary["metrics"]["test"]
 

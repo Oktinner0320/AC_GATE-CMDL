@@ -24,7 +24,12 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 
 from experiments.run_economics import setup_experiment  # noqa: E402
-from experiments.run_economics_ablation import prepare_variant_setup, run_suite  # noqa: E402
+from experiments.run_economics_ablation import (  # noqa: E402
+    aggregate_results,
+    build_ablation_decision_log,
+    prepare_variant_setup,
+    run_suite,
+)
 
 
 class EconomicsAblationTest(unittest.TestCase):
@@ -116,7 +121,10 @@ class EconomicsAblationTest(unittest.TestCase):
             self.assertTrue((output_root / "ablation_results.csv").exists())
             self.assertTrue((output_root / "ablation_results.json").exists())
             self.assertTrue((output_root / "ablation_results_aggregated.csv").exists())
+            self.assertTrue((output_root / "ablation_mechanism_summary.csv").exists())
+            self.assertTrue((output_root / "ablation_decision_log.csv").exists())
             self.assertEqual(len(aggregated), 3)
+            self.assertTrue((aggregated["n_seeds"] == 1).all())
 
             no_recon_run_dir = output_root / "economics_ablation_no_recon_regularization_seed0"
             no_recon_summary = json.loads((no_recon_run_dir / "summary.json").read_text(encoding="utf-8"))
@@ -149,6 +157,64 @@ class EconomicsAblationTest(unittest.TestCase):
                 self.assertTrue((run_dir / "predictions.csv").exists())
                 self.assertTrue((run_dir / "history.csv").exists())
                 self.assertTrue((run_dir / "best_model.pt").exists())
+
+    def test_aggregate_results_reports_multiseed_positive_shares(self) -> None:
+        rows = [
+            {
+                "variant": "no_ac_encoder",
+                "target_column": "ctfp",
+                "feature_bundle": "effective_labor_aware",
+                "seed": 0,
+                "test_kstar_proxy_spearman_adjusted_rho": 0.20,
+                "test_kstar_std": 0.00,
+                "test_lag_gate_sensitivity_range": 0.00,
+                "test_proxy_recon_r2": np.nan,
+            },
+            {
+                "variant": "no_ac_encoder",
+                "target_column": "ctfp",
+                "feature_bundle": "effective_labor_aware",
+                "seed": 1,
+                "test_kstar_proxy_spearman_adjusted_rho": -0.10,
+                "test_kstar_std": 0.00,
+                "test_lag_gate_sensitivity_range": 0.00,
+                "test_proxy_recon_r2": np.nan,
+            },
+            {
+                "variant": "uniform_lag",
+                "target_column": "ctfp",
+                "feature_bundle": "effective_labor_aware",
+                "seed": 0,
+                "test_kstar_proxy_spearman_adjusted_rho": 0.30,
+                "test_kstar_std": 0.00,
+                "test_lag_gate_sensitivity_range": 0.10,
+                "test_proxy_recon_r2": 0.20,
+            },
+            {
+                "variant": "uniform_lag",
+                "target_column": "ctfp",
+                "feature_bundle": "effective_labor_aware",
+                "seed": 1,
+                "test_kstar_proxy_spearman_adjusted_rho": 0.40,
+                "test_kstar_std": 0.00,
+                "test_lag_gate_sensitivity_range": 0.10,
+                "test_proxy_recon_r2": 0.25,
+            },
+        ]
+
+        aggregated = aggregate_results(rows)
+        decision_log = build_ablation_decision_log(pd.DataFrame(rows))
+
+        no_ac_row = aggregated.loc[aggregated["variant"] == "no_ac_encoder"].iloc[0]
+        uniform_row = aggregated.loc[aggregated["variant"] == "uniform_lag"].iloc[0]
+        self.assertEqual(int(no_ac_row["n_seeds"]), 2)
+        self.assertAlmostEqual(no_ac_row["test_kstar_proxy_spearman_adjusted_rho_positive_share"], 0.5)
+        self.assertAlmostEqual(uniform_row["test_kstar_proxy_spearman_adjusted_rho_positive_share"], 1.0)
+
+        uniform_decisions = decision_log.loc[decision_log["variant"] == "uniform_lag"]
+        answers = dict(zip(uniform_decisions["layer"], uniform_decisions["answer"]))
+        self.assertEqual(answers["mechanism_direction"], "yes")
+        self.assertEqual(answers["lag_heterogeneity"], "no")
 
     def test_run_suite_smoke_supports_effective_labor_bundle(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_dir:

@@ -362,13 +362,18 @@ def aggregate_results(rows: list[dict[str, Any]]) -> pd.DataFrame:
         return pd.DataFrame()
 
     frame = pd.DataFrame(rows)
-    group_columns = [column for column in ["variant", "treatment_column", "target_column"] if column in frame.columns]
+    group_columns = [
+        column
+        for column in ["variant", "treatment_column", "target_column", "feature_bundle"]
+        if column in frame.columns
+    ]
     non_numeric_columns = {
         "experiment",
         "model",
         "variant",
         "treatment_column",
         "target_column",
+        "feature_bundle",
         "seed",
         "run_dir",
         "source_path",
@@ -381,12 +386,74 @@ def aggregate_results(rows: list[dict[str, Any]]) -> pd.DataFrame:
         for column in frame.columns
         if column not in non_numeric_columns and pd.api.types.is_numeric_dtype(frame[column])
     ]
-    aggregated = frame.groupby(group_columns, as_index=False)[numeric_columns].agg(["mean", "std"])
+    grouped = frame.groupby(group_columns, dropna=False)
+    aggregated = grouped[numeric_columns].agg(["mean", "std"]).reset_index()
     aggregated.columns = [
         column if isinstance(column, str) else "_".join(part for part in column if part)
         for column in aggregated.columns.to_flat_index()
     ]
+    n_seeds = grouped["seed"].nunique(dropna=True).reset_index(name="n_seeds")
+    aggregated = aggregated.merge(n_seeds, on=group_columns, how="left")
+    positive_columns = [
+        column
+        for column in numeric_columns
+        if column.endswith("spearman_adjusted_rho") or column.endswith("adjusted_rho")
+    ]
+    for column in positive_columns:
+        shares = grouped[column].apply(_positive_share).reset_index(name=f"{column}_positive_share")
+        aggregated = aggregated.merge(shares, on=group_columns, how="left")
     return aggregated
+
+
+def _positive_share(values: pd.Series) -> float:
+    numeric = pd.to_numeric(values, errors="coerce").dropna()
+    if numeric.empty:
+        return float("nan")
+    return float((numeric > 0.0).mean())
+
+
+def build_ablation_decision_log(summary_frame: pd.DataFrame) -> pd.DataFrame:
+    """Build compact multi-seed energy ablation decision rows."""
+
+    columns = ["variant", "layer", "answer", "evidence"]
+    if summary_frame.empty:
+        return pd.DataFrame(columns=columns)
+
+    rows: list[dict[str, Any]] = []
+    for variant, group in summary_frame.groupby("variant", dropna=False):
+        kstar_std = pd.to_numeric(group.get("test_kstar_std"), errors="coerce")
+        adjusted = pd.to_numeric(group.get("test_kstar_proxy_spearman_adjusted_rho"), errors="coerce")
+        lag_range = pd.to_numeric(group.get("test_lag_gate_sensitivity_range"), errors="coerce")
+        proxy_signal = pd.to_numeric(group.get("test_proxy_recon_r2"), errors="coerce")
+        rows.extend(
+            [
+                {
+                    "variant": variant,
+                    "layer": "mechanism_direction",
+                    "answer": "yes" if _positive_share(adjusted) >= (2.0 / 3.0) else "no",
+                    "evidence": (
+                        f"adjusted_rho_mean={adjusted.mean(skipna=True)}, "
+                        f"positive_seed_share={_positive_share(adjusted)}"
+                    ),
+                },
+                {
+                    "variant": variant,
+                    "layer": "lag_heterogeneity",
+                    "answer": "yes" if float(kstar_std.mean(skipna=True) or 0.0) > 0.0 else "no",
+                    "evidence": (
+                        f"kstar_std_mean={kstar_std.mean(skipna=True)}, "
+                        f"lag_gate_sensitivity_range_mean={lag_range.mean(skipna=True)}"
+                    ),
+                },
+                {
+                    "variant": variant,
+                    "layer": "proxy_signal",
+                    "answer": "yes" if float(proxy_signal.mean(skipna=True) or 0.0) > 0.0 else "no",
+                    "evidence": f"proxy_recon_r2_mean={proxy_signal.mean(skipna=True)}",
+                },
+            ]
+        )
+    return pd.DataFrame(rows, columns=columns)
 
 
 def run_suite(args: argparse.Namespace) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -406,6 +473,7 @@ def run_suite(args: argparse.Namespace) -> tuple[pd.DataFrame, pd.DataFrame]:
                     "variant": variant,
                     "treatment_column": summary["data"].get("treatment_column"),
                     "target_column": summary["data"]["target_column"],
+                    "feature_bundle": summary["data"].get("feature_bundle"),
                     "source_path": summary["data"]["source_path"],
                     "seed": summary["config"]["seed"],
                     "effective_lambda_r": summary.get("effective_lambda_r"),
@@ -440,6 +508,11 @@ def run_suite(args: argparse.Namespace) -> tuple[pd.DataFrame, pd.DataFrame]:
     aggregated = aggregate_results(summary_rows)
     if not aggregated.empty:
         aggregated.to_csv(output_root / "ablation_results_aggregated.csv", index=False)
+        aggregated.to_csv(output_root / "ablation_mechanism_summary.csv", index=False)
+
+    decision_log = build_ablation_decision_log(summary_frame)
+    if not decision_log.empty:
+        decision_log.to_csv(output_root / "ablation_decision_log.csv", index=False)
 
     return summary_frame, aggregated
 

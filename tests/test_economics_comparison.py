@@ -20,9 +20,11 @@ if WORKSPACE_ROOT not in sys.path:
 
 from evaluation.economics_comparison import (  # noqa: E402
     build_economics_comparison,
+    build_grouped_ardl_lag_trend_table,
     build_interpretability_table,
     build_mechanism_result_log,
     build_mechanism_summary_table,
+    build_per_proxy_audit_summary_table,
     build_per_proxy_alignment_table,
     build_task_table,
 )
@@ -42,6 +44,7 @@ class EconomicsComparisonTest(unittest.TestCase):
             "feature_bundle": "minimal",
             "seq_feature_columns": ["x_t"],
             "proxy_columns": ["proxy_hc"],
+            "proxy_expected_signs": [-1.0],
             "anchor_proxy_name": "proxy_hc",
             "anchor_proxy_index": 0,
             "anchor_expected_sign": -1.0,
@@ -326,6 +329,129 @@ class EconomicsComparisonTest(unittest.TestCase):
             self.assertEqual(answers["simple_baseline_calibration"], "yes")
             self.assertEqual(answers["ac_gate_mechanism"], "yes")
             self.assertEqual(answers["ablation_guard"], "yes")
+
+    def test_audit_summary_and_grouped_ardl_lag_trend_are_multiseed_ready(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            temporary_root = Path(temporary_dir)
+            cmdl_root = temporary_root / "cmdl"
+            grouped_root = temporary_root / "grouped_ardl"
+
+            base_data = self._build_data_payload()
+            for seed, adjusted_rho in [(0, 0.60), (1, 0.20)]:
+                raw_rho = -adjusted_rho
+                self._write_summary(
+                    cmdl_root,
+                    f"E4_economics_cmdl_seed{seed}",
+                    {
+                        "experiment": f"E4_economics_cmdl_seed{seed}",
+                        "tracking_backend": "json",
+                        "device": "cpu",
+                        "best_epoch": 10 + seed,
+                        "best_val_task_loss": 0.10,
+                        "config": {
+                            "domain": "economics",
+                            "seed": seed,
+                            "max_lag": 10,
+                            "d_model": 64,
+                            "n_entities": 105,
+                            "seq_length": 44,
+                            "seq_features": 1,
+                            "n_proxies": 1,
+                            "static_dim": 2,
+                            "lambda_r": 0.1,
+                        },
+                        "data": base_data,
+                        "metrics": {
+                            "test": {
+                                "mse": 0.12,
+                                "mae": 0.23,
+                                "r2": 0.50 + 0.01 * seed,
+                                "kstar_proxy_spearman_rho": raw_rho,
+                                "kstar_proxy_spearman_p": 0.03,
+                                "kstar_proxy_spearman_adjusted_rho": adjusted_rho,
+                                "kstar_proxy_metric_valid": 1.0,
+                                "kstar_proxy_1_spearman_rho": raw_rho,
+                                "kstar_proxy_1_spearman_p": 0.03,
+                                "kstar_proxy_1_spearman_adjusted_rho": adjusted_rho,
+                                "kstar_proxy_1_metric_valid": 1.0,
+                                "kstar_proxy_hc_spearman_rho": raw_rho,
+                                "kstar_proxy_hc_spearman_adjusted_rho": adjusted_rho,
+                                "kstar_std": 0.4,
+                                "omega_entropy_mean": 1.5,
+                                "omega_top1_share": 0.5,
+                                "z_proxy_spearman_adjusted_rho": adjusted_rho / 2.0,
+                                "lag_gate_sensitivity_range": 0.25,
+                                "proxy_recon_r2": 0.4,
+                            }
+                        },
+                    },
+                )
+
+            self._write_summary(
+                grouped_root,
+                "E4_economics_grouped_ardl_seed0",
+                {
+                    "experiment": "E4_economics_grouped_ardl_seed0",
+                    "model": "grouped_ardl",
+                    "tracking_backend": "json",
+                    "device": "cpu",
+                    "best_epoch": 0,
+                    "best_val_task_loss": 0.20,
+                    "config": {
+                        "domain": "economics",
+                        "seed": 0,
+                        "max_lag": 10,
+                        "d_model": 64,
+                        "n_entities": 105,
+                        "seq_length": 44,
+                        "seq_features": 1,
+                        "n_proxies": 1,
+                        "static_dim": 2,
+                    },
+                    "data": base_data,
+                    "metrics": {
+                        "test": {
+                            "mse": 0.30,
+                            "mae": 0.40,
+                            "r2": 0.30,
+                            "group_count": 3.0,
+                            "best_lag_mean": 2.0,
+                            "effective_lag_mean": 3.0,
+                            "low_best_lag": 1.0,
+                            "low_effective_lag": 2.0,
+                            "mid_best_lag": 2.0,
+                            "mid_effective_lag": 3.0,
+                            "high_best_lag": 4.0,
+                            "high_effective_lag": 5.0,
+                        }
+                    },
+                },
+            )
+
+            comparison = build_economics_comparison(cmdl_root=cmdl_root, grouped_ardl_root=grouped_root)
+            per_proxy = build_per_proxy_alignment_table(comparison)
+            audit_summary = build_per_proxy_audit_summary_table(comparison)
+            mechanism_summary = build_mechanism_summary_table(comparison)
+            lag_trend = build_grouped_ardl_lag_trend_table(comparison)
+
+            self.assertEqual(len(per_proxy), 2)
+            self.assertEqual(len(audit_summary), 1)
+            self.assertEqual(audit_summary.iloc[0]["proxy_name"], "hc")
+            self.assertAlmostEqual(audit_summary.iloc[0]["positive_seed_share"], 1.0)
+            self.assertEqual(audit_summary.iloc[0]["mechanism_status"], "candidate_positive")
+
+            cmdl_summary = mechanism_summary.loc[mechanism_summary["display_name"] == "CMDL"].iloc[0]
+            self.assertEqual(int(cmdl_summary["n_seeds"]), 2)
+            self.assertAlmostEqual(
+                cmdl_summary["test_effective_kstar_proxy_spearman_adjusted_rho_positive_share"],
+                1.0,
+            )
+            self.assertAlmostEqual(cmdl_summary["mechanism_positive_seed_share"], 1.0)
+
+            self.assertEqual(len(lag_trend), 3)
+            high_row = lag_trend.loc[lag_trend["group"] == "high"].iloc[0]
+            self.assertAlmostEqual(high_row["effective_lag"], 5.0)
+            self.assertTrue(bool(high_row["deterministic_baseline"]))
 
     def test_empty_roots_return_empty_tables_with_stable_columns(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_dir:

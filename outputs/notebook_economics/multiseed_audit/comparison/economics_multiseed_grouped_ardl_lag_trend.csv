@@ -1,0 +1,10 @@
+display_name,family,seed,experiment,target_column,feature_bundle,anchor_proxy_name,anchor_expected_sign,group,group_order,best_lag,effective_lag,deterministic_baseline
+Grouped ARDL,grouped_ardl,0,multiseed_economics_grouped_ardl_seed0,ctfp,effective_labor_aware,proxy_effective_labor_anchor,-1.0,low,1,10.0,6.070965216226474,True
+Grouped ARDL,grouped_ardl,0,multiseed_economics_grouped_ardl_seed0,ctfp,effective_labor_aware,proxy_effective_labor_anchor,-1.0,mid,2,1.0,4.823772453516424,True
+Grouped ARDL,grouped_ardl,0,multiseed_economics_grouped_ardl_seed0,ctfp,effective_labor_aware,proxy_effective_labor_anchor,-1.0,high,3,2.0,5.636657777282413,True
+Grouped ARDL,grouped_ardl,1,multiseed_economics_grouped_ardl_seed1,ctfp,effective_labor_aware,proxy_effective_labor_anchor,-1.0,low,1,10.0,6.070965216226474,True
+Grouped ARDL,grouped_ardl,1,multiseed_economics_grouped_ardl_seed1,ctfp,effective_labor_aware,proxy_effective_labor_anchor,-1.0,mid,2,1.0,4.823772453516424,True
+Grouped ARDL,grouped_ardl,1,multiseed_economics_grouped_ardl_seed1,ctfp,effective_labor_aware,proxy_effective_labor_anchor,-1.0,high,3,2.0,5.636657777282413,True
+Grouped ARDL,grouped_ardl,2,multiseed_economics_grouped_ardl_seed2,ctfp,effective_labor_aware,proxy_effective_labor_anchor,-1.0,low,1,10.0,6.070965216226474,True
+Grouped ARDL,grouped_ardl,2,multiseed_economics_grouped_ardl_seed2,ctfp,effective_labor_aware,proxy_effective_labor_anchor,-1.0,mid,2,1.0,4.823772453516424,True
+Grouped ARDL,grouped_ardl,2,multiseed_economics_grouped_ardl_seed2,ctfp,effective_labor_aware,proxy_effective_labor_anchor,-1.0,high,3,2.0,5.636657777282413,True

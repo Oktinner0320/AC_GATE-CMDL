@@ -23,6 +23,7 @@ from evaluation.energy_comparison import (  # noqa: E402
     build_interpretability_table,
     build_mechanism_result_log,
     build_mechanism_summary_table,
+    build_per_proxy_audit_summary_table,
     build_per_proxy_alignment_table,
     build_task_table,
 )
@@ -320,15 +321,18 @@ class EnergyComparisonTest(unittest.TestCase):
             self.assertEqual(interpretability_table.iloc[0]["display_name"], "CMDL")
 
             per_proxy_table = build_per_proxy_alignment_table(comparison)
+            per_proxy_audit_summary = build_per_proxy_audit_summary_table(comparison)
             mechanism_summary = build_mechanism_summary_table(comparison)
             result_log = build_mechanism_result_log(comparison)
 
             self.assertEqual(len(per_proxy_table), 3)
+            self.assertEqual(len(per_proxy_audit_summary), 3)
             self.assertEqual(
                 per_proxy_table["proxy_name"].tolist(),
                 ["government_effectiveness", "regulatory_quality", "rule_of_law"],
             )
             self.assertAlmostEqual(float(per_proxy_table["adjusted_rho"].min()), 0.82)
+            self.assertTrue((per_proxy_audit_summary["positive_seed_share"] == 1.0).all())
             self.assertIn("test_lag_gate_sensitivity_range_mean", mechanism_summary.columns)
             answers = dict(zip(result_log["layer"], result_log["answer"]))
             self.assertEqual(answers["forecast_calibration"], "yes")
@@ -342,11 +346,13 @@ class EnergyComparisonTest(unittest.TestCase):
             task_table = build_task_table(comparison)
             interpretability_table = build_interpretability_table(comparison)
             per_proxy_table = build_per_proxy_alignment_table(comparison)
+            per_proxy_audit_summary = build_per_proxy_audit_summary_table(comparison)
             mechanism_summary = build_mechanism_summary_table(comparison)
             result_log = build_mechanism_result_log(comparison)
 
             self.assertTrue(comparison.empty)
             self.assertTrue(per_proxy_table.empty)
+            self.assertTrue(per_proxy_audit_summary.empty)
             self.assertTrue(mechanism_summary.empty)
             self.assertTrue(result_log.empty)
             self.assertEqual(
