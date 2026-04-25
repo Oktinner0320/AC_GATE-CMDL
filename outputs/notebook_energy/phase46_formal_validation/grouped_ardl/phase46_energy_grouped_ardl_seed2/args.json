@@ -1,0 +1,14 @@
+{
+  "csv_path": "c:\\DevSpace\\PyDevspace\\CMDL\\data\\energy\\raw\\energy_wgi_merged.csv",
+  "year_start": 1996,
+  "year_end": 2023,
+  "train_end_year": 2011,
+  "val_end_year": 2017,
+  "treatment_column": "renewables_share_energy",
+  "target_column": "co2_per_unit_energy",
+  "feature_bundle": "minimal",
+  "max_missing_share": 0.15,
+  "seed": 2,
+  "output_dir": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\notebook_energy\\phase46_formal_validation\\grouped_ardl",
+  "experiment_name": "phase46_energy_grouped_ardl_seed2"
+}
