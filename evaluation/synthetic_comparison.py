@@ -147,6 +147,7 @@ def build_synthetic_comparison(
     if not frames:
         return pd.DataFrame(columns=_BASE_COLUMNS)
 
+    frames = [frame.dropna(axis=1, how="all") for frame in frames]
     combined = pd.concat(frames, ignore_index=True, sort=False)
     sort_columns = [column for column in ["scenario", "family", "display_name", "experiment"] if column in combined.columns]
     combined = combined.sort_values(sort_columns, na_position="last").reset_index(drop=True)

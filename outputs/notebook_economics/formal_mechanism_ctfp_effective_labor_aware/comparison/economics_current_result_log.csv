@@ -1,7 +1,0 @@
-stage,question,result,evidence
-screening,Which contract currently wins pure forecast screening?,rtfpna + minimal,"Best Phase B CMDL row by test_r2; test_r2=0.0584, rho=-0.4912."
-screening,Which contract remains the main AC-GATE formal target?,ctfp + effective_labor_aware,"This contract keeps the effective-labor anchor and exposes the AC-GATE mechanism question most directly, even if another row has better raw forecast metrics."
-formal,Does economics strongly establish AC-GATE today?,"No, not yet","CMDL mean test_r2=0.0628, while Plain LSTM mean test_r2=0.0990; CMDL mean rho=-0.2899 and its sign is still not stable across seeds."
-formal,Was the old No Recon advantage causal?,No,"After the matched-init rerun, repaired no_recon mean test_r2=0.0616 vs CMDL 0.0628, and repaired mean rho=-0.2925 vs CMDL -0.2899; they nearly collapse onto each other."
-formal,Does the heterogeneity machinery still matter?,Yes,"No AC Encoder drives mean effective k* std down to 0.000000, and Uniform Lag fixes mean entropy at 2.3026 with mean effective k* std=0.000000."
-decision,Current economics verdict,"Weak support for the architecture, no clean support yet for the reconstruction branch","The next step should be controlled optimization-path repair, not a new proxy search or a stronger claim."

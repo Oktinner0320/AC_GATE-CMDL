@@ -8,3 +8,6 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 
+# Experiment outputs and generated artifacts stay local
+outputs/
+

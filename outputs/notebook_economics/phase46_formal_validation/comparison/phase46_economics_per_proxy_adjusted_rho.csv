@@ -1,5 +1,0 @@
-display_name,family,variant,seed,experiment,target_column,feature_bundle,anchor_proxy_name,anchor_expected_sign,proxy_name,adjusted_rho
-CMDL,cmdl,,0,phase46_economics_cmdl_seed0,ctfp,effective_labor_aware,proxy_effective_labor_anchor,-1.0,effective_labor_anchor,-0.15897643619456875
-CMDL,cmdl,,0,phase46_economics_cmdl_seed0,ctfp,effective_labor_aware,proxy_effective_labor_anchor,-1.0,employment_level,-0.13985065689831286
-CMDL,cmdl,,0,phase46_economics_cmdl_seed0,ctfp,effective_labor_aware,proxy_effective_labor_anchor,-1.0,hc_level,0.8064175266809906
-CMDL,cmdl,,0,phase46_economics_cmdl_seed0,ctfp,effective_labor_aware,proxy_effective_labor_anchor,-1.0,hc_trend,0.10080659363882921
