@@ -1,0 +1,31 @@
+{
+  "csv_path": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\energy\\raw\\energy_wgi_merged.csv",
+  "year_start": 1996,
+  "year_end": 2023,
+  "train_end_year": 2011,
+  "val_end_year": 2017,
+  "treatment_column": "renewables_share_energy",
+  "target_column": "co2_per_unit_energy",
+  "feature_bundle": "minimal",
+  "max_missing_share": 0.15,
+  "lr": 0.001,
+  "lambda_r": 0.1,
+  "temperature": 1.0,
+  "lag_bias_strength": 1.0,
+  "grad_clip": 1.0,
+  "grad_clip_mode": "split",
+  "device": "auto",
+  "disable_mlflow": true,
+  "smoke": false,
+  "epochs": 30,
+  "patience": 8,
+  "log_every": 5,
+  "seeds": [
+    0
+  ],
+  "variant": "all",
+  "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\notebook_energy\\phase46_formal_validation\\ablation",
+  "experiment_prefix": "phase46_energy_ablation",
+  "seed": 0,
+  "experiment_name": "phase46_energy_ablation_no_recon_regularization_seed0"
+}
