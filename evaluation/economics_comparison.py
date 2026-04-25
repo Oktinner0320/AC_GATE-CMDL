@@ -416,6 +416,10 @@ def _named_proxy_columns(comparison_frame: pd.DataFrame, split: str, metric_pref
     for column in comparison_frame.columns:
         if not column.startswith(prefix) or not column.endswith(suffix):
             continue
+        if column == f"{split}_{metric_prefix}_proxy_spearman_adjusted_rho":
+            continue
+        if column == f"{split}_{metric_prefix}_proxy_mean_spearman_adjusted_rho":
+            continue
         proxy_name = column.removeprefix(prefix).removesuffix(suffix)
         if proxy_name == "mean" or proxy_name.isdigit():
             continue
