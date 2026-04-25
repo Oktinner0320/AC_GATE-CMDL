@@ -1,4 +1,4 @@
-display_name,seed,proxy_name,adjusted_rho
-CMDL,0,government_effectiveness,0.644153315039391
-CMDL,0,regulatory_quality,0.6444062266847077
-CMDL,0,rule_of_law,0.6819636060142389
+display_name,family,variant,seed,experiment,target_column,feature_bundle,anchor_proxy_name,anchor_expected_sign,proxy_name,adjusted_rho
+CMDL,cmdl,,0,phase46_energy_cmdl_seed0,co2_per_unit_energy,minimal,proxy_government_effectiveness,-1.0,government_effectiveness,0.644153315039391
+CMDL,cmdl,,0,phase46_energy_cmdl_seed0,co2_per_unit_energy,minimal,proxy_government_effectiveness,-1.0,regulatory_quality,0.6444062266847077
+CMDL,cmdl,,0,phase46_energy_cmdl_seed0,co2_per_unit_energy,minimal,proxy_government_effectiveness,-1.0,rule_of_law,0.6819636060142389
