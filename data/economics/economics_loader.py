@@ -151,6 +151,21 @@ def _feature_bundle_columns(feature_bundle: str) -> tuple[list[str], list[str], 
 	raise AssertionError(f"Unhandled feature_bundle: {feature_bundle}")
 
 
+def _feature_bundle_proxy_metadata(feature_bundle: str) -> dict[str, object]:
+	"""Return proxy anchor metadata used by real-data mechanism diagnostics."""
+
+	_, proxy_columns, _ = _feature_bundle_columns(_validate_feature_bundle(feature_bundle))
+	anchor_proxy_index = 0
+	return {
+		"anchor_proxy_name": proxy_columns[anchor_proxy_index],
+		"anchor_proxy_index": anchor_proxy_index,
+		"anchor_expected_sign": -1.0,
+		"auxiliary_proxy_names": [name for index, name in enumerate(proxy_columns) if index != anchor_proxy_index],
+		"proxy_expected_signs": [-1.0 for _ in proxy_columns],
+		"proxy_aggregate_name": "proxy_mean",
+	}
+
+
 def _require_bundle_input_columns(frame: pd.DataFrame, feature_bundle: str) -> None:
 	"""Validate that one bundle has the source columns it needs."""
 
@@ -596,22 +611,7 @@ def build_economics_dataframe(
 		sequence_columns = ["x_cap_deepening", "x_log_rgdpna_growth", "x_log_ck_growth"]
 	else:
 		raise AssertionError(f"Unhandled feature_bundle: {feature_bundle}")
-
-
 def _feature_bundle_proxy_metadata(feature_bundle: str) -> dict[str, object]:
-	"""Return proxy anchor metadata used by real-data mechanism diagnostics."""
-
-	_, proxy_columns, _ = _feature_bundle_columns(_validate_feature_bundle(feature_bundle))
-	anchor_proxy_index = 0
-	return {
-		"anchor_proxy_name": proxy_columns[anchor_proxy_index],
-		"anchor_proxy_index": anchor_proxy_index,
-		"anchor_expected_sign": -1.0,
-		"auxiliary_proxy_names": [name for index, name in enumerate(proxy_columns) if index != anchor_proxy_index],
-		"proxy_expected_signs": [-1.0 for _ in proxy_columns],
-		"proxy_aggregate_name": "proxy_mean",
-	}
-
 	static_frame = cleaned_frame.groupby("entity_code", as_index=False).agg(
 		{
 			"entity_name": "first",

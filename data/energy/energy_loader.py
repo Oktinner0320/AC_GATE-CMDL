@@ -364,7 +364,6 @@ def build_energy_dataframe(
 	prepared_frame = prepared_frame.sort_values(["entity_code", "year"]).reset_index(drop=True)
 
 	sequence_columns, proxy_columns, static_columns = _feature_bundle_columns(feature_bundle)
-	proxy_metadata = _feature_bundle_proxy_metadata(feature_bundle)
 	return prepared_frame.loc[
 		:,
 		[
@@ -395,6 +394,7 @@ def load_energy_panel(
 	runtime_cfg = CMDLConfig.from_domain("energy") if cfg is None else cfg
 	feature_bundle = _validate_feature_bundle(feature_bundle)
 	sequence_columns, proxy_columns, static_columns = _feature_bundle_columns(feature_bundle)
+	proxy_metadata = _feature_bundle_proxy_metadata(feature_bundle)
 	dataframe = build_energy_dataframe(
 		csv_path=csv_path,
 		treatment_column=treatment_column,
