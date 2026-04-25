@@ -38,14 +38,297 @@
 
 ## 3. Target Venue Strategy
 
-| Tier | Venue type | Fit | Submission angle |
-| --- | --- | --- | --- |
-| Primary | KDD / AAAI / IJCAI workshop on time series, data mining, AI for social impact, or applied ML | High | Mechanism-first method with transparent real-domain audit |
-| Secondary | Applied track short paper / symposium | Medium | Interpretable heterogeneous lag discovery for panel data |
-| Risky | Main ML conference full paper | Low-medium | Needs stronger theory, stronger baselines, and a primary real domain with stable mechanism evidence |
-| Not recommended yet | Economics or energy domain journal | Low | Current real-domain evidence is not strong enough for domain-causal claims |
+严格说，下面三个高优先级目标主要是 conference proceedings / applied track，而不是传统 journal。它们比 KDD ADS / IAAI 更适合当前状态，因为它们通常允许“真实应用问题 + 离线真实数据评估 + 可复现实验”，不一定要求 live deployment 或 post-launch metrics。
 
-最稳的路线是先投 workshop 或 applied short paper。该版本应强调方法论、诊断协议、可复现实验，而不是宣称在真实经济或能源问题上已经得到领域定论。
+| Priority | Venue / track | Fit now | Submission angle | Readiness |
+| --- | --- | ---: | --- | --- |
+| 1 | ECML PKDD Applied Data Science Track | High | A real-world panel time-series lag-audit method with explicit data idiosyncrasies, diagnostics, and use-case conclusions | Closest fit; needs stronger real-domain framing and reproducibility package |
+| 2 | CIKM Applied Research Papers / Industry-style applied track | Medium-high | A reproducible lag-audit workflow for economic and energy panel data, emphasizing implementation, data pipeline, and analyst-facing diagnostics | Good fit if framed as workflow/system, not only model |
+| 3 | IEEE ICDM application-oriented submission / Applied Track if available | Medium-high | Interpretable heterogeneous lag mining for country-level panel time series, with algorithmic clarity and public-data reproducibility | Needs stronger technical framing, significance tests, and clean anonymized artifacts |
+| 4 | KDD / AAAI / IJCAI workshop | High backup | Mechanism-first method with transparent real-domain audit | Safe fallback |
+| 5 | KDD ADS / IAAI | Low now | Deployed decision-support workbench with post-launch metrics | Not ready without deployment or controlled pilot |
+
+最稳的正式投稿路线是：先准备 ECML PKDD ADS 版本；如果时间窗口或 scope 不合适，平移到 CIKM Applied Research；如果想强化技术贡献和数据挖掘味道，再准备 ICDM 版本。三个版本共用同一套实验，但论文叙事、主表和摘要重点不同。
+
+### 3.1 Applied Track Reality Check
+
+2026-04-25 检索 KDD 2026 官方 Applied Data Science Track CFP 后，需要特别注意：KDD ADS 不是“在真实数据上做应用实验”的泛化通道，而是非常强调真实部署的通道。官方页面要求论文描述 deployed applications，并要求量化 post-launch performance；没有 post-launch performance quantification 的投稿会被 desk-rejected。官方还明确说，仅在真实数据上做离线测试但没有 live user deployment，不满足 real-world deployment criteria。
+
+参考页面：
+
+- KDD 2026 Applied Data Science Track CFP: https://kdd2026.kdd.org/applied-data-science-ads-track-call-for-papers/
+- KDD 2026 Research Track CFP: https://kdd2026.kdd.org/research-track-call-for-papers/
+
+这意味着：当前 CMDL 项目如果按现在的状态直接投 KDD ADS，风险很高，主要原因不是模型不够，而是没有 deployment 和 post-launch 指标。当前版本更像 mechanism-oriented research / workshop / application-oriented research paper，而不是严格意义的 ADS deployment paper。
+
+### 3.2 If We Want an Applied Track Paper
+
+如果目标是 Applied Track，论文必须从“提出一个模型”升级为“部署一个可用的异质滞后审计系统”。建议命名为：
+
+> AC-GATE Audit Workbench: A deployed decision-support system for auditing heterogeneous delays in panel time-series indicators.
+
+核心转向：
+
+| 当前版本 | Applied track 需要的版本 |
+| --- | --- |
+| Offline 20-seed experiments | Deployed or controlled-pilot system |
+| Synthetic mechanism proof | System capability validation, placed after use case |
+| Economics / energy as datasets | Domain workflow with concrete users and decisions |
+| Model metrics only | Post-launch usage, expert utility, speed, quality, robustness metrics |
+| Method contribution | Application significance + design tradeoffs + lessons learned |
+
+Applied track 的主问题不应写成“Can AC-GATE recover hidden lags?”，而应写成：
+
+> Can a deployed lag-audit workbench help analysts identify, compare, and stress-test heterogeneous policy-response delays across countries more reliably than manual lag specification and homogeneous baselines?
+
+### 3.3 Minimum Work Needed for KDD-Style ADS
+
+| Requirement | Current status | Required action |
+| --- | --- | --- |
+| Real deployment or controlled pilot | Missing | Build a small web dashboard or notebook-backed workbench and put it in front of real users |
+| Post-launch quantification | Missing | Log usage and measure analyst outcomes after deployment |
+| Domain significance | Partially present | Pick one primary use case: economics policy lag audit or energy transition lag audit |
+| Design tradeoffs | Partially present | Document why neural lag gating, why ARDL baseline remains visible, why negative findings are surfaced |
+| Real-world challenges | Partially present | Turn energy failure and economics instability into lessons about false-positive prevention |
+| Reproducibility | Mostly present | Keep code/configs tracked; provide run command, seed list, and artifact regeneration protocol |
+| Ethics and limitations | Partially present | Add no-causal-claim policy, public-data statement, and analyst-facing warning labels |
+
+Minimum viable applied-track package:
+
+1. Build an analyst-facing workbench.
+   - Inputs: country panel, target, treatment/input variable, proxy bundle, split years, baseline set.
+   - Outputs: forecast table, `k*` map/ranking, proxy alignment table, seed stability report, baseline comparison, warning labels.
+   - Interface can be Streamlit, Dash, a lightweight local web app, or a polished notebook if it is used by actual analysts in a controlled pilot.
+2. Run a controlled pilot with domain users.
+   - Minimum: 3-5 users with economics, energy, policy, or applied data science background.
+   - Ask them to complete realistic tasks: identify countries with short/long lag, compare CMDL vs ARDL, decide whether a mechanism claim is supportable, detect unstable proxy directions.
+   - Record time, correctness against a rubric, confidence, perceived usefulness, and failure cases.
+3. Quantify post-launch performance.
+   - Usage: number of users, sessions, completed analyses, repeated use.
+   - Efficiency: time-to-insight versus manual spreadsheet/ARDL workflow.
+   - Decision quality: agreement with expert rubric or known synthetic ground truth in training tasks.
+   - Reliability: seed-stability warnings reduce unsupported mechanism claims.
+   - Model calibration: baseline-aware R2/RMSE and mechanism diagnostics from [experiment_results_20seed.md](experiment_results_20seed.md).
+4. Add a lessons-learned section.
+   - Economics: partial signal, unstable expected direction, good example of audit caution.
+   - Energy: negative/stress-test case, shows the system does not always manufacture a positive mechanism.
+   - Synthetic: used to train and validate analysts' trust in `k*`, not as the sole application proof.
+
+如果无法获得真实用户或 pilot，建议不要投 KDD ADS。可以改投 Research Track 的 application-oriented paper、workshop、AI for social impact workshop、time-series workshop，或把 Applied Track 目标推迟到下一轮。
+
+### 3.4 Applied Track Paper Storyline
+
+Applied track 版本的标题应避免像纯方法论文，可以考虑：
+
+- Auditing Heterogeneous Policy Delays in Panel Time Series with AC-GATE
+- A Decision-Support Workbench for Entity-Specific Lag Discovery in Economic and Energy Panels
+- From Lag Discovery to Lag Audit: Deploying AC-GATE for Interpretable Panel Time-Series Analysis
+
+推荐摘要逻辑：
+
+1. Real-world problem: analysts often need to choose lag windows for policy/economic indicators, but homogeneous lag assumptions hide cross-country heterogeneity.
+2. Deployed solution: we built AC-GATE Audit Workbench, which combines adaptive lag discovery with baseline comparison and seed-stability warnings.
+3. Post-launch evidence: report pilot usage, task-completion speed, expert agreement, and cases where the system prevented overclaiming.
+4. Technical evidence: synthetic ground-truth recovery and 20-seed robustness.
+5. Lessons: real domains contain partial and negative mechanism evidence; applied systems must surface uncertainty instead of forcing a positive narrative.
+
+Applied track 的 Results 排序也应改变：
+
+| Section | Applied track emphasis |
+| --- | --- |
+| Deployment setting | Who used the system, for what task, under what constraints |
+| Post-launch metrics | Usage, speed, expert agreement, decision quality, failure detection |
+| System design | Why these diagnostics are exposed; why baselines remain first-class citizens |
+| Model validation | Synthetic 20-seed recovery and ablation support |
+| Domain audit findings | Economics partial, energy negative, both framed as practical lessons |
+
+### 3.5 Applied Track Metrics to Add
+
+Do not rely only on R2, MAE, and Spearman rho. Add applied-system metrics:
+
+| Metric family | Concrete metric | Why reviewers care |
+| --- | --- | --- |
+| Adoption | users, sessions, analyses completed | Shows the system was actually used |
+| Efficiency | median time-to-insight vs manual baseline | Demonstrates workflow value |
+| Decision quality | agreement with expert rubric | Shows outputs help analysts make better judgments |
+| Safety | unsupported-claim rate before/after warnings | Shows the audit design reduces overclaiming |
+| Robustness | seed-stability pass/fail rate | Connects ML reliability to user-facing decisions |
+| Baseline awareness | fraction of cases where simpler baseline is recommended | Shows the system does not blindly promote CMDL |
+| Qualitative value | expert ratings and quotes | Captures lessons that metrics miss |
+
+For this project, the most defensible applied metric is “unsupported mechanism claim reduction”: give analysts compact result tables with and without seed-stability/proxy-direction warnings, then measure whether they stop claiming that economics or energy strongly proves the mechanism. That directly matches the current evidence and turns the negative/partial results into an applied contribution.
+
+### 3.6 Applied Track Risk Decision
+
+Decision rule:
+
+| Condition | Recommendation |
+| --- | --- |
+| No deployed workbench, no user pilot | Do not submit to strict ADS track |
+| Workbench exists but only author used it | Still weak for ADS; target workshop / applied research track |
+| 3-5 domain users complete controlled pilot and post-launch metrics are reported | Possible ADS submission |
+| Institutional or lab partner uses it for repeated analyses | Strong ADS submission |
+
+Current state: **not yet ADS-ready**. Best applied-track path is to spend 2-4 weeks building a small audit workbench and running a controlled expert pilot. Without that, use the current 20-seed package for a workshop or application-oriented research submission instead.
+
+### 3.7 Venue-Specific Revision Plan
+
+#### 3.7.1 ECML PKDD Applied Data Science Track
+
+ECML PKDD ADS should be treated as the first target. The fit is strong because this track historically asks for unique applications of machine learning / data mining to real-world problems, including the real-world difficulty, data idiosyncrasies, methodology, and conclusions for the use case. That maps well to CMDL: the contribution is not only a neural module, but a reproducible protocol for auditing whether heterogeneous lags are present in country-level panels.
+
+Recommended title:
+
+> Auditing Heterogeneous Delays in Panel Time Series with AC-GATE
+
+Recommended thesis:
+
+> We study a real-world applied data science problem: analysts need to reason about cross-country lag heterogeneity, but standard homogeneous-lag baselines and post-hoc neural explanations are hard to audit. AC-GATE provides a diagnostic pipeline that recovers known heterogeneous lags in synthetic panels and exposes partial or negative evidence in real economic and energy panels.
+
+Main-text emphasis:
+
+| Section | What ECML PKDD ADS should see |
+| --- | --- |
+| Problem | Real-world panel time-series lag audit, not generic sequence modeling |
+| Data | Country-level annual panels, missingness, balanced-panel filtering, train-window standardization, proxy sign assumptions |
+| Method | AC encoder + lag gate + audit diagnostics |
+| Results | Synthetic ground truth first, then economics/energy as use-case conclusions |
+| Lessons | Real data can produce partial or negative mechanism evidence; the method is useful because it surfaces that uncertainty |
+
+Must add before submission:
+
+1. A “Data idiosyncrasies” subsection.
+   - Explain annual panels, short time dimension, cross-country heterogeneity, proxy aggregation, train/test time splits, and why simple random splits are invalid.
+2. A “Use-case conclusions” table.
+   - Synthetic: mechanism supported.
+   - Economics: partial audit support.
+   - Energy: stress-test / weak mechanism evidence.
+3. Confidence intervals or seed-distribution plots.
+   - ECML reviewers will expect the 20-seed claim to be visible, not buried in CSVs.
+4. A reproducibility appendix.
+   - Include command, seed list, config table, and note that `outputs/` is regenerated locally.
+
+Risk to avoid:
+
+- Do not lead with “we outperform baselines.” In economics and energy, that is not true enough.
+- Do not call energy a failed experiment. Call it a stress-test case showing that the audit protocol does not force a positive mechanism.
+
+Decision: **best current target**.
+
+#### 3.7.2 CIKM Applied Research Papers / Applied Track
+
+CIKM Applied Research is the second target. It is likely to value implementation, data pipeline, system design, and practical lessons. For CIKM, the paper should look less like “a model architecture paper” and more like “a reusable lag-audit workflow for knowledge discovery in panel data.”
+
+Recommended title:
+
+> A Reproducible Lag-Audit Workflow for Economic and Energy Panel Data
+
+Recommended thesis:
+
+> We present an applied research workflow that integrates adaptive lag discovery, baseline comparison, seed-stability diagnostics, and proxy-alignment audit for country-level panel time series.
+
+Main-text emphasis:
+
+| Section | What CIKM should see |
+| --- | --- |
+| System/workflow | Data loading, experiment orchestration, notebook reports, comparison tables, and warning labels |
+| Knowledge discovery | `k*` ranking, proxy alignment, per-domain audit logs, and baseline-aware interpretation |
+| Applied lesson | The system separates supported, partial, and unsupported mechanism claims |
+| Reproducibility | 20-seed orchestration script, notebooks, result report, local-only outputs policy |
+
+Must add before submission:
+
+1. A workflow diagram.
+   - Data -> CMDL / baselines -> diagnostics -> result report -> analyst decision.
+2. A compact “audit decision rule” box.
+   - Strong support requires high synthetic recovery, non-degenerate `k*`, positive seed share, proxy direction stability, and baseline sanity.
+3. A short case-study narrative for economics.
+   - Show how a reader should interpret partial evidence without overclaiming.
+4. Optional but useful: a small Streamlit/Dash or notebook dashboard screenshot.
+   - CIKM will likely tolerate offline evaluation, but an analyst-facing artifact improves the applied story.
+
+Risk to avoid:
+
+- Do not over-focus on AC-GATE internals while hiding the workflow. CIKM applied reviewers need to see the operational value.
+- Do not make the paper too domain-specific to economics; keep the data mining / knowledge discovery angle broad.
+
+Decision: **strong second target**, especially if a small dashboard or polished notebook report is added.
+
+#### 3.7.3 IEEE ICDM Application-Oriented Submission
+
+ICDM is the third target. It can fit because ICDM covers algorithms, software, systems, and applications of data mining, including time-evolving data, interpretable modeling, heterogeneous data integration, and applications in social science / climate / finance. The tradeoff is that ICDM will likely judge technical merit more sharply than ECML PKDD ADS or CIKM Applied Research.
+
+Recommended title:
+
+> Interpretable Heterogeneous Lag Mining in Country-Level Panel Time Series
+
+Recommended thesis:
+
+> We formulate heterogeneous lag discovery as a data mining problem over entity-indexed temporal panels and introduce AC-GATE as an interpretable mining model with explicit recovery diagnostics.
+
+Main-text emphasis:
+
+| Section | What ICDM should see |
+| --- | --- |
+| Mining task | Define heterogeneous lag mining clearly and distinguish it from forecasting |
+| Algorithm | Give precise AC encoder / lag gate equations and pseudocode |
+| Evaluation | Synthetic recovery, ablations, baseline comparison, statistical tests, reproducibility checklist |
+| Applications | Economics and energy as public-data case studies, not primary proof |
+
+Must add before submission:
+
+1. Formal task definition.
+   - Name the task: entity-conditioned heterogeneous lag mining.
+   - Define input, output, evaluation, and what is identifiable.
+2. Pseudocode and complexity.
+   - Training loop, diagnostic computation, and runtime scaling with `N`, `T`, and `K`.
+3. Statistical testing.
+   - Paired or bootstrap confidence intervals for CMDL vs Plain LSTM post-hoc lag recovery on synthetic data.
+4. Stronger baseline section.
+   - Persistence, entity mean, Panel OLS / ARDL, Plain LSTM, Uniform Lag, No AC Encoder.
+5. Anonymized reproducibility plan.
+   - ICDM uses strict blind review in recent calls; remove identifying repo metadata if sharing code during review.
+
+Risk to avoid:
+
+- Do not rely on application motivation alone. ICDM needs a sharper technical contribution.
+- Do not submit an applied narrative without statistical evidence; the synthetic mechanism claim should be statistically tight.
+
+Decision: **good target if we add formalization, pseudocode, CIs, and a cleaner baseline table**.
+
+### 3.8 Three-Target Execution Plan
+
+| Step | Output | Needed for ECML PKDD | Needed for CIKM | Needed for ICDM |
+| --- | --- | ---: | ---: | ---: |
+| Add seed distribution plots | Boxplots / CI table for `k*` MAE, rho, R2 | Yes | Yes | Yes |
+| Add data idiosyncrasy section | Missingness, splits, proxy construction | Yes | Yes | Medium |
+| Add workflow diagram | Pipeline from data to audit report | Medium | Yes | Medium |
+| Add formal task definition | Mathematical problem statement | Medium | Medium | Yes |
+| Add pseudocode / complexity | Algorithm block | Medium | Low | Yes |
+| Add proxy rationale table | Proxy, expected sign, source, caveat | Yes | Yes | Yes |
+| Add baseline compact table | Persistence / OLS / ARDL / LSTM / CMDL | Yes | Yes | Yes |
+| Add dashboard / report screenshot | Optional artifact | Medium | High | Low |
+| Add controlled pilot | User study / analyst feedback | Optional | Optional-high | Optional |
+
+Recommended order of work:
+
+1. Prepare ECML PKDD ADS manuscript first.
+2. Keep CIKM variant as a workflow-heavy rewrite of the same paper.
+3. Prepare ICDM variant only after adding formalization, statistical testing, and algorithmic details.
+
+### 3.9 Venue-Specific Abstract Angles
+
+ECML PKDD ADS angle:
+
+> Real-world panel time-series applications often require analysts to reason about delayed effects under short, noisy, and heterogeneous country panels. We introduce AC-GATE as an applied lag-audit framework that combines adaptive lag discovery with seed-stability and proxy-alignment diagnostics. Synthetic ground-truth experiments show stable mechanism recovery across 20 seeds, while economics and energy panels illustrate partial and negative mechanism evidence in realistic settings.
+
+CIKM Applied Research angle:
+
+> We present a reproducible workflow for knowledge discovery in country-level panel time series. The workflow orchestrates adaptive lag modeling, baseline comparison, per-proxy audit tables, and notebook-based reports, enabling analysts to distinguish supported, partial, and unsupported lag-mechanism claims.
+
+ICDM angle:
+
+> We formulate entity-conditioned heterogeneous lag mining as an interpretable data mining task and propose AC-GATE, a neural lag-gating model that outputs entity-specific lag distributions and expected lag scores. Across 20-seed synthetic experiments, AC-GATE recovers known lag mechanisms more accurately than post-hoc LSTM lag attribution, and real panel case studies demonstrate the diagnostic boundary of the approach.
 
 ## 4. Paper Thesis
 
