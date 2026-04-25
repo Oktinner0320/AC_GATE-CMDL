@@ -4,7 +4,7 @@
 
 ## 一、目标与边界
 
-本轮计划用于指导后续代码改进。核心判断保持不变：AC-GATE 的原创贡献不是把 CMDL 改造成通用 forecasting SOTA，而是提出一个可诊断的 **AC-conditioned heterogeneous lag discovery** 机制。后续所有改进都应服务于以下目标：
+本文件用于记录 AC-GATE 改进计划、已执行结果和下一轮最小改进路径。核心判断保持不变：AC-GATE 的原创贡献不是把 CMDL 改造成通用 forecasting SOTA，而是提出一个可诊断的 **AC-conditioned heterogeneous lag discovery** 机制。后续所有改进都应服务于以下目标：
 
 1. 让实体级 proxy 通过 `z_i -> omega -> k*` 的路径更稳定地表达滞后异质性。
 2. 提升 `omega/k*` 的可解释性、非退化性和跨 seed 稳定性。
@@ -382,3 +382,68 @@ CMDL 在 focused run 中能超过 matched Plain LSTM，但不稳定超过 persis
 最终判断标准不是“AC-GATE 是否在所有数据集上预测第一”，而是：
 
 > AC-GATE 是否提供了传统 forecasting baseline 难以直接给出的、可检验的实体级异质滞后结构。
+
+## 十、2026-04-25 执行后状态更新
+
+本轮已经完成原计划中的 6 个 Phase 的代码任务，并完成 focused validation、notebook 汇总和回归测试。当前状态不再是“待实现计划”，而是“已实现机制后的证据评估与下一轮改进路线”。
+
+### 已完成实现
+
+1. `omega_transform` 已支持 `softmax` 与可选 `sparsemax`，默认仍为 `softmax`。
+2. `DomainAgnosticLoss` 已加入默认关闭的 `omega` entropy band penalty。
+3. `DomainAgnosticLoss` 已加入默认关闭的 `z_anchor` alignment loss。
+4. real-data diagnostics 已加入 `z_anchor_*` 显式字段。
+5. economics / energy 已加入 Grouped ARDL-style distributed-lag baseline。
+6. comparison API 已统一支持 task table、interpretability table、per-proxy alignment、mechanism summary 和 mechanism result log。
+7. economics / energy notebook 的 Phase4/Phase6 汇总已改为公共 helper，并纳入 Grouped ARDL。
+8. 全量测试通过：`59 passed, 0 failed`。
+
+### 当前核心结果
+
+| 域 | 当前结论 | 关键证据 | 论文用途 |
+|---|---|---|---|
+| Synthetic | 机制成立 | softmax run: `kstar_spearman_rho=0.9808`, `proxy_recon_r2=0.9508`; sparse/entropy/anchor run: `kstar_spearman_rho=0.9588`, `proxy_recon_r2=0.9534` | 作为 AC-GATE 可恢复 ground-truth heterogeneous lag 的主证明 |
+| Energy | 真实域机制支持 | anchor-adjusted rho `0.6442`；WGI per-proxy adjusted rho 全为正；lag gate 非退化 | 作为真实域机制展示主案例 |
+| Economics | 混合证据 / boundary case | CMDL 高于 Plain LSTM 和 Grouped ARDL，但 anchor-adjusted rho `-0.1590` | 作为 anchor mismatch、边界条件和后续改进对象 |
+
+Forecast 结论必须克制：CMDL 在 focused validation 中能超过 matched Plain LSTM，但 energy 明显低于 Grouped ARDL，economics 低于 persistence。因此，forecast 应写作 calibration evidence，不应写作 universal forecasting superiority。
+
+### outputs 清理建议
+
+已删除所有 `__pycache__` 目录内的缓存文件。当前 outputs 中建议分三类处理：
+
+1. 建议保留：
+   - `outputs/notebook_economics/phase46_formal_validation/`
+   - `outputs/notebook_energy/phase46_formal_validation/`
+   - `outputs/notebook_step4/formal_target/`
+   - `outputs/notebook_step45/formal_target/`
+   - `outputs/notebook_economics/formal_mechanism_*`
+2. 可以删除或归档：
+   - `outputs/improve_plan_validation/`：本轮代码 smoke / quick validation 产物，关键结论已经写入本文档和 comparison CSV。
+   - `outputs/phase_execution_smoke/`：阶段执行 smoke 产物，非论文证据。
+   - `outputs/step5/economics_cleaned_smoke/`：早期 smoke run，若不再用于 debug 可删除。
+3. 暂不建议删除：
+   - `outputs/notebook_economics/phase46_formal_validation/grouped_ardl/`
+   - `outputs/notebook_energy/phase46_formal_validation/grouped_ardl/`
+   这些目录虽小，但已被 notebook comparison 读取，用于 Grouped ARDL 对照。
+
+### 机制是否支持论文撰写
+
+当前结果已经支持撰写一篇机制导向论文的初稿，但论文主张必须限定为：
+
+1. AC-GATE 能在 synthetic 中恢复已知异质滞后结构。
+2. AC encoder 与 adaptive lag gate 是必要组件；退化 ablation 会暴露边界。
+3. 真实域中，energy 支持 proxy-aligned heterogeneous lag discovery。
+4. economics 暂不能作为强机制正例，应作为 boundary case 或 anchor-audit case。
+5. 预测指标用于校准与 sanity check，不作为全面 SOTA 主张。
+
+### 下一轮最小改进路径
+
+下一轮不应继续盲目加复杂模型，而应按以下顺序推进：
+
+1. **多 seed 正式复核**：把 economics / energy 的 Phase46 从当前 focused seed=0 扩展到 seeds `[0, 1, 2]` 的完整 CMDL、Plain LSTM、Ablation、Grouped ARDL 汇总。
+2. **Grouped ARDL 机制趋势对照**：不仅比较 R2，还比较 low / mid / high proxy 组的 best lag / effective lag 与 AC-GATE `k*` 分位趋势是否一致。
+3. **Energy 机制图表**：固定输出 WGI proxy quartile 下的 `k*` summary、omega heatmap 和 per-proxy adjusted rho 表，作为论文真实域主图。
+4. **Economics anchor audit**：分开报告 effective labor anchor、employment、human capital level、human capital trend 的 adjusted rho，判断负方向是理论错位还是训练不稳。
+5. **可选机制实验**：只在多 seed 后再开启 `lambda_z_anchor` 或 entropy band，不要同时开启多个新机制。
+6. **写作策略**：先写 Method + Synthetic + Energy mechanism，最后再写 Economics limitation。

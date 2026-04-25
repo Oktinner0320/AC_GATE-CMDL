@@ -87,11 +87,11 @@
    ```
 2. **编写 `ScaleInvariantLagGate`**（Core 简化版，去掉时间单位嵌入）
    ```
-   Input: z_i [B, 1]
-   Gate: Linear(1, K) → 加相对位置偏置 → 温度缩放 softmax
-   Output: ω [B, K] 概率分布
-   Context: Σ ω_k · X_{t-k} → [B, d_model]
-   k*: Σ k · ω_k → [B]
+   Input: z_i = f_phi(p_i) [B, 1]
+   Logits: a_i = g_theta(z_i) + b_lag, a_i ∈ R^K
+   Transform: omega_i = T_tau(a_i), T ∈ {softmax, sparsemax}
+   Effective lag: k_i^* = Σ_{k=1}^K k · omega_{i,k}
+   Lag context: c_{i,t} = Σ_{k=1}^K omega_{i,k} · X_{i,t-k}
    ```
 3. **单元测试**
    - 验证 ω 求和为 1
@@ -123,8 +123,8 @@
 # 3. 去掉 context_projection（z_i 本身就是 context）
 # 4. 在 fc2 输出后、GLU 前，加入：
 #    logits = logits - λ * rel_pos   # rel_pos = arange(K)/K
-#    omega = F.softmax(logits / tau, dim=-1)  # 温度缩放
-# 5. 输出 omega [B, K] 而非 GRN 的 hidden state
+#    omega = transform(logits / tau)  # softmax 默认，sparsemax 可选
+# 5. 输出 omega [B, K]、k_i^* 与 lag context，而非 GRN 的 hidden state
 ```
 
 ### �📖 文献阅读（编码时读）
@@ -154,8 +154,17 @@
    ```
 2. **编写 `DomainAgnosticLoss`**
    ```
-   L = L_task (MSE) + λ_r * L_recon (proxy 重构 MSE)
-   仅两项；当前 synthetic formal_target 配置已统一为 λ_r = 1.0
+   L = L_task + λ_r L_recon + λ_ω L_entropy_band + λ_z L_z_anchor
+
+   L_task = MSE(ŷ_it, y_it)
+   L_recon = MSE(p_hat_i, p_i) 或 anchor-weighted MSE
+
+   H(omega_i) = -Σ_k omega_{i,k} log omega_{i,k}
+   L_entropy_band = E_i[(max(0, H_min - H_i) + max(0, H_i - H_max))^2]
+
+   L_z_anchor = max(0, -s_anchor · corr_batch(z_i, p_i^anchor))
+
+   默认 λ_ω = 0, λ_z = 0；因此旧实验行为保持不变。
    ```
 3. **组装 `CMDLModel`**
    - 输入适配层 → AC Encoder → Lag Gate → Backbone → RegressionHead
@@ -417,12 +426,15 @@ training = TimeSeriesDataSet(
 
 3. **分组 ARDL（强 baseline，新增）** ⚡
    ```
-   按 proxy 均值将国家分为 4 组（Q1-Q4）
-   每组独立拟合 Panel ARDL → 得到 4 组不同滞后系数
-   从系数反推组级 k*: argmax(|cumulative_coef|)
+   按 anchor proxy 的训练期分位数将实体分为 low / mid / high 三组
+   每组独立拟合 distributed-lag OLS:
+   y_it = α_g + Σ_{k=1}^K β_{g,k} x_{i,t-k} + ε_it
+   组级 best lag: k_g^best = argmax_k |β_{g,k}|
+   组级 effective lag: k_g^eff = Σ_k k · |β_{g,k}| / Σ_k |β_{g,k}|
    ```
-   - 这是 "人工版 AC-Gate"——如果 AC-Gate 无法显著超越，说服力会大打折扣
-   - 使用 `linearmodels`
+   - 这是“人工分组版异质滞后”强 baseline，用于校准 AC-GATE 的连续 AC-conditioned lag gate。
+   - 如果 Grouped ARDL 预测更强，论文应降低 forecasting superiority claim，但仍可比较 AC-GATE 的实体级连续 `omega/k*` 解释能力。
+   - 当前实现优先使用轻量 distributed-lag OLS，避免额外依赖；后续可再接入 `statsmodels` ARDL。
 
 ### 使用的库
 - `linearmodels`（PanelOLS, BetweenOLS）
@@ -604,7 +616,13 @@ training = TimeSeriesDataSet(
 
 3. **第 11 周: Method 章节**
    - 形式化 CMDL 任务定义
-   - AC-Gate 的完整公式（readme.md §6.3）
+   - AC-GATE 的完整公式需使用当前改进版：
+     - entity proxy encoder: $z_i=f_\phi(p_i)$, $\hat p_i=r_\psi(z_i)$；
+     - lag logits: $a_i=g_\theta(z_i)+b_{lag}$；
+     - lag distribution: $\omega_i=T_\tau(a_i)$, $T\in\{\mathrm{softmax},\mathrm{sparsemax}\}$；
+     - effective lag: $k_i^*=\sum_{k=1}^{K} k\omega_{i,k}$；
+     - lag context: $c_{i,t}=\sum_{k=1}^{K}\omega_{i,k}X_{i,t-k}$；
+     - objective: $\mathcal L=\mathcal L_{task}+\lambda_r\mathcal L_{recon}+\lambda_\omega\mathcal L_{entropy}+\lambda_z\mathcal L_{z-anchor}$，其中后两项默认关闭。
    - 损失函数与训练细节
 
 4. **第 11–12 周: Experiments 章节**
