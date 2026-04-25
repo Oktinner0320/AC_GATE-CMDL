@@ -31,6 +31,7 @@ import pandas as pd
 import torch
 import torch.nn.functional as F
 
+from baselines.panel_ols import add_forecast_calibration
 from baselines.lstm_baseline import PlainLSTMBaseline, PlainLSTMBaselineOutput
 from config.cmdl_config import CMDLConfig
 from data.energy.energy_loader import (
@@ -45,7 +46,8 @@ from data.energy.energy_loader import (
     get_prediction_years,
     load_energy_panel,
 )
-from evaluation.metrics import compute_mae, compute_mse, compute_r2, compute_spearman
+from evaluation.metrics import compute_mae, compute_mse, compute_r2
+from evaluation.realdata_diagnostics import build_realdata_diagnostics, proxy_metadata_payload
 from experiments.run_energy import (
     build_sqlite_tracking_uri,
     move_panel_to_device,
@@ -388,28 +390,24 @@ def evaluate(
 
     lag_profile, pseudo_k_star = compute_posthoc_lag_profile(model, panel, base_output=output)
     lag_profile_np = lag_profile.detach().cpu().numpy()
-    lag_entropy = -np.sum(lag_profile_np * np.log(np.clip(lag_profile_np, 1e-8, None)), axis=1)
-    proxy_signal = _mean_proxy_signal(panel)
-    proxy_signal_std = _tensor_population_std(proxy_signal)
-    kstar_std = float(pseudo_k_star.std(unbiased=False).item()) if pseudo_k_star.numel() > 1 else 0.0
-    kstar_metric_valid = kstar_std > _METRIC_EPS and proxy_signal_std > _METRIC_EPS
-    if kstar_metric_valid:
-        kstar_rho, kstar_p_value = compute_spearman(pseudo_k_star, proxy_signal)
-    else:
-        kstar_rho, kstar_p_value = float("nan"), float("nan")
+    diagnostics = build_realdata_diagnostics(
+        effective_kstar=pseudo_k_star,
+        proxies=panel.p_i,
+        metadata=panel.metadata,
+        prefix="posthoc_kstar",
+        omega=lag_profile,
+    )
 
     metrics = {
         "task_loss": float(task_loss.item()),
         "mse": float(compute_mse(output.y_pred, target)),
         "mae": float(compute_mae(output.y_pred, target)),
         "r2": float(compute_r2(output.y_pred, target)),
-        "posthoc_kstar_proxy_spearman_rho": float(kstar_rho),
-        "posthoc_kstar_proxy_spearman_p": float(kstar_p_value),
         "posthoc_kstar_mean": float(pseudo_k_star.mean().item()),
-        "posthoc_kstar_std": kstar_std,
-        "lag_profile_entropy_mean": float(np.mean(lag_entropy)),
-        "kstar_proxy_metric_valid": float(kstar_metric_valid),
     }
+    metrics.update(diagnostics)
+    metrics["lag_profile_entropy_mean"] = metrics["omega_entropy_mean"]
+    metrics["kstar_proxy_metric_valid"] = metrics["posthoc_kstar_proxy_metric_valid"]
 
     if not include_outputs:
         return metrics, None
@@ -475,6 +473,11 @@ def summarize_run(
 ) -> dict[str, Any]:
     """Build the JSON summary for one completed energy baseline run."""
 
+    train_metrics = add_forecast_calibration(train_metrics, setup.train_panel, setup.train_panel, setup.cfg.max_lag)
+    val_metrics = add_forecast_calibration(val_metrics, setup.train_panel, setup.val_panel, setup.cfg.max_lag)
+    test_metrics = add_forecast_calibration(test_metrics, setup.train_panel, setup.test_panel, setup.cfg.max_lag)
+    proxy_payload = proxy_metadata_payload(setup.full_panel.metadata, setup.cfg.n_proxies)
+
     return {
         "experiment": args.experiment_name,
         "model": "plain_lstm",
@@ -491,6 +494,7 @@ def summarize_run(
             "feature_bundle": setup.full_panel.metadata["feature_bundle"],
             "seq_feature_columns": list(setup.full_panel.metadata["seq_feature_columns"]),
             "proxy_columns": list(setup.full_panel.metadata["proxy_columns"]),
+            **proxy_payload,
             "static_columns": list(setup.full_panel.metadata["static_columns"]),
             "stats_end_year": int(setup.full_panel.metadata["stats_end_year"]),
             "year_start": int(args.year_start),

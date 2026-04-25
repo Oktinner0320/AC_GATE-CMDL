@@ -26,6 +26,8 @@ from config.cmdl_config import CMDLConfig
 from data.economics.economics_loader import DEFAULT_ECONOMICS_FEATURE_BUNDLE, SUPPORTED_ECONOMICS_FEATURE_BUNDLES
 from experiments.run_ablation import NoACEncoderCMDLModel, UniformLagCMDLModel
 from experiments.run_economics import (
+    GRAD_CLIP_MODE_CHOICES,
+    RECON_LOSS_MODE_CHOICES,
     evaluate,
     finish_mlflow,
     log_mlflow_metrics,
@@ -94,6 +96,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--temperature", type=float, default=economics_defaults.temperature)
     parser.add_argument("--lag-bias-strength", type=float, default=economics_defaults.lag_bias_strength)
     parser.add_argument("--grad-clip", type=float, default=1.0)
+    parser.add_argument("--grad-clip-mode", choices=GRAD_CLIP_MODE_CHOICES, default="global")
+    parser.add_argument("--recon-loss-mode", choices=RECON_LOSS_MODE_CHOICES, default="all")
+    parser.add_argument("--anchor-recon-weight", type=float, default=1.0)
+    parser.add_argument("--reconstruction-detach", dest="reconstruction_detach", action="store_true", default=True)
+    parser.add_argument("--no-reconstruction-detach", dest="reconstruction_detach", action="store_false")
     parser.add_argument("--output-dir", type=str, default="outputs/step5/economics_ablation")
     parser.add_argument("--experiment-prefix", type=str, default="E4_economics_ablation")
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
@@ -151,7 +158,13 @@ def prepare_variant_setup(
         model, effective_lambda_r = build_variant_model(variant, setup.cfg)
         matched_init_to_full_cmdl = False
     setup.model = model.to(setup.device)
-    setup.criterion = DomainAgnosticLoss(lambda_r=effective_lambda_r, warmup_steps=setup.cfg.max_lag)
+    setup.criterion = DomainAgnosticLoss(
+        lambda_r=effective_lambda_r,
+        warmup_steps=setup.cfg.max_lag,
+        recon_loss_mode=getattr(variant_args, "recon_loss_mode", "all"),
+        anchor_proxy_index=int(setup.full_panel.metadata.get("anchor_proxy_index", 0)),
+        anchor_recon_weight=float(getattr(variant_args, "anchor_recon_weight", 1.0)),
+    )
     setup.optimizer = torch.optim.Adam(setup.model.parameters(), lr=variant_args.lr)
     return setup, variant_args, effective_lambda_r, _ablation_diagnostics(variant, matched_init_to_full_cmdl)
 
@@ -190,6 +203,10 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
             "temperature": variant_args.temperature,
             "lag_bias_strength": variant_args.lag_bias_strength,
             "grad_clip": variant_args.grad_clip,
+            "grad_clip_mode": variant_args.grad_clip_mode,
+            "recon_loss_mode": variant_args.recon_loss_mode,
+            "anchor_recon_weight": variant_args.anchor_recon_weight,
+            "reconstruction_detach": variant_args.reconstruction_detach,
             "year_start": variant_args.year_start,
             "year_end": variant_args.year_end,
             "train_end_year": variant_args.train_end_year,
@@ -212,6 +229,7 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
                 optimizer=setup.optimizer,
                 panel=setup.train_panel,
                 grad_clip=variant_args.grad_clip,
+                grad_clip_mode=variant_args.grad_clip_mode,
             )
             val_metrics, _ = evaluate(setup.model, setup.criterion, setup.val_panel)
 
@@ -408,6 +426,9 @@ def run_suite(args: argparse.Namespace) -> tuple[pd.DataFrame, pd.DataFrame]:
                     .get("proxy_refit", {})
                     .get("metrics_interpretable"),
                     "proxy_refit_reason": summary.get("diagnostics", {}).get("proxy_refit", {}).get("reason"),
+                    "grad_clip_mode": summary.get("diagnostics", {})
+                    .get("training_controls", {})
+                    .get("grad_clip_mode"),
                     "run_dir": str(output_root / summary["experiment"]),
                     **prefix_metrics("train", summary["metrics"]["train"]),
                     **prefix_metrics("val", summary["metrics"]["val"]),

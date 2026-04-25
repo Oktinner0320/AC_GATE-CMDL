@@ -37,6 +37,11 @@ _IDENTITY_COLUMNS = [
     "feature_bundle",
     "seq_feature_names",
     "proxy_feature_names",
+    "anchor_proxy_name",
+    "anchor_proxy_index",
+    "anchor_expected_sign",
+    "auxiliary_proxy_names",
+    "proxy_aggregate_name",
     "static_feature_names",
     "source_path",
     "stats_end_year",
@@ -68,6 +73,10 @@ _IDENTITY_COLUMNS = [
     "best_val_task_loss",
     "matched_init_to_full_cmdl",
     "causal_ablation_validity",
+    "grad_clip_mode",
+    "recon_loss_mode",
+    "anchor_recon_weight",
+    "reconstruction_detach",
     "proxy_refit_status",
     "proxy_refit_applied",
     "proxy_metric_interpretable",
@@ -171,21 +180,34 @@ def _normalize_split_metrics(
     }
 
     if family == "plain_lstm":
-        kstar_metric_valid = _bool_flag(metrics.get("kstar_proxy_metric_valid"))
+        kstar_metric_valid = _bool_flag(
+            metrics.get("posthoc_kstar_proxy_metric_valid", metrics.get("kstar_proxy_metric_valid"))
+        )
         kstar_rho = _finite_or_none(metrics.get("posthoc_kstar_proxy_spearman_rho"))
         kstar_p = _finite_or_none(metrics.get("posthoc_kstar_proxy_spearman_p"))
+        kstar_adjusted = _finite_or_none(metrics.get("posthoc_kstar_proxy_spearman_adjusted_rho"))
         if kstar_metric_valid is False:
             kstar_rho = None
             kstar_p = None
+            kstar_adjusted = None
         row.update(
             {
                 f"{split}_proxy_signal_r2": None,
                 f"{split}_proxy_signal_metric_valid": None,
                 f"{split}_effective_kstar_proxy_spearman_rho": kstar_rho,
                 f"{split}_effective_kstar_proxy_spearman_p": kstar_p,
+                f"{split}_effective_kstar_proxy_spearman_adjusted_rho": kstar_adjusted,
+                f"{split}_effective_kstar_proxy_mean_spearman_rho": _finite_or_none(
+                    metrics.get("posthoc_kstar_proxy_mean_spearman_rho")
+                ),
+                f"{split}_effective_kstar_proxy_mean_spearman_adjusted_rho": _finite_or_none(
+                    metrics.get("posthoc_kstar_proxy_mean_spearman_adjusted_rho")
+                ),
                 f"{split}_effective_kstar_mean": _finite_or_none(metrics.get("posthoc_kstar_mean")),
                 f"{split}_effective_kstar_std": _finite_or_none(metrics.get("posthoc_kstar_std")),
                 f"{split}_effective_lag_entropy_mean": _finite_or_none(metrics.get("lag_profile_entropy_mean")),
+                f"{split}_effective_lag_entropy_std": _finite_or_none(metrics.get("omega_entropy_std")),
+                f"{split}_effective_lag_top1_share": _finite_or_none(metrics.get("omega_top1_share")),
                 f"{split}_effective_kstar_proxy_metric_valid": kstar_metric_valid,
             }
         )
@@ -198,11 +220,13 @@ def _normalize_split_metrics(
     proxy_signal = _finite_or_none(metrics.get("proxy_recon_r2"))
     kstar_rho = _finite_or_none(metrics.get("kstar_proxy_spearman_rho"))
     kstar_p = _finite_or_none(metrics.get("kstar_proxy_spearman_p"))
+    kstar_adjusted = _finite_or_none(metrics.get("kstar_proxy_spearman_adjusted_rho"))
     if proxy_metric_valid is False:
         proxy_signal = None
     if kstar_metric_valid is False:
         kstar_rho = None
         kstar_p = None
+        kstar_adjusted = None
 
     row.update(
         {
@@ -210,10 +234,25 @@ def _normalize_split_metrics(
             f"{split}_proxy_signal_metric_valid": proxy_metric_valid,
             f"{split}_effective_kstar_proxy_spearman_rho": kstar_rho,
             f"{split}_effective_kstar_proxy_spearman_p": kstar_p,
+            f"{split}_effective_kstar_proxy_spearman_adjusted_rho": kstar_adjusted,
+            f"{split}_effective_kstar_proxy_mean_spearman_rho": _finite_or_none(
+                metrics.get("kstar_proxy_mean_spearman_rho")
+            ),
+            f"{split}_effective_kstar_proxy_mean_spearman_adjusted_rho": _finite_or_none(
+                metrics.get("kstar_proxy_mean_spearman_adjusted_rho")
+            ),
             f"{split}_effective_kstar_mean": _finite_or_none(metrics.get("kstar_mean")),
             f"{split}_effective_kstar_std": _finite_or_none(metrics.get("kstar_std")),
             f"{split}_effective_lag_entropy_mean": _finite_or_none(metrics.get("omega_entropy_mean")),
+            f"{split}_effective_lag_entropy_std": _finite_or_none(metrics.get("omega_entropy_std")),
+            f"{split}_effective_lag_top1_share": _finite_or_none(metrics.get("omega_top1_share")),
             f"{split}_effective_kstar_proxy_metric_valid": kstar_metric_valid,
+            f"{split}_z_std": _finite_or_none(metrics.get("z_std")),
+            f"{split}_z_proxy_spearman_adjusted_rho": _finite_or_none(
+                metrics.get("z_proxy_spearman_adjusted_rho")
+            ),
+            f"{split}_lag_gate_sensitivity_slope": _finite_or_none(metrics.get("lag_gate_sensitivity_slope")),
+            f"{split}_lag_gate_sensitivity_range": _finite_or_none(metrics.get("lag_gate_sensitivity_range")),
         }
     )
     return row
@@ -226,6 +265,7 @@ def _normalize_summary(summary_path: Path, output_root: Path, family: str) -> di
     diagnostics = dict(payload.get("diagnostics", {}))
     ablation = dict(diagnostics.get("ablation") or {})
     proxy_refit = dict(diagnostics.get("proxy_refit") or {})
+    training_controls = dict(diagnostics.get("training_controls") or {})
     train_year_start, train_year_end = _year_bounds(data.get("train_years"))
     val_year_start, val_year_end = _year_bounds(data.get("val_years"))
     test_year_start, test_year_end = _year_bounds(data.get("test_years"))
@@ -248,6 +288,11 @@ def _normalize_summary(summary_path: Path, output_root: Path, family: str) -> di
         "feature_bundle": data.get("feature_bundle"),
         "seq_feature_names": ",".join(data.get("seq_feature_columns", [])),
         "proxy_feature_names": ",".join(data.get("proxy_columns", [])),
+        "anchor_proxy_name": data.get("anchor_proxy_name"),
+        "anchor_proxy_index": data.get("anchor_proxy_index"),
+        "anchor_expected_sign": data.get("anchor_expected_sign"),
+        "auxiliary_proxy_names": ",".join(data.get("auxiliary_proxy_names", [])),
+        "proxy_aggregate_name": data.get("proxy_aggregate_name"),
         "static_feature_names": ",".join(data.get("static_columns", [])),
         "source_path": data.get("source_path"),
         "stats_end_year": data.get("stats_end_year"),
@@ -279,6 +324,10 @@ def _normalize_summary(summary_path: Path, output_root: Path, family: str) -> di
         "best_val_task_loss": payload.get("best_val_task_loss"),
         "matched_init_to_full_cmdl": ablation.get("matched_init_to_full_cmdl"),
         "causal_ablation_validity": ablation.get("causal_ablation_validity"),
+        "grad_clip_mode": training_controls.get("grad_clip_mode"),
+        "recon_loss_mode": training_controls.get("recon_loss_mode"),
+        "anchor_recon_weight": training_controls.get("anchor_recon_weight"),
+        "reconstruction_detach": training_controls.get("reconstruction_detach"),
         "proxy_refit_status": proxy_refit.get("status"),
         "proxy_refit_applied": proxy_refit.get("applied"),
         "proxy_metric_interpretable": proxy_refit.get("metrics_interpretable"),
@@ -389,6 +438,11 @@ def build_task_table(comparison_frame: pd.DataFrame, split: str = "test") -> pd.
         "best_epoch",
         "best_val_task_loss",
         f"{split}_r2",
+        f"{split}_baseline_persistence_r2",
+        f"{split}_baseline_panel_ols_r2",
+        f"{split}_baseline_best_simple_r2",
+        f"{split}_r2_delta_vs_persistence",
+        f"{split}_r2_delta_vs_panel_ols",
         f"{split}_mae",
         f"{split}_mse",
     ]
@@ -418,13 +472,24 @@ def build_interpretability_table(comparison_frame: pd.DataFrame, split: str = "t
         "target_column",
         "feature_bundle",
         "lag_method",
+        "anchor_proxy_name",
+        "anchor_expected_sign",
         "proxy_refit_status",
         "proxy_metric_interpretable",
         f"{split}_effective_kstar_proxy_spearman_rho",
+        f"{split}_effective_kstar_proxy_spearman_adjusted_rho",
+        f"{split}_effective_kstar_proxy_mean_spearman_rho",
+        f"{split}_effective_kstar_proxy_mean_spearman_adjusted_rho",
         f"{split}_effective_kstar_proxy_metric_valid",
         f"{split}_effective_kstar_mean",
         f"{split}_effective_kstar_std",
         f"{split}_effective_lag_entropy_mean",
+        f"{split}_effective_lag_entropy_std",
+        f"{split}_effective_lag_top1_share",
+        f"{split}_z_std",
+        f"{split}_z_proxy_spearman_adjusted_rho",
+        f"{split}_lag_gate_sensitivity_slope",
+        f"{split}_lag_gate_sensitivity_range",
         f"{split}_proxy_signal_r2",
         f"{split}_proxy_signal_metric_valid",
     ]

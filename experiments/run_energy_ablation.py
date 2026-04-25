@@ -33,6 +33,7 @@ from data.energy.energy_loader import (
 )
 from experiments.run_ablation import NoACEncoderCMDLModel, UniformLagCMDLModel
 from experiments.run_energy import (
+    GRAD_CLIP_MODE_CHOICES,
     evaluate,
     finish_mlflow,
     log_mlflow_metrics,
@@ -99,6 +100,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--temperature", type=float, default=energy_defaults.temperature)
     parser.add_argument("--lag-bias-strength", type=float, default=energy_defaults.lag_bias_strength)
     parser.add_argument("--grad-clip", type=float, default=1.0)
+    parser.add_argument("--grad-clip-mode", choices=GRAD_CLIP_MODE_CHOICES, default="global")
     parser.add_argument("--output-dir", type=str, default="outputs/step5/energy_ablation")
     parser.add_argument("--experiment-prefix", type=str, default="E3_energy_ablation")
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
@@ -184,6 +186,7 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
             "temperature": variant_args.temperature,
             "lag_bias_strength": variant_args.lag_bias_strength,
             "grad_clip": variant_args.grad_clip,
+            "grad_clip_mode": variant_args.grad_clip_mode,
             "year_start": variant_args.year_start,
             "year_end": variant_args.year_end,
             "train_end_year": variant_args.train_end_year,
@@ -206,6 +209,7 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
                 optimizer=setup.optimizer,
                 panel=setup.train_panel,
                 grad_clip=variant_args.grad_clip,
+                grad_clip_mode=variant_args.grad_clip_mode,
             )
             val_metrics, _ = evaluate(setup.model, setup.criterion, setup.val_panel)
 
@@ -398,6 +402,9 @@ def run_suite(args: argparse.Namespace) -> tuple[pd.DataFrame, pd.DataFrame]:
                     .get("proxy_refit", {})
                     .get("metrics_interpretable"),
                     "proxy_refit_reason": summary.get("diagnostics", {}).get("proxy_refit", {}).get("reason"),
+                    "grad_clip_mode": summary.get("diagnostics", {})
+                    .get("training_controls", {})
+                    .get("grad_clip_mode"),
                     "run_dir": str(output_root / summary["experiment"]),
                     **prefix_metrics("train", summary["metrics"]["train"]),
                     **prefix_metrics("val", summary["metrics"]["val"]),

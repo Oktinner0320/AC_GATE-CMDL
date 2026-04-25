@@ -32,6 +32,7 @@ import numpy as np
 import pandas as pd
 import torch
 
+from baselines.panel_ols import add_forecast_calibration
 from config.cmdl_config import CMDLConfig
 from data.economics.economics_loader import (
 	DEFAULT_ECONOMICS_FEATURE_BUNDLE,
@@ -43,7 +44,8 @@ from data.economics.economics_loader import (
 	get_prediction_years,
 	load_economics_panel,
 )
-from evaluation.metrics import compute_mae, compute_mse, compute_r2, compute_spearman
+from evaluation.metrics import compute_mae, compute_mse, compute_r2
+from evaluation.realdata_diagnostics import build_realdata_diagnostics, proxy_metadata_payload
 from model.cmdl_model import CMDLModel
 from model.loss import DomainAgnosticLoss
 
@@ -107,6 +109,8 @@ class ProxyRefitResult:
 
 
 _METRIC_EPS = 1e-10
+GRAD_CLIP_MODE_CHOICES = ("global", "none", "main_only", "split")
+RECON_LOSS_MODE_CHOICES = ("all", "anchor_only", "anchor_weighted")
 
 
 def parse_args() -> argparse.Namespace:
@@ -145,6 +149,11 @@ def parse_args() -> argparse.Namespace:
 	parser.add_argument("--temperature", type=float, default=economics_defaults.temperature)
 	parser.add_argument("--lag-bias-strength", type=float, default=economics_defaults.lag_bias_strength)
 	parser.add_argument("--grad-clip", type=float, default=1.0)
+	parser.add_argument("--grad-clip-mode", choices=GRAD_CLIP_MODE_CHOICES, default="global")
+	parser.add_argument("--recon-loss-mode", choices=RECON_LOSS_MODE_CHOICES, default="all")
+	parser.add_argument("--anchor-recon-weight", type=float, default=1.0)
+	parser.add_argument("--reconstruction-detach", dest="reconstruction_detach", action="store_true", default=True)
+	parser.add_argument("--no-reconstruction-detach", dest="reconstruction_detach", action="store_false")
 	parser.add_argument("--output-dir", type=str, default="outputs/step5/economics")
 	parser.add_argument("--experiment-name", type=str, default="E4_economics")
 	parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
@@ -322,6 +331,63 @@ def _tensor_population_std(tensor: torch.Tensor) -> float:
 	return float(values.std(unbiased=False).item())
 
 
+def _parameter_grad_norm(parameters: list[torch.nn.Parameter]) -> float:
+	"""Return the L2 norm of gradients over a parameter group."""
+
+	squared_norm = 0.0
+	for parameter in parameters:
+		if parameter.grad is None:
+			continue
+		grad = parameter.grad.detach().to(dtype=torch.float64)
+		squared_norm += float(torch.sum(grad * grad).item())
+	return float(np.sqrt(squared_norm))
+
+
+def _split_main_proxy_parameters(model: torch.nn.Module) -> tuple[list[torch.nn.Parameter], list[torch.nn.Parameter]]:
+	"""Split parameters into main model and proxy reconstruction head groups."""
+
+	main_parameters: list[torch.nn.Parameter] = []
+	proxy_parameters: list[torch.nn.Parameter] = []
+	for name, parameter in model.named_parameters():
+		if not parameter.requires_grad:
+			continue
+		if "proxy_reconstructor" in name:
+			proxy_parameters.append(parameter)
+		else:
+			main_parameters.append(parameter)
+	return main_parameters, proxy_parameters
+
+
+def _clip_gradients(model: torch.nn.Module, grad_clip: float, grad_clip_mode: str) -> dict[str, float]:
+	"""Apply the configured clipping policy and return group norms."""
+
+	main_parameters, proxy_parameters = _split_main_proxy_parameters(model)
+	all_parameters = main_parameters + proxy_parameters
+	grad_norm_total = _parameter_grad_norm(all_parameters)
+	grad_norm_main = _parameter_grad_norm(main_parameters)
+	grad_norm_proxy_head = _parameter_grad_norm(proxy_parameters)
+	clip_applied = grad_clip_mode != "none" and grad_clip > 0.0
+
+	if clip_applied:
+		if grad_clip_mode == "global":
+			torch.nn.utils.clip_grad_norm_(all_parameters, max_norm=grad_clip)
+		elif grad_clip_mode == "main_only":
+			torch.nn.utils.clip_grad_norm_(main_parameters, max_norm=grad_clip)
+		elif grad_clip_mode == "split":
+			torch.nn.utils.clip_grad_norm_(main_parameters, max_norm=grad_clip)
+			torch.nn.utils.clip_grad_norm_(proxy_parameters, max_norm=grad_clip)
+		else:
+			raise ValueError(f"Unsupported grad_clip_mode: {grad_clip_mode}")
+
+	return {
+		"grad_norm": grad_norm_total,
+		"grad_norm_total": grad_norm_total,
+		"grad_norm_main": grad_norm_main,
+		"grad_norm_proxy_head": grad_norm_proxy_head,
+		"clip_applied": float(clip_applied),
+	}
+
+
 def _build_proxy_refit_matrices(
 	model: CMDLModel,
 	panel: EconomicsPanel,
@@ -409,6 +475,7 @@ def train_one_epoch(
 	optimizer: torch.optim.Optimizer,
 	panel: EconomicsPanel,
 	grad_clip: float,
+	grad_clip_mode: str = "global",
 ) -> dict[str, float]:
 	"""Run one optimization step over the economics training split.
 
@@ -424,15 +491,17 @@ def train_one_epoch(
 		raise FloatingPointError("Encountered a non-finite total loss during economics training")
 
 	losses.total_loss.backward()
-	grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=grad_clip)
+	grad_metrics = _clip_gradients(model, grad_clip=grad_clip, grad_clip_mode=grad_clip_mode)
 	optimizer.step()
 
-	return {
+	metrics = {
 		"total_loss": float(losses.total_loss.item()),
 		"task_loss": float(losses.task_loss.item()),
 		"recon_loss": float(losses.recon_loss.item()),
-		"grad_norm": float(grad_norm),
+		"anchor_recon_loss": float(losses.anchor_recon_loss.item()),
 	}
+	metrics.update(grad_metrics)
+	return metrics
 
 
 def evaluate(
@@ -453,35 +522,30 @@ def evaluate(
 		losses = criterion(output.y_pred, panel.Y_it, output.p_hat_i, panel.p_i)
 
 	aligned_y_true = panel.Y_it[:, model.cfg.max_lag :]
-	omega = output.omega.detach().cpu().numpy()
-	omega_entropy = -np.sum(omega * np.log(np.clip(omega, 1e-8, None)), axis=1)
-	kstar_std = float(output.k_star.std(unbiased=False).item()) if output.k_star.numel() > 1 else 0.0
-	proxy_std = _tensor_population_std(panel.p_i[:, 0])
-	kstar_proxy_metric_valid = kstar_std > _METRIC_EPS and proxy_std > _METRIC_EPS
-	if kstar_proxy_metric_valid:
-		kstar_rho, kstar_p_value = compute_spearman(output.k_star, panel.p_i[:, 0])
-	else:
-		kstar_rho, kstar_p_value = float("nan"), float("nan")
-
 	proxy_metric_valid = True if proxy_refit_result is None else proxy_refit_result.metrics_interpretable
-	proxy_recon_r2 = float(compute_r2(output.p_hat_i, panel.p_i)) if proxy_metric_valid else float("nan")
+	diagnostics = build_realdata_diagnostics(
+		effective_kstar=output.k_star,
+		proxies=panel.p_i,
+		metadata=panel.metadata,
+		prefix="kstar",
+		omega=output.omega,
+		z_values=output.z_i,
+		proxy_predictions=output.p_hat_i,
+		proxy_metric_valid=proxy_metric_valid,
+		lag_gate=getattr(model, "lag_gate", None),
+	)
 
 	metrics = {
 		"total_loss": float(losses.total_loss.item()),
 		"task_loss": float(losses.task_loss.item()),
 		"recon_loss": float(losses.recon_loss.item()),
+		"anchor_recon_loss": float(losses.anchor_recon_loss.item()),
 		"mse": float(compute_mse(output.y_pred, aligned_y_true)),
 		"mae": float(compute_mae(output.y_pred, aligned_y_true)),
 		"r2": float(compute_r2(output.y_pred, aligned_y_true)),
-		"proxy_recon_r2": proxy_recon_r2,
-		"proxy_metric_valid": float(proxy_metric_valid),
-		"kstar_proxy_spearman_rho": float(kstar_rho),
-		"kstar_proxy_spearman_p": float(kstar_p_value),
 		"kstar_mean": float(output.k_star.mean().item()),
-		"kstar_std": kstar_std,
-		"kstar_proxy_metric_valid": float(kstar_proxy_metric_valid),
-		"omega_entropy_mean": float(np.mean(omega_entropy)),
 	}
+	metrics.update(diagnostics)
 
 	if not include_outputs:
 		return metrics, None
@@ -514,6 +578,8 @@ def save_predictions(outputs: dict[str, np.ndarray], path: Path) -> None:
 	for entity_index, entity_id in enumerate(outputs["entity_ids"].astype(int)):
 		omega_row = omega[entity_index]
 		omega_peak = int(np.argmax(omega_row) + 1)
+		proxy_true_row = outputs["p_true"][entity_index]
+		proxy_pred_row = outputs["p_pred"][entity_index]
 		for time_index, year in enumerate(years):
 			row = {
 				"entity_id": int(entity_id),
@@ -524,9 +590,10 @@ def save_predictions(outputs: dict[str, np.ndarray], path: Path) -> None:
 				"y_pred": float(outputs["y_pred"][entity_index, time_index]),
 				"k_star": float(outputs["k_star"][entity_index]),
 				"omega_peak": omega_peak,
-				"proxy_1_true": float(outputs["p_true"][entity_index, 0]),
-				"proxy_1_pred": float(outputs["p_pred"][entity_index, 0]),
 			}
+			for proxy_index, proxy_value in enumerate(proxy_true_row, start=1):
+				row[f"proxy_{proxy_index}_true"] = float(proxy_value)
+				row[f"proxy_{proxy_index}_pred"] = float(proxy_pred_row[proxy_index - 1])
 			for lag_index, lag_weight in enumerate(omega_row, start=1):
 				row[f"omega_{lag_index}"] = float(lag_weight)
 			rows.append(row)
@@ -552,6 +619,11 @@ def summarize_run(
 	生成 economics 实验完成后的 JSON 汇总结果。
 	"""
 
+	train_metrics = add_forecast_calibration(train_metrics, setup.train_panel, setup.train_panel, setup.cfg.max_lag)
+	val_metrics = add_forecast_calibration(val_metrics, setup.train_panel, setup.val_panel, setup.cfg.max_lag)
+	test_metrics = add_forecast_calibration(test_metrics, setup.train_panel, setup.test_panel, setup.cfg.max_lag)
+	proxy_payload = proxy_metadata_payload(setup.full_panel.metadata, setup.cfg.n_proxies)
+
 	return {
 		"experiment": args.experiment_name,
 		"tracking_backend": tracking_backend,
@@ -565,6 +637,7 @@ def summarize_run(
 			"feature_bundle": setup.full_panel.metadata["feature_bundle"],
 			"seq_feature_columns": list(setup.full_panel.metadata["seq_feature_columns"]),
 			"proxy_columns": list(setup.full_panel.metadata["proxy_columns"]),
+			**proxy_payload,
 			"static_columns": list(setup.full_panel.metadata["static_columns"]),
 			"stats_end_year": int(setup.full_panel.metadata["stats_end_year"]),
 			"year_start": int(args.year_start),
@@ -584,6 +657,12 @@ def summarize_run(
 		},
 		"diagnostics": {
 			"proxy_refit": None if proxy_refit_result is None else proxy_refit_result.to_dict(),
+			"training_controls": {
+				"grad_clip_mode": getattr(args, "grad_clip_mode", "global"),
+				"recon_loss_mode": getattr(args, "recon_loss_mode", "all"),
+				"anchor_recon_weight": float(getattr(args, "anchor_recon_weight", 1.0)),
+				"reconstruction_detach": bool(getattr(args, "reconstruction_detach", True)),
+			},
 		},
 	}
 
@@ -616,6 +695,7 @@ def setup_experiment(args: argparse.Namespace) -> EconomicsExperimentSetup:
 		lambda_r=args.lambda_r,
 		temperature=args.temperature,
 		lag_bias_strength=args.lag_bias_strength,
+		reconstruction_detach=getattr(args, "reconstruction_detach", True),
 		n_entities=full_panel_cpu.X_it.shape[0],
 		seq_length=full_panel_cpu.X_it.shape[1],
 		seq_features=full_panel_cpu.X_it.shape[2],
@@ -637,7 +717,13 @@ def setup_experiment(args: argparse.Namespace) -> EconomicsExperimentSetup:
 	test_panel = move_panel_to_device(test_panel_cpu, device)
 
 	model = CMDLModel(cfg).to(device)
-	criterion = DomainAgnosticLoss(lambda_r=cfg.lambda_r, warmup_steps=cfg.max_lag)
+	criterion = DomainAgnosticLoss(
+		lambda_r=cfg.lambda_r,
+		warmup_steps=cfg.max_lag,
+		recon_loss_mode=getattr(args, "recon_loss_mode", "all"),
+		anchor_proxy_index=int(full_panel_cpu.metadata.get("anchor_proxy_index", 0)),
+		anchor_recon_weight=float(getattr(args, "anchor_recon_weight", 1.0)),
+	)
 	optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
 	run_dir = Path(args.output_dir).resolve() / args.experiment_name
@@ -687,6 +773,10 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
 			"temperature": args.temperature,
 			"lag_bias_strength": args.lag_bias_strength,
 			"grad_clip": args.grad_clip,
+			"grad_clip_mode": args.grad_clip_mode,
+			"recon_loss_mode": args.recon_loss_mode,
+			"anchor_recon_weight": args.anchor_recon_weight,
+			"reconstruction_detach": args.reconstruction_detach,
 			"year_start": args.year_start,
 			"year_end": args.year_end,
 			"train_end_year": args.train_end_year,
@@ -709,6 +799,7 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
 				optimizer=setup.optimizer,
 				panel=setup.train_panel,
 				grad_clip=args.grad_clip,
+				grad_clip_mode=args.grad_clip_mode,
 			)
 			val_metrics, _ = evaluate(setup.model, setup.criterion, setup.val_panel)
 
