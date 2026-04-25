@@ -186,7 +186,7 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
             "temperature": variant_args.temperature,
             "lag_bias_strength": variant_args.lag_bias_strength,
             "grad_clip": variant_args.grad_clip,
-            "grad_clip_mode": variant_args.grad_clip_mode,
+            "grad_clip_mode": getattr(variant_args, "grad_clip_mode", "global"),
             "year_start": variant_args.year_start,
             "year_end": variant_args.year_end,
             "train_end_year": variant_args.train_end_year,
@@ -209,7 +209,7 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
                 optimizer=setup.optimizer,
                 panel=setup.train_panel,
                 grad_clip=variant_args.grad_clip,
-                grad_clip_mode=variant_args.grad_clip_mode,
+                grad_clip_mode=getattr(variant_args, "grad_clip_mode", "global"),
             )
             val_metrics, _ = evaluate(setup.model, setup.criterion, setup.val_panel)
 

@@ -611,7 +611,6 @@ def build_economics_dataframe(
 		sequence_columns = ["x_cap_deepening", "x_log_rgdpna_growth", "x_log_ck_growth"]
 	else:
 		raise AssertionError(f"Unhandled feature_bundle: {feature_bundle}")
-def _feature_bundle_proxy_metadata(feature_bundle: str) -> dict[str, object]:
 	static_frame = cleaned_frame.groupby("entity_code", as_index=False).agg(
 		{
 			"entity_name": "first",
