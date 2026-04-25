@@ -30,6 +30,7 @@ class CMDLConfig:
 	lstm_layers: int = 2                    # LSTM 层数 | Number of LSTM layers in the backbone.
 	dropout: float = 0.05                  # 通用 dropout 比例 | Shared dropout rate for Step 3 blocks.
 	noise_std: float = 0.15                 # 合成数据噪声强度 | Noise level used in synthetic generation.
+	reconstruction_detach: bool = True      # proxy 重构是否截断 z 梯度 | Whether proxy reconstruction detaches z.
 	seed: int = 42                          # 随机种子 | Random seed for reproducibility.
 	scenario: ScenarioLiteral = "linear"    # 合成场景类型 | Synthetic scenario type.
 

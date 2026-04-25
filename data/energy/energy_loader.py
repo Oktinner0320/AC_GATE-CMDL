@@ -120,6 +120,21 @@ def _feature_bundle_columns(feature_bundle: str) -> tuple[list[str], list[str], 
 	], ["static_log_population", "static_log_gdp_per_capita"]
 
 
+def _feature_bundle_proxy_metadata(feature_bundle: str) -> dict[str, object]:
+	"""Return proxy anchor metadata used by real-data mechanism diagnostics."""
+
+	_, proxy_columns, _ = _feature_bundle_columns(_validate_feature_bundle(feature_bundle))
+	anchor_proxy_index = 0
+	return {
+		"anchor_proxy_name": proxy_columns[anchor_proxy_index],
+		"anchor_proxy_index": anchor_proxy_index,
+		"anchor_expected_sign": -1.0,
+		"auxiliary_proxy_names": [name for index, name in enumerate(proxy_columns) if index != anchor_proxy_index],
+		"proxy_expected_signs": [-1.0 for _ in proxy_columns],
+		"proxy_aggregate_name": "mean_wgi_proxy",
+	}
+
+
 def _validate_loader_shape_contract(
 	cfg: CMDLConfig,
 	seq_features: int,
@@ -349,6 +364,7 @@ def build_energy_dataframe(
 	prepared_frame = prepared_frame.sort_values(["entity_code", "year"]).reset_index(drop=True)
 
 	sequence_columns, proxy_columns, static_columns = _feature_bundle_columns(feature_bundle)
+	proxy_metadata = _feature_bundle_proxy_metadata(feature_bundle)
 	return prepared_frame.loc[
 		:,
 		[
@@ -440,6 +456,7 @@ def load_energy_panel(
 			"feature_bundle": feature_bundle,
 			"seq_feature_columns": list(sequence_columns),
 			"proxy_columns": list(proxy_columns),
+			**proxy_metadata,
 			"static_columns": list(static_columns),
 			"years": years,
 			"year_start": int(years[0]),

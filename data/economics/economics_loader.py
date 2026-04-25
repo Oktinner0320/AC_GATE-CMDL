@@ -597,6 +597,21 @@ def build_economics_dataframe(
 	else:
 		raise AssertionError(f"Unhandled feature_bundle: {feature_bundle}")
 
+
+def _feature_bundle_proxy_metadata(feature_bundle: str) -> dict[str, object]:
+	"""Return proxy anchor metadata used by real-data mechanism diagnostics."""
+
+	_, proxy_columns, _ = _feature_bundle_columns(_validate_feature_bundle(feature_bundle))
+	anchor_proxy_index = 0
+	return {
+		"anchor_proxy_name": proxy_columns[anchor_proxy_index],
+		"anchor_proxy_index": anchor_proxy_index,
+		"anchor_expected_sign": -1.0,
+		"auxiliary_proxy_names": [name for index, name in enumerate(proxy_columns) if index != anchor_proxy_index],
+		"proxy_expected_signs": [-1.0 for _ in proxy_columns],
+		"proxy_aggregate_name": "proxy_mean",
+	}
+
 	static_frame = cleaned_frame.groupby("entity_code", as_index=False).agg(
 		{
 			"entity_name": "first",
@@ -656,6 +671,7 @@ def load_economics_panel(
 	runtime_cfg = CMDLConfig.from_domain("economics") if cfg is None else cfg
 	feature_bundle = _validate_feature_bundle(feature_bundle)
 	sequence_columns, proxy_columns, static_columns = _feature_bundle_columns(feature_bundle)
+	proxy_metadata = _feature_bundle_proxy_metadata(feature_bundle)
 
 	dataframe = build_economics_dataframe(
 		csv_path=csv_path,
@@ -719,6 +735,7 @@ def load_economics_panel(
 			"treatment_column": "cap_deepening",
 			"seq_feature_columns": list(sequence_columns),
 			"proxy_columns": list(proxy_columns),
+			**proxy_metadata,
 			"static_columns": list(static_columns),
 			"years": years,
 			"year_start": int(years[0]),

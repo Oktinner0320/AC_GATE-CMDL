@@ -37,7 +37,13 @@ class AdaptiveACEncoder(nn.Module):
 	2. the latent head compresses it into z_i, and the reconstructor maps z_i back to proxy space.
 	"""
 
-	def __init__(self, n_proxies:int, hidden_dim:int=32, bottleneck_dim:int=16) -> None:
+	def __init__(
+		self,
+		n_proxies:int,
+		hidden_dim:int=32,
+		bottleneck_dim:int=16,
+		detach_reconstruction: bool = True,
+	) -> None:
 		super().__init__()
 		if n_proxies < 1:
 			raise ValueError("n_proxies must be at least 1")
@@ -45,6 +51,7 @@ class AdaptiveACEncoder(nn.Module):
 			raise ValueError("hidden dimensions must be positive")
 
 		self.n_proxies = n_proxies
+		self.detach_reconstruction = bool(detach_reconstruction)
 		# 主编码器先做特征混合与非线性变换，再把信息压到较小瓶颈层。
 		# The main encoder mixes proxy features and compresses them into a smaller bottleneck.
 		self.encoder = nn.Sequential(nn.Linear(n_proxies, hidden_dim), nn.LayerNorm(hidden_dim),
@@ -73,9 +80,10 @@ class AdaptiveACEncoder(nn.Module):
 		# hidden aggregates proxy information; z_i becomes the entity-level conditioning signal for the lag gate.
 		hidden = self.encoder(proxies)
 		z_i = self.latent_head(hidden)
-		# p_hat_i 用于后续 reconstruction loss；detach 防止 recon 梯度干扰 encoder 表示学习。
-		# p_hat_i feeds reconstruction loss; detach prevents recon gradients from disturbing encoder representations.
-		p_hat_i = self.proxy_reconstructor(z_i.detach())
+		# 默认截断 recon 梯度；真实域 anchor objective 实验可显式关闭该行为。
+		# Detach by default; real-data anchor-objective experiments may opt out explicitly.
+		reconstruction_input = z_i.detach() if self.detach_reconstruction else z_i
+		p_hat_i = self.proxy_reconstructor(reconstruction_input)
 		return ACEncoderOutput(z_i=z_i, p_hat_i=p_hat_i)
 
 

@@ -41,7 +41,10 @@ class CMDLModel(nn.Module):
 		self.cfg = cfg
 		# 模块按训练时的数据流顺序声明，便于后续实验脚本直接复用。
 		# Modules are declared in the same order as the training data flow for easier reuse.
-		self.ac_encoder = AdaptiveACEncoder(n_proxies=cfg.n_proxies)
+		self.ac_encoder = AdaptiveACEncoder(
+			n_proxies=cfg.n_proxies,
+			detach_reconstruction=getattr(cfg, "reconstruction_detach", True),
+		)
 		# 输入适配层先把原始时序特征投影到统一的 d_model 空间。
 		# The input adapter projects raw sequential features into the shared d_model space first.
 		self.input_adapter = nn.Sequential(
