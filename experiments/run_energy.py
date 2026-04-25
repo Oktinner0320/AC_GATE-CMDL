@@ -785,7 +785,7 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
 			"temperature": args.temperature,
 			"lag_bias_strength": args.lag_bias_strength,
 			"grad_clip": args.grad_clip,
-			"grad_clip_mode": args.grad_clip_mode,
+			"grad_clip_mode": getattr(args, "grad_clip_mode", "global"),
 			"year_start": args.year_start,
 			"year_end": args.year_end,
 			"train_end_year": args.train_end_year,
@@ -808,7 +808,7 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
 				optimizer=setup.optimizer,
 				panel=setup.train_panel,
 				grad_clip=args.grad_clip,
-				grad_clip_mode=args.grad_clip_mode,
+				grad_clip_mode=getattr(args, "grad_clip_mode", "global"),
 			)
 			val_metrics, _ = evaluate(setup.model, setup.criterion, setup.val_panel)
 

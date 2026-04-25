@@ -773,10 +773,10 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
 			"temperature": args.temperature,
 			"lag_bias_strength": args.lag_bias_strength,
 			"grad_clip": args.grad_clip,
-			"grad_clip_mode": args.grad_clip_mode,
-			"recon_loss_mode": args.recon_loss_mode,
-			"anchor_recon_weight": args.anchor_recon_weight,
-			"reconstruction_detach": args.reconstruction_detach,
+			"grad_clip_mode": getattr(args, "grad_clip_mode", "global"),
+			"recon_loss_mode": getattr(args, "recon_loss_mode", "all"),
+			"anchor_recon_weight": getattr(args, "anchor_recon_weight", 1.0),
+			"reconstruction_detach": getattr(args, "reconstruction_detach", True),
 			"year_start": args.year_start,
 			"year_end": args.year_end,
 			"train_end_year": args.train_end_year,
@@ -799,7 +799,7 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
 				optimizer=setup.optimizer,
 				panel=setup.train_panel,
 				grad_clip=args.grad_clip,
-				grad_clip_mode=args.grad_clip_mode,
+				grad_clip_mode=getattr(args, "grad_clip_mode", "global"),
 			)
 			val_metrics, _ = evaluate(setup.model, setup.criterion, setup.val_panel)
 
