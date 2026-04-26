@@ -1,0 +1,161 @@
+display_name,family,scenario,experiment,task_loss,proxy_signal_r2,z_signal_spearman_rho,best_epoch
+Uniform Lag,ablation,linear,uniform_lag_linear_seed11,0.07124852389097214,0.9537061007776794,0.9908872721818047,32
+Uniform Lag,ablation,linear,uniform_lag_linear_seed12,0.0645907074213028,0.9535938515188626,0.9846756168904225,50
+CMDL,cmdl,linear,cmdl_linear_seed19,0.03933504596352577,0.9522168808963819,0.9918262956573916,106
+No Recon Regularization,ablation,linear,no_recon_regularization_linear_seed19,0.039315782487392426,0.9522162006867156,0.9918262956573916,106
+Uniform Lag,ablation,linear,uniform_lag_linear_seed18,0.07010657340288162,0.951379811020349,0.9913912847821196,39
+Uniform Lag,ablation,linear,uniform_lag_linear_seed3,0.06838253885507584,0.9503806527214752,0.989678241956049,34
+No Recon Regularization,ablation,linear,no_recon_regularization_linear_seed0,0.03127359598875046,0.948779798954516,0.9896197404935125,153
+CMDL,cmdl,linear,cmdl_linear_seed0,0.03128436207771301,0.9487720032548356,0.9896197404935125,153
+CMDL,cmdl,linear,cmdl_linear_seed10,0.03156784549355507,0.9477176807990695,0.9898087452186306,138
+No Recon Regularization,ablation,linear,no_recon_regularization_linear_seed10,0.03178723156452179,0.9476838417404087,0.9898087452186306,138
+CMDL,cmdl,linear,cmdl_linear_seed7,0.041274383664131165,0.9472587107218683,0.9891157278931976,83
+No Recon Regularization,ablation,linear,no_recon_regularization_linear_seed7,0.04140640050172806,0.9472500463155153,0.9891157278931976,83
+CMDL,cmdl,linear,cmdl_linear_seed5,0.04461454972624779,0.947146541075439,0.9906457661441538,136
+No Recon Regularization,ablation,linear,no_recon_regularization_linear_seed5,0.044608790427446365,0.9471447407409538,0.9906457661441538,136
+No Recon Regularization,ablation,linear,no_recon_regularization_linear_seed14,0.03458932787179947,0.9466089180565017,0.9931043276081903,180
+CMDL,cmdl,linear,cmdl_linear_seed14,0.034597739577293396,0.9466080755968647,0.9931043276081903,180
+CMDL,cmdl,linear,cmdl_linear_seed8,0.03169674053788185,0.9455486688446234,0.9929363234080855,200
+No Recon Regularization,ablation,linear,no_recon_regularization_linear_seed8,0.03163065016269684,0.9455249731681,0.9929363234080855,200
+No Recon Regularization,ablation,linear,no_recon_regularization_linear_seed15,0.030395762994885445,0.9453706375431136,0.9925928148203707,181
+CMDL,cmdl,linear,cmdl_linear_seed15,0.030380437150597572,0.9453667544279177,0.9925928148203707,181
+No Recon Regularization,ablation,linear,no_recon_regularization_linear_seed4,0.03691868111491203,0.9438665251914847,0.9908527713192832,93
+CMDL,cmdl,linear,cmdl_linear_seed4,0.036916591227054596,0.9438661937594773,0.9908527713192832,93
+Uniform Lag,ablation,linear,uniform_lag_linear_seed6,0.0747029036283493,0.9437328761735732,0.9854331358283958,28
+CMDL,cmdl,linear,cmdl_linear_seed1,0.03257286548614502,0.9419249562278212,0.9920318007950201,131
+No Recon Regularization,ablation,linear,no_recon_regularization_linear_seed1,0.03429257497191429,0.9407325281925324,0.9919762994074854,116
+CMDL,cmdl,linear,cmdl_linear_seed16,0.030374471098184586,0.9366893298515887,0.9919177979449487,140
+No Recon Regularization,ablation,linear,no_recon_regularization_linear_seed16,0.03040025383234024,0.9366811970923886,0.9919177979449487,140
+CMDL,cmdl,linear,cmdl_linear_seed11,0.03209337219595909,0.9356143702822418,0.9925553138828471,198
+No Recon Regularization,ablation,linear,no_recon_regularization_linear_seed11,0.03210538625717163,0.93557841669855,0.9925553138828471,198
+CMDL,cmdl,linear,cmdl_linear_seed9,0.03680543228983879,0.9334195713839025,0.9901117527938199,150
+No Recon Regularization,ablation,linear,no_recon_regularization_linear_seed9,0.036777570843696594,0.9333901901879257,0.9901117527938199,150
+CMDL,cmdl,linear,cmdl_linear_seed3,0.03572094440460205,0.9285880453170301,0.9893077326933174,110
+No Recon Regularization,ablation,linear,no_recon_regularization_linear_seed3,0.035664234310388565,0.9285113391540186,0.9892672316807921,111
+Uniform Lag,ablation,linear,uniform_lag_linear_seed16,0.07134007662534714,0.9272548302316616,0.9774799369984251,36
+No Recon Regularization,ablation,linear,no_recon_regularization_linear_seed12,0.042587023228406906,0.9226227580135196,0.9835085877146931,63
+CMDL,cmdl,linear,cmdl_linear_seed12,0.04258759692311287,0.9226224191920643,0.9835085877146931,63
+Uniform Lag,ablation,linear,uniform_lag_linear_seed15,0.07339443266391754,0.9221610007059221,0.9881572039300984,34
+Uniform Lag,ablation,linear,uniform_lag_linear_seed9,0.0707116574048996,0.9214115101314753,0.9734568364209106,35
+Uniform Lag,ablation,linear,uniform_lag_linear_seed7,0.07279380410909653,0.9188794950402935,0.9761254031350787,31
+Uniform Lag,ablation,linear,uniform_lag_linear_seed14,0.06913885474205017,0.9119444843450747,0.9771169279231982,41
+Uniform Lag,ablation,linear,uniform_lag_linear_seed2,0.0693383738398552,0.910387102295893,0.9898657466436663,52
+Uniform Lag,ablation,linear,uniform_lag_linear_seed8,0.06975958496332169,0.9056217040492988,0.9926198154953875,41
+Uniform Lag,ablation,linear,uniform_lag_linear_seed10,0.06677237153053284,0.9017040143379353,0.9890167254181357,43
+No Recon Regularization,ablation,linear,no_recon_regularization_linear_seed17,0.04134069383144379,0.891752675645234,0.9884617115427886,136
+CMDL,cmdl,linear,cmdl_linear_seed17,0.04139716550707817,0.8917259324727232,0.9884617115427886,136
+Uniform Lag,ablation,linear,uniform_lag_linear_seed13,0.06763350963592529,0.8787345473789063,0.9670501762544064,27
+Uniform Lag,ablation,linear,uniform_lag_linear_seed1,0.06802242994308472,0.8584179033389406,0.9584624615615392,35
+Uniform Lag,ablation,linear,uniform_lag_linear_seed4,0.0666215568780899,0.8453963085864816,0.9890002250056252,33
+CMDL,cmdl,linear,cmdl_linear_seed6,0.03567156568169594,0.8442603403007846,0.9275211880297008,199
+No Recon Regularization,ablation,linear,no_recon_regularization_linear_seed6,0.035634588450193405,0.8442083014049394,0.9275211880297008,199
+Uniform Lag,ablation,linear,uniform_lag_linear_seed19,0.06798413395881653,0.7986515122181266,0.9705047626190655,43
+CMDL,cmdl,linear,cmdl_linear_seed18,0.037939172238111496,0.7986401595437841,0.816428410710268,200
+No Recon Regularization,ablation,linear,no_recon_regularization_linear_seed18,0.03789399191737175,0.7955452080763065,0.8115412885322134,200
+No Recon Regularization,ablation,linear,no_recon_regularization_linear_seed13,0.0375874787569046,0.723798021709111,0.7342683567089179,109
+CMDL,cmdl,linear,cmdl_linear_seed13,0.037562429904937744,0.7233987638272446,0.7335783394584866,109
+Uniform Lag,ablation,linear,uniform_lag_linear_seed5,0.07343613356351852,0.6272951862372077,0.8194734868371711,36
+CMDL,cmdl,linear,cmdl_linear_seed2,0.04036131873726845,0.610307486907145,0.7670441761044028,179
+No Recon Regularization,ablation,linear,no_recon_regularization_linear_seed2,0.040362872183322906,0.6094204905530393,0.766532663316583,179
+Uniform Lag,ablation,linear,uniform_lag_linear_seed0,0.0676942765712738,0.4572380633597226,0.7270576764419111,39
+Uniform Lag,ablation,linear,uniform_lag_linear_seed17,0.06657334417104721,0.4290533048247506,0.6771394284857122,47
+No AC Encoder,ablation,linear,no_ac_encoder_linear_seed17,0.06830479204654694,-2910386916613.615,0.0,56
+No AC Encoder,ablation,linear,no_ac_encoder_linear_seed9,0.06349043548107147,-7387864900485.683,0.0,65
+No AC Encoder,ablation,linear,no_ac_encoder_linear_seed14,0.05282866954803467,-10162361976440.408,0.0,75
+No AC Encoder,ablation,linear,no_ac_encoder_linear_seed0,0.06365169584751129,-22770655458185.64,0.0,49
+No AC Encoder,ablation,linear,no_ac_encoder_linear_seed8,0.058615341782569885,-40535239999607.945,0.0,69
+No AC Encoder,ablation,linear,no_ac_encoder_linear_seed12,0.06268370896577835,-46945847087958.76,0.0,51
+No AC Encoder,ablation,linear,no_ac_encoder_linear_seed4,0.054956402629613876,-59255336302815.445,0.0,69
+No AC Encoder,ablation,linear,no_ac_encoder_linear_seed16,0.06303945183753967,-68614726122272.98,0.0,60
+No AC Encoder,ablation,linear,no_ac_encoder_linear_seed5,0.06633646041154861,-84886421575931.33,0.0,62
+No AC Encoder,ablation,linear,no_ac_encoder_linear_seed19,0.06388994306325912,-100488642141645.05,0.0,53
+No AC Encoder,ablation,linear,no_ac_encoder_linear_seed13,0.06182805076241493,-150296689028858.12,0.0,47
+No AC Encoder,ablation,linear,no_ac_encoder_linear_seed6,0.0710851326584816,-581297748086085.6,0.0,49
+No AC Encoder,ablation,linear,no_ac_encoder_linear_seed10,0.06395115703344345,-607888662103137.4,0.0,52
+No AC Encoder,ablation,linear,no_ac_encoder_linear_seed18,0.0635354220867157,-735738081723202.9,0.0,63
+No AC Encoder,ablation,linear,no_ac_encoder_linear_seed3,0.06017747148871422,-1089357287386932.0,0.0,59
+No AC Encoder,ablation,linear,no_ac_encoder_linear_seed1,0.06692807376384735,-1753748842765566.8,0.0,34
+No AC Encoder,ablation,linear,no_ac_encoder_linear_seed2,0.07080631703138351,-1887052474311485.2,0.0,46
+No AC Encoder,ablation,linear,no_ac_encoder_linear_seed15,0.050631169229745865,-3.071742697980056e+16,0.0,95
+No AC Encoder,ablation,linear,no_ac_encoder_linear_seed11,0.06414026021957397,-4.743568209379777e+16,0.0,55
+No AC Encoder,ablation,linear,no_ac_encoder_linear_seed7,0.06804860383272171,-2.0982519541078454e+17,0.0,52
+Uniform Lag,ablation,nonlinear,uniform_lag_nonlinear_seed6,0.10121297091245651,0.9597736833397358,0.9871476786919674,27
+Uniform Lag,ablation,nonlinear,uniform_lag_nonlinear_seed12,0.09060411900281906,0.9583511242528221,0.9880327008175206,42
+Uniform Lag,ablation,nonlinear,uniform_lag_nonlinear_seed16,0.09685982018709183,0.9547449923840712,0.98996774919373,30
+CMDL,cmdl,nonlinear,cmdl_nonlinear_seed12,0.03500998392701149,0.9513665465019101,0.9889972249306234,124
+No Recon Regularization,ablation,nonlinear,no_recon_regularization_nonlinear_seed12,0.03496665507555008,0.9513636365450197,0.9889972249306234,124
+Uniform Lag,ablation,nonlinear,uniform_lag_nonlinear_seed1,0.09536534547805786,0.9495328104795622,0.9904537613440337,27
+Uniform Lag,ablation,nonlinear,uniform_lag_nonlinear_seed18,0.08320046216249466,0.9471579177697201,0.9917527938198456,48
+CMDL,cmdl,nonlinear,cmdl_nonlinear_seed0,0.03441439941525459,0.9468722623262873,0.9885682142053552,156
+No Recon Regularization,ablation,nonlinear,no_recon_regularization_nonlinear_seed0,0.034410133957862854,0.9468678665380682,0.9885682142053552,156
+CMDL,cmdl,nonlinear,cmdl_nonlinear_seed7,0.03795274347066879,0.9468161261247755,0.9896947423685594,80
+No Recon Regularization,ablation,nonlinear,no_recon_regularization_nonlinear_seed7,0.037740107625722885,0.9467799703599852,0.9897217430435762,82
+CMDL,cmdl,nonlinear,cmdl_nonlinear_seed2,0.04472881183028221,0.9446162839561731,0.9912967824195605,152
+No Recon Regularization,ablation,nonlinear,no_recon_regularization_nonlinear_seed2,0.04472600668668747,0.9446144384246956,0.9912967824195605,152
+Uniform Lag,ablation,nonlinear,uniform_lag_nonlinear_seed10,0.07845929265022278,0.9429988240519326,0.9818045451136279,50
+CMDL,cmdl,nonlinear,cmdl_nonlinear_seed3,0.02871096506714821,0.9429518496048033,0.9900532513312835,199
+No Recon Regularization,ablation,nonlinear,no_recon_regularization_nonlinear_seed3,0.028714805841445923,0.94294359040826,0.9900532513312835,199
+CMDL,cmdl,nonlinear,cmdl_nonlinear_seed5,0.04567670449614525,0.9417344500194775,0.9907552688817222,87
+No Recon Regularization,ablation,nonlinear,no_recon_regularization_nonlinear_seed5,0.045674730092287064,0.9417335427925724,0.9907552688817222,87
+No Recon Regularization,ablation,nonlinear,no_recon_regularization_nonlinear_seed14,0.040142230689525604,0.9415255262373937,0.9926798169954252,191
+CMDL,cmdl,nonlinear,cmdl_nonlinear_seed14,0.04018981754779816,0.9414921553538081,0.9926798169954252,191
+No Recon Regularization,ablation,nonlinear,no_recon_regularization_nonlinear_seed15,0.03204160928726196,0.9413007802619416,0.9908617715442887,200
+CMDL,cmdl,nonlinear,cmdl_nonlinear_seed15,0.03205312415957451,0.9412985518096623,0.9908617715442887,200
+CMDL,cmdl,nonlinear,cmdl_nonlinear_seed11,0.0346248559653759,0.9382821509359598,0.9913252831320785,179
+No Recon Regularization,ablation,nonlinear,no_recon_regularization_nonlinear_seed11,0.03461569547653198,0.9382176936276814,0.9913252831320785,179
+No Recon Regularization,ablation,nonlinear,no_recon_regularization_nonlinear_seed18,0.03473895043134689,0.9377959448965282,0.9918067951698795,127
+CMDL,cmdl,nonlinear,cmdl_nonlinear_seed18,0.034786272794008255,0.9377914228485578,0.99179179479487,127
+No Recon Regularization,ablation,nonlinear,no_recon_regularization_nonlinear_seed4,0.03411836177110672,0.9376477062496026,0.9908182704567615,111
+CMDL,cmdl,nonlinear,cmdl_nonlinear_seed4,0.034105896949768066,0.9376450524252435,0.9908182704567615,111
+Uniform Lag,ablation,nonlinear,uniform_lag_nonlinear_seed15,0.10031808167695999,0.9369413572801815,0.9888682217055429,27
+No Recon Regularization,ablation,nonlinear,no_recon_regularization_nonlinear_seed19,0.03847254440188408,0.9357069384029401,0.9921008025200632,132
+CMDL,cmdl,nonlinear,cmdl_nonlinear_seed19,0.03846763074398041,0.9357058479098498,0.9921008025200632,132
+No Recon Regularization,ablation,nonlinear,no_recon_regularization_nonlinear_seed17,0.03775947168469429,0.9336351747021246,0.9922088052201307,198
+CMDL,cmdl,nonlinear,cmdl_nonlinear_seed17,0.03775505721569061,0.9336264470464438,0.9922088052201307,198
+CMDL,cmdl,nonlinear,cmdl_nonlinear_seed6,0.03522172570228577,0.932549344603342,0.9906457661441538,134
+No Recon Regularization,ablation,nonlinear,no_recon_regularization_nonlinear_seed6,0.03524916619062424,0.9324967843736253,0.9906457661441538,134
+No Recon Regularization,ablation,nonlinear,no_recon_regularization_nonlinear_seed1,0.03923296555876732,0.9313013985793047,0.9921443036075903,131
+CMDL,cmdl,nonlinear,cmdl_nonlinear_seed1,0.03923478722572327,0.9312921474622097,0.9921473036825922,131
+Uniform Lag,ablation,nonlinear,uniform_lag_nonlinear_seed3,0.08844464272260666,0.9290766746907199,0.9894292357308934,32
+No Recon Regularization,ablation,nonlinear,no_recon_regularization_nonlinear_seed13,0.03416357934474945,0.9287203935727152,0.9902872571814296,190
+CMDL,cmdl,nonlinear,cmdl_nonlinear_seed13,0.034182868897914886,0.9287112147122446,0.9902872571814296,190
+CMDL,cmdl,nonlinear,cmdl_nonlinear_seed10,0.03756984323263168,0.9258466859688946,0.9903667591689793,155
+No Recon Regularization,ablation,nonlinear,no_recon_regularization_nonlinear_seed10,0.037583641707897186,0.9258183214885708,0.9903667591689793,155
+Uniform Lag,ablation,nonlinear,uniform_lag_nonlinear_seed4,0.07873990386724472,0.9257190866771571,0.9912082802070054,48
+Uniform Lag,ablation,nonlinear,uniform_lag_nonlinear_seed0,0.09311024099588394,0.923572070481313,0.9899782494562366,34
+Uniform Lag,ablation,nonlinear,uniform_lag_nonlinear_seed11,0.10018455982208252,0.9182215724825631,0.9788464711617793,29
+CMDL,cmdl,nonlinear,cmdl_nonlinear_seed8,0.03379659354686737,0.9112050080867898,0.9930008250206257,140
+No Recon Regularization,ablation,nonlinear,no_recon_regularization_nonlinear_seed8,0.03381389006972313,0.9111433018448696,0.9930008250206257,140
+Uniform Lag,ablation,nonlinear,uniform_lag_nonlinear_seed8,0.09405386447906494,0.9076223787258811,0.992150303757594,30
+Uniform Lag,ablation,nonlinear,uniform_lag_nonlinear_seed2,0.10474222898483276,0.9058522599997164,0.973689342233556,21
+Uniform Lag,ablation,nonlinear,uniform_lag_nonlinear_seed7,0.09859950095415115,0.8969417630857156,0.9675316882922074,30
+Uniform Lag,ablation,nonlinear,uniform_lag_nonlinear_seed9,0.09652885794639587,0.8695750217296622,0.9553798844971126,31
+Uniform Lag,ablation,nonlinear,uniform_lag_nonlinear_seed19,0.09264875203371048,0.8591657916836152,0.9896947423685594,34
+CMDL,cmdl,nonlinear,cmdl_nonlinear_seed16,0.0381028912961483,0.8544096673503389,0.9915727893197331,200
+No Recon Regularization,ablation,nonlinear,no_recon_regularization_nonlinear_seed16,0.03807782754302025,0.8543461554217205,0.9915727893197331,200
+Uniform Lag,ablation,nonlinear,uniform_lag_nonlinear_seed5,0.10406903922557831,0.7803504182036262,0.9460676516912924,35
+Uniform Lag,ablation,nonlinear,uniform_lag_nonlinear_seed14,0.08315747231245041,0.4833945280556194,0.5467441686042152,44
+Uniform Lag,ablation,nonlinear,uniform_lag_nonlinear_seed13,0.10438501834869385,0.3340999979500978,0.6487347183679592,29
+Uniform Lag,ablation,nonlinear,uniform_lag_nonlinear_seed17,0.09166213870048523,0.1585746063024638,0.33508737718442966,35
+No Recon Regularization,ablation,nonlinear,no_recon_regularization_nonlinear_seed9,0.06062143296003342,0.07263451955155531,0.040792019800495016,79
+CMDL,cmdl,nonlinear,cmdl_nonlinear_seed9,0.05991683155298233,0.04888895675825655,0.07526888172204307,81
+No AC Encoder,ablation,nonlinear,no_ac_encoder_nonlinear_seed9,0.07460688799619675,-3167263216879.9155,0.0,42
+No AC Encoder,ablation,nonlinear,no_ac_encoder_nonlinear_seed2,0.09126065671443939,-3400004142602.092,0.0,78
+No AC Encoder,ablation,nonlinear,no_ac_encoder_nonlinear_seed18,0.04158401861786842,-3928139575297.025,0.0,126
+No AC Encoder,ablation,nonlinear,no_ac_encoder_nonlinear_seed5,0.08306258171796799,-23312651763673.863,0.0,29
+No AC Encoder,ablation,nonlinear,no_ac_encoder_nonlinear_seed14,0.08129049837589264,-29186883546013.516,0.0,41
+No AC Encoder,ablation,nonlinear,no_ac_encoder_nonlinear_seed17,0.0802050232887268,-41192528872940.18,0.0,36
+No AC Encoder,ablation,nonlinear,no_ac_encoder_nonlinear_seed4,0.03835798427462578,-73638609601621.81,0.0,188
+No AC Encoder,ablation,nonlinear,no_ac_encoder_nonlinear_seed0,0.0399935208261013,-83656752244414.5,0.0,200
+No AC Encoder,ablation,nonlinear,no_ac_encoder_nonlinear_seed16,0.0828806683421135,-90325249573142.7,0.0,50
+No AC Encoder,ablation,nonlinear,no_ac_encoder_nonlinear_seed15,0.058558546006679535,-151879009891966.84,0.0,59
+No AC Encoder,ablation,nonlinear,no_ac_encoder_nonlinear_seed3,0.04143432155251503,-244762577132896.75,0.0,200
+No AC Encoder,ablation,nonlinear,no_ac_encoder_nonlinear_seed7,0.04517510533332825,-274918693684946.38,0.0,200
+No AC Encoder,ablation,nonlinear,no_ac_encoder_nonlinear_seed1,0.07228103280067444,-561940507493254.06,0.0,47
+No AC Encoder,ablation,nonlinear,no_ac_encoder_nonlinear_seed11,0.08093495666980743,-715194807105061.9,0.0,44
+No AC Encoder,ablation,nonlinear,no_ac_encoder_nonlinear_seed8,0.07793378084897995,-1.4532650088509064e+16,0.0,32
+No AC Encoder,ablation,nonlinear,no_ac_encoder_nonlinear_seed19,0.0548977255821228,-3.5046923548317708e+16,0.0,199
+No AC Encoder,ablation,nonlinear,no_ac_encoder_nonlinear_seed12,0.07502376288175583,-9.209751660043133e+16,0.0,59
+No AC Encoder,ablation,nonlinear,no_ac_encoder_nonlinear_seed6,0.04274047166109085,-1.1815200680120706e+17,0.0,134
+No AC Encoder,ablation,nonlinear,no_ac_encoder_nonlinear_seed13,0.07303343713283539,-1.492614549394813e+17,0.0,49
+No AC Encoder,ablation,nonlinear,no_ac_encoder_nonlinear_seed10,0.08590712398290634,-1.5868147089988573e+17,0.0,52

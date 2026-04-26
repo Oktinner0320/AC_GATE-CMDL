@@ -9,5 +9,5 @@ __pycache__/
 .ruff_cache/
 
 # Experiment outputs and generated artifacts stay local
-outputs/
+
 

@@ -1,0 +1,5 @@
+scenario,layer,answer,evidence
+linear,lag_recovery,yes,"CMDL kstar_mae=1.159093333899975, Plain LSTM kstar_mae=1.7067199896275997"
+linear,ablation_guard,yes,Ablation rows are present; compare kstar MAE/rho against CMDL.
+nonlinear,lag_recovery,yes,"CMDL kstar_mae=1.466921085000038, Plain LSTM kstar_mae=2.6107988274991514"
+nonlinear,ablation_guard,yes,Ablation rows are present; compare kstar MAE/rho against CMDL.
