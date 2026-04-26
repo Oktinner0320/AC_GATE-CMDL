@@ -1,3 +1,0 @@
-target_column,feature_bundle,metric,reference,method,n_pairs,reference_mean,method_mean,mean_diff,median_diff,wilcoxon_statistic,wilcoxon_p,greater_is_better,reference_better_mean
-ctfp,effective_labor_aware,test_effective_kstar_proxy_spearman_adjusted_rho,CMDL,No Recon Regularization,20,-0.10869306317884078,0.1637728505512311,-0.27246591373007184,-0.3532105244619774,65.0,0.14290618896484375,True,False
-ctfp,effective_labor_aware,test_effective_kstar_proxy_spearman_adjusted_rho,CMDL,Plain LSTM,20,-0.10869306317884078,-0.017294734488074767,-0.09139832869076596,-0.3070415439069407,92.0,0.6476554870605469,True,False
