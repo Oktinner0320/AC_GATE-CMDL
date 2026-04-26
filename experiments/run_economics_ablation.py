@@ -36,6 +36,7 @@ from experiments.run_economics import (
     refit_proxy_reconstructor,
     save_json,
     save_predictions,
+    set_seed,
     setup_experiment,
     summarize_run,
     train_one_epoch,
@@ -162,6 +163,9 @@ def prepare_variant_setup(
         effective_lambda_r = 0.0
         matched_init_to_full_cmdl = True
     else:
+        # Reuse the same RNG seed before constructing architecture-changed variants
+        # so ablations follow the same initialization protocol as the full CMDL run.
+        set_seed(int(seed))
         model, effective_lambda_r = build_variant_model(variant, setup.cfg)
         matched_init_to_full_cmdl = False
     setup.model = model.to(setup.device)

@@ -12,13 +12,13 @@
 | 维度 | 评级 | 关键依据 |
 |---|---|---|
 | 3.1 基线公平对比 | ✅ + ⚠️ | 同 loader / 同 seeds / 同骨干超参；缺超参搜索声明 |
-| 3.2 数据处理透明性 | ✅ + ⚠️ | 训练窗口统计已严格隔离；缺数据快照元数据 |
-| 3.3 评估协议严谨性 | ✅ + ❌ | 20 seeds 均值 + std 已有；**缺配对显著性检验** |
-| §2.1 代码工程包装 | ❌ | 缺 `requirements.txt` / `LICENSE` / 复现命令段 |
-| §4 NeurIPS Checklist | ⚠️ | 缺硬件 / 训练时长 / 确定性算法标记 |
-| §5 GenAI / 匿名化 | ❌ | 缺 `GenAI Usage Disclosure`，未做匿名化清理 |
+| 3.2 数据处理透明性 | ✅ | 训练窗口统计已严格隔离；数据快照元数据已补齐 |
+| 3.3 评估协议严谨性 | ✅ + ⚠️ | 20 seeds 均值 + std 与配对显著性检验已补齐；ablation 匹配初始化对照仍需补强 |
+| §2.1 代码工程包装 | ⚠️ | `requirements.txt` / `environment.yml` / `LICENSE` 已补齐；README 复现命令段仍缺 |
+| §4 NeurIPS Checklist | ⚠️ | 硬件 / 训练时长记录已补；确定性算法开关与文档仍缺 |
+| §5 GenAI / 匿名化 | ⚠️ | `GenAI Usage Disclosure` 已补；匿名化清理仍需投稿前完成 |
 
-风险排序（影响录用红线）：**§3.3 显著性检验 > §5 GenAI > §2.1 依赖锁定 > §3.2 数据元数据 > 其余**。
+当前剩余主要风险：**README 文档声明 / baseline 口径 > 3.3 ablation 匹配初始化 > §4 确定性算法标记 > §5 投稿期匿名化**。
 
 ---
 
@@ -83,30 +83,13 @@
 
 **无需改动。**
 
-### 2.3 ⚠️ 数据集版本锁定
+### 2.3 ✅ 数据集版本锁定（已补齐）
 
-**问题**：原始数据通过下载脚本拉取后缓存为 `data/economics/raw/pwt110.csv`、`data/energy/raw/energy_wgi_merged.csv`，但**未记录下载日期、源 URL 或 sha256**。Zenodo 归档与审稿复现都需要稳定版本号。
+**现状**：
+- [data/economics/download.py](data/economics/download.py) 与 [data/energy/download.py](data/energy/download.py) 已在下载完成后自动写出 `.meta.json` 元数据文件；
+- 仓库已提交 [data/economics/raw/pwt110.csv.meta.json](data/economics/raw/pwt110.csv.meta.json) 与 [data/energy/raw/energy_wgi_merged.csv.meta.json](data/energy/raw/energy_wgi_merged.csv.meta.json)，包含 source URL、UTC 下载时间、sha256 与字节数。
 
-**最小修改方案**（每个 download 脚本仅加约 15 行）：
-
-在 [data/economics/download.py](data/economics/download.py) 与 [data/energy/download.py](data/energy/download.py) 下载完成后追加：
-
-```python
-import hashlib, json, datetime
-def _write_meta(cache_path: Path, source_url: str) -> None:
-    digest = hashlib.sha256(cache_path.read_bytes()).hexdigest()
-    meta = {
-        "source_url": source_url,
-        "downloaded_at_utc": datetime.datetime.utcnow().isoformat() + "Z",
-        "sha256": digest,
-        "bytes": cache_path.stat().st_size,
-    }
-    cache_path.with_suffix(cache_path.suffix + ".meta.json").write_text(
-        json.dumps(meta, indent=2), encoding="utf-8"
-    )
-```
-
-并在原下载落盘后调用 `_write_meta(cache_path, SOURCE_URL)`。生成 `pwt110.csv.meta.json` 与 `energy_wgi_merged.csv.meta.json`，提交进 git。
+**结论**：数据集版本锁定问题已解决。
 
 ### 2.4 ✅ 专有数据
 
@@ -122,62 +105,14 @@ def _write_meta(cache_path: Path, source_url: str) -> None:
 
 **无需改动。**
 
-### 3.2 ❌ 配对显著性检验（关键缺失）
+### 3.2 ✅ 配对显著性检验（已补齐）
 
-**问题**：全仓 grep 无 `wilcoxon` / `ttest_rel` / `bootstrap` 命中。当前 comparison CSV 只输出 `mean ± std`，未做配对检验。Economics/Energy 的 test_R² 差距非常小（~0.05），不附显著性论文将无法主张差异有意义——这是 §3.3 明文要求。
+**现状**：
+- 已新增 [evaluation/significance.py](evaluation/significance.py)，实现 seed-level 配对 Wilcoxon 检验；
+- [evaluation/economics_comparison.py](evaluation/economics_comparison.py)、[evaluation/energy_comparison.py](evaluation/energy_comparison.py) 与 [evaluation/synthetic_comparison.py](evaluation/synthetic_comparison.py) 已接入显著性表构建；
+- 当前产物目录已包含显著性检验 CSV，例如 [outputs/notebook_economics/complete_20seed_20260426/comparison/economics_significance_test_r2.csv](outputs/notebook_economics/complete_20seed_20260426/comparison/economics_significance_test_r2.csv)、[outputs/notebook_energy/complete_20seed_20260426/comparison/energy_significance_test_r2.csv](outputs/notebook_energy/complete_20seed_20260426/comparison/energy_significance_test_r2.csv) 与 [outputs/notebook_synthetic/complete_20seed_20260426/comparison/synthetic_significance_kstar_mae.csv](outputs/notebook_synthetic/complete_20seed_20260426/comparison/synthetic_significance_kstar_mae.csv)。
 
-**最小修改方案**（仅在 evaluation 层加一个新函数，调用方按需启用，不破坏既有汇总）：
-
-新增 `evaluation/significance.py`：
-
-```python
-"""Paired significance tests across seeds for compact comparison tables."""
-from __future__ import annotations
-import numpy as np
-import pandas as pd
-from scipy.stats import wilcoxon
-
-def paired_wilcoxon(per_seed: pd.DataFrame, metric: str,
-                    method_col: str = "model", seed_col: str = "seed",
-                    reference: str = "CMDL") -> pd.DataFrame:
-    """Return Wilcoxon signed-rank p-values comparing each method to `reference`
-    on `metric`, paired by seed. Drops seeds missing either side.
-    """
-    pivot = per_seed.pivot(index=seed_col, columns=method_col, values=metric)
-    if reference not in pivot.columns:
-        raise ValueError(f"reference {reference!r} not in {list(pivot.columns)}")
-    rows = []
-    ref = pivot[reference]
-    for method in pivot.columns:
-        if method == reference:
-            continue
-        joined = pd.concat([ref, pivot[method]], axis=1).dropna()
-        if len(joined) < 5:
-            rows.append({"method": method, "n_pairs": len(joined),
-                         "median_diff": np.nan, "wilcoxon_p": np.nan})
-            continue
-        diff = joined[reference] - joined[method]
-        try:
-            stat = wilcoxon(diff, zero_method="wilcox", alternative="two-sided")
-            p = float(stat.pvalue)
-        except ValueError:
-            p = np.nan
-        rows.append({"method": method, "n_pairs": int(len(joined)),
-                     "median_diff": float(np.median(diff)), "wilcoxon_p": p})
-    return pd.DataFrame(rows)
-```
-
-并在三域 comparison 脚本（[evaluation/economics_comparison.py](evaluation/economics_comparison.py)、[evaluation/energy_comparison.py](evaluation/energy_comparison.py)、[evaluation/synthetic_comparison.py](evaluation/synthetic_comparison.py)）的"按 seed 长表"导出位置增加一行：
-
-```python
-from evaluation.significance import paired_wilcoxon
-sig_table = paired_wilcoxon(per_seed_long, metric="test_r2", reference="CMDL")
-sig_table.to_csv(out_dir / "significance_test_r2.csv", index=False)
-```
-
-对关键指标各跑一份：`test_r2`（任务侧）、`anchor_adjusted_rho`（机制侧）、`kstar_mae`（synthetic）。
-
-**一次新增文件 + 每个 comparison 模块加 3 行调用**，不动既有数值。
+**结论**：配对显著性检验缺失问题已解决。
 
 ### 3.3 ✅ 评估指标对齐
 
@@ -211,30 +146,17 @@ sig_table.to_csv(out_dir / "significance_test_r2.csv", index=False)
 
 ## 4. §2.1 代码工程包装
 
-### 4.1 ❌ `requirements.txt` 版本锁定
+### 4.1 ✅ `requirements.txt` 版本锁定（已补齐）
 
-**问题**：仅有 [requirements.md](requirements.md) 文档，使用 `≥X.Y` 软约束；无 `requirements.txt` / `environment.yml`。
+**现状**：根目录已包含 [requirements.txt](requirements.txt) 与 [environment.yml](environment.yml)，可用于 pip 与 Conda 两种复现路径。
 
-**最小修改方案**：在 PTenv 中执行：
+**结论**：依赖版本锁定问题已解决。
 
-```powershell
-conda activate PTenv
-pip freeze | Select-String -NotMatch "^(-e |# )" > requirements.txt
-```
+### 4.2 ✅ `LICENSE`（已补齐）
 
-提交 `requirements.txt`。可选：再导出 `environment.yml`：
+**现状**：根目录已新增 [LICENSE](LICENSE)，当前采用 MIT 许可并使用匿名作者占位。
 
-```powershell
-conda env export --no-builds | Out-File -Encoding utf8 environment.yml
-```
-
-不动任何源代码。
-
-### 4.2 ❌ `LICENSE`
-
-**问题**：根目录无 LICENSE 文件。
-
-**最小修改方案**：新增一个 `LICENSE`，建议 MIT 或 Apache-2.0（与依赖库主流许可兼容）。无代码改动。
+**结论**：许可证缺失问题已解决。
 
 ### 4.3 ⚠️ README 复现指引
 
@@ -274,27 +196,14 @@ jupyter nbconvert --to notebook --execute notebooks/03_energy_results.ipynb
 
 ## 5. §4 NeurIPS Reproducibility Checklist 缺口
 
-### 5.1 ⚠️ 硬件 / 训练时长记录
+### 5.1 ✅ 硬件 / 训练时长记录（已补齐）
 
-**问题**：每次 run 写出 `args.json` + `summary.json`，但**未记录 GPU 型号、CUDA 版本、训练时长**。
+**现状**：
+- 已新增统一 helper [experiments/_runtime_meta.py](experiments/_runtime_meta.py)；
+- economics / energy / synthetic / baseline / ablation runner 已接入 runtime metadata 写入；
+- 当前 `summary.json` 已包含 GPU 型号、CUDA 版本、PyTorch 版本、Python 版本、OS 与 wall time 字段。
 
-**最小修改方案**：在 [run_economics.py](experiments/run_economics.py) `setup_experiment` 末尾或 `summarize_run` 入口处，把以下字段并入 summary：
-
-```python
-import time, platform
-runtime_meta = {
-    "device_name": (torch.cuda.get_device_name(setup.device)
-                    if setup.device.type == "cuda" else platform.processor()),
-    "cuda_version": torch.version.cuda,
-    "torch_version": torch.__version__,
-    "python_version": platform.python_version(),
-    "os": platform.platform(),
-    "wall_time_seconds": float(time.perf_counter() - t0),  # t0 在训练循环前记录
-}
-summary["runtime"] = runtime_meta
-```
-
-energy / lstm / ablation runner 同步加（可抽到 `experiments/_runtime_meta.py` 一个单文件 helper，3 处调用）。
+**结论**：硬件与训练时长记录问题已解决。
 
 ### 5.2 ⚠️ 确定性算法（可选）
 
@@ -314,17 +223,11 @@ if os.environ.get("CMDL_DETERMINISTIC", "0") == "1":
 
 ## 6. §5 GenAI / 匿名化
 
-### 6.1 ❌ GenAI Usage Disclosure（CIKM 强制）
+### 6.1 ✅ GenAI Usage Disclosure（已补齐）
 
-**问题**：仓库与论文均无该章节。
+**现状**：根目录已新增 [GenAI_Usage_Disclosure.md](GenAI_Usage_Disclosure.md)，记录所用工具、使用范围、禁止用途与人工审查声明，并采用匿名化表述。
 
-**最小修改方案**：新增根目录文件 `GenAI_Usage_Disclosure.md`，包含：
-- 工具与版本（如 GitHub Copilot Chat / Claude / GPT-4 等实际使用工具）；
-- 用途分布：代码生成 / 代码审查 / 文档润色 / 实验结果分析；
-- 未用于生成实验数据、未代写实验结论；
-- 所有 GenAI 输出均经作者人工审查。
-
-论文同步插入独立章节（CIKM 不计入页数）。
+**结论**：GenAI Usage Disclosure 缺失问题已解决。
 
 ### 6.2 ⚠️ 投稿期匿名化（ICDM 三盲）
 
@@ -344,20 +247,19 @@ if os.environ.get("CMDL_DETERMINISTIC", "0") == "1":
 
 ## 7. 行动清单（按风险高 → 低）
 
-| # | 行动 | 类型 | 文件 | 是否改代码 |
-|---|---|---|---|---|
-| 1 | 加配对 Wilcoxon 显著性检验 | 新增 | `evaluation/significance.py` + 三个 comparison 模块各 3 行 | ✅ 是（最小） |
-| 2 | 写 `GenAI_Usage_Disclosure.md` | 新增 | 根目录 | ❌ |
-| 3 | 导出 `requirements.txt` (+ `environment.yml`) | 命令 | 根目录 | ❌ |
-| 4 | 加 `LICENSE` | 新增 | 根目录 | ❌ |
-| 5 | 数据快照 `*.meta.json`（sha256 + URL + 日期） | 新增 + 小补丁 | `data/economics/download.py`, `data/energy/download.py` | ✅ 是（每文件 ~15 行） |
-| 6 | summary.json 加 runtime meta（GPU/CUDA/wall time） | 小补丁 | `experiments/_runtime_meta.py`（新）+ 各 runner 1-2 行 | ✅ 是（最小） |
-| 7 | Ablation runner 在改造模型后重设 seed | 小补丁 | `experiments/run_economics_ablation.py`, `experiments/run_energy_ablation.py` 各 1 行 | ✅ 是（1 行） |
-| 8 | README 增 `Hyperparameter Protocol` + `Reproducing paper tables` 段 | 文档 | `readme.md` | ❌ |
-| 9 | README 基线表，TFT 标注为未纳入 | 文档 | `readme.md` | ❌ |
-| 10 | `set_seed` 加可选 `CMDL_DETERMINISTIC` 分支 | 小补丁 | `experiments/run_economics.py`（共享函数） | ✅ 是（2 行） |
-| 11 | 投稿前匿名化分支 + Anonymous GitHub 上传 | 流程 | — | ❌ |
+| # | 行动 | 当前状态 | 类型 | 文件 | 是否改代码 |
+|---|---|---|---|---|---|
+| 1 | 加配对 Wilcoxon 显著性检验 | √ 已完成 | 新增 | `evaluation/significance.py` + 三个 comparison 模块各 3 行 | ✅ 是（最小） |
+| 2 | 写 `GenAI_Usage_Disclosure.md` | √ 已完成 | 新增 | 根目录 | ❌ |
+| 3 | 导出 `requirements.txt` (+ `environment.yml`) | √ 已完成 | 命令 | 根目录 | ❌ |
+| 4 | 加 `LICENSE` | √ 已完成 | 新增 | 根目录 | ❌ |
+| 5 | 数据快照 `*.meta.json`（sha256 + URL + 日期） | √ 已完成 | 新增 + 小补丁 | `data/economics/download.py`, `data/energy/download.py` | ✅ 是（每文件 ~15 行） |
+| 6 | summary.json 加 runtime meta（GPU/CUDA/wall time） | √ 已完成 | 小补丁 | `experiments/_runtime_meta.py`（新）+ 各 runner 1-2 行 | ✅ 是（最小） |
+| 7 | Ablation runner 在改造模型后重设 seed | × 未完成 | 小补丁 | `experiments/run_economics_ablation.py`, `experiments/run_energy_ablation.py` 各 1 行 | ✅ 是（1 行） |
+| 8 | README 增 `Hyperparameter Protocol` + `Reproducing paper tables` 段 | × 未完成 | 文档 | `readme.md` | ❌ |
+| 9 | README 基线表，TFT 标注为未纳入 | × 未完成 | 文档 | `readme.md` | ❌ |
+| 10 | `set_seed` 加可选 `CMDL_DETERMINISTIC` 分支 | × 未完成 | 小补丁 | `experiments/run_economics.py`（共享函数） | ✅ 是（2 行） |
+| 11 | 投稿前匿名化分支 + Anonymous GitHub 上传 | × 未完成 | 流程 | — | ❌ |
 
-红线项（不做会被拒）：**1, 2**。
-强烈建议补的工程项：**3, 4, 5, 6**。
-论文层面声明项（零代码）：**8, 9, 11**。
+红线项（当前状态）：**1, 2 已完成**。
+当前未完成项：**7, 8, 9, 10, 11**。
