@@ -166,11 +166,23 @@ tests/              Pytest suites for loaders, baselines, ablations, comparisons
 
 ## 8. Method
 
-For each entity $i$, AC-GATE encodes a small set of static proxy variables $\mathbf{p}_i$ into a scalar absorption score $z_i = f_\phi(\mathbf{p}_i)$. A **scale-invariant lag gate** maps $z_i$ to an entity-specific lag-weight distribution
+For each entity $i$, AC-GATE encodes a set of static proxy variables into a scalar absorption score $z_i$.
+A **scale-invariant lag gate** maps $z_i$ to an entity-specific lag-weight distribution:
 
-$$\omega(k\mid z_i) = \mathrm{Softmax}\!\left(\tfrac{g_\theta(z_i) - \lambda \cdot k/K}{\tau}\right),\qquad k = 1,\dots,K,$$
+$$\omega(k \mid z_i) = \mathrm{Softmax}\left(\frac{g_\theta(z_i) - \lambda \cdot k/K}{\tau}\right), \quad k = 1, \ldots, K$$
 
-which weights past treatments to form the per-entity context $c_{i,t} = \sum_{k=1}^{K} \omega_{i,k}\, X_{i,t-k}$. An LSTM backbone consumes the concatenation $(c_{i,t},\ \mathrm{emb}_i,\ \mathbf{s}_i,\ \mathbf{c}_t)$ and a regression head emits $\hat{Y}_{i,t+1}$. Training minimises $\mathcal{L}_{\text{task}} + \lambda_r \mathcal{L}_{\text{recon}}$ where $\mathcal{L}_{\text{recon}}$ is the proxy reconstruction MSE that anchors $z_i$ to the input proxies. The interpretable byproduct is the **per-entity effective lag** $k_i^* = \sum_k k\, \omega_{i,k}$, computed at inference.
+These weights aggregate past inputs into a per-entity context vector:
+
+$$c_{i,t} = \sum_{k=1}^{K} \omega_{i,k} \, X_{i,t-k}$$
+
+An LSTM backbone processes the concatenation of $c_{i,t}$, entity embedding, static features, and cross-sectional context to predict $\hat{Y}_{i,t+1}$. Training minimises:
+
+$$\mathcal{L} = \mathcal{L}_\mathrm{task} + \lambda_r \mathcal{L}_\mathrm{recon}$$
+
+where $\mathcal{L}_\mathrm{recon}$ is a proxy-reconstruction MSE that anchors $z_i$ to the input proxies.
+The interpretable byproduct is the **per-entity effective lag**, computed at inference:
+
+$$k_i^* = \sum_{k} k \, \omega_{i,k}$$
 
 ---
 
