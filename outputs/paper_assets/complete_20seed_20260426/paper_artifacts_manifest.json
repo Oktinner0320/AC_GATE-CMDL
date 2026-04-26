@@ -1,0 +1,45 @@
+{
+  "plan_name": "complete_20seed_20260426",
+  "output_root": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426",
+  "tables": {
+    "synthetic_main_table.csv": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\synthetic_main_table.csv",
+    "synthetic_bootstrap_ci.csv": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\synthetic_bootstrap_ci.csv",
+    "realdata_forecast_table.csv": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\realdata_forecast_table.csv",
+    "baseline_compact_table.csv": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\baseline_compact_table.csv",
+    "economics_stratified_main_table.csv": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\economics_stratified_main_table.csv",
+    "energy_stratified_main_table.csv": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\energy_stratified_main_table.csv",
+    "ablation_degeneracy_table.csv": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\ablation_degeneracy_table.csv",
+    "verdict_matrix.csv": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\verdict_matrix.csv",
+    "proxy_metadata_table.csv": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\proxy_metadata_table.csv",
+    "economics_case_study_source.csv": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\economics_case_study_source.csv",
+    "energy_case_study_source.csv": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\energy_case_study_source.csv",
+    "economics_mechanism_result_log.csv": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\economics_mechanism_result_log.csv",
+    "energy_mechanism_result_log.csv": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\energy_mechanism_result_log.csv"
+  },
+  "figures": {
+    "workflow_overview.png": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\figures\\workflow_overview.png",
+    "synthetic_kstar_mae_seed_distribution.png": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\figures\\synthetic_kstar_mae_seed_distribution.png",
+    "economics_forecast_seed_distribution.png": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\figures\\economics_forecast_seed_distribution.png",
+    "energy_forecast_seed_distribution.png": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\figures\\energy_forecast_seed_distribution.png",
+    "economics_structured_mechanism_seed_distribution.png": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\figures\\economics_structured_mechanism_seed_distribution.png",
+    "energy_structured_mechanism_seed_distribution.png": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\figures\\energy_structured_mechanism_seed_distribution.png",
+    "economics_case_study.png": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\figures\\economics_case_study.png",
+    "energy_case_study.png": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\figures\\energy_case_study.png"
+  },
+  "case_studies": {
+    "economics": {
+      "domain": "economics",
+      "seed": 5,
+      "stratifier": "hc_mean_train",
+      "x_label": "hc_mean_train",
+      "y_label": "Learned per-entity effective lag k*"
+    },
+    "energy": {
+      "domain": "energy",
+      "seed": 3,
+      "stratifier": "rule_of_law_train",
+      "x_label": "rule_of_law_train",
+      "y_label": "Learned per-entity effective lag k*"
+    }
+  }
+}

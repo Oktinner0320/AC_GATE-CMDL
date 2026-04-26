@@ -1,0 +1,79 @@
+domain,seed,stratifier,entity_code,entity_name,k_star,stratifier_value
+energy,3,rule_of_law_train,IRQ,Iraq,5.192460536956787,-1.6250968230769185
+energy,3,rule_of_law_train,VEN,Venezuela,5.19230318069458,-1.3587809307692278
+energy,3,rule_of_law_train,TKM,Turkmenistan,5.192440986633301,-1.3475450846153838
+energy,3,rule_of_law_train,UZB,Uzbekistan,5.192460536956787,-1.243216638461534
+energy,3,rule_of_law_train,IRN,Iran,5.192383766174316,-1.0125392153846138
+energy,3,rule_of_law_train,BGD,Bangladesh,5.192339420318604,-0.9496712461538451
+energy,3,rule_of_law_train,KAZ,Kazakhstan,5.1922287940979,-0.9399072384615367
+energy,3,rule_of_law_train,BLR,Belarus,5.192460060119629,-0.9178033538461535
+energy,3,rule_of_law_train,RUS,Russia,5.191977500915527,-0.9135154538461533
+energy,3,rule_of_law_train,PAK,Pakistan,5.192099094390869,-0.8962752538461529
+energy,3,rule_of_law_train,ECU,Ecuador,5.192287445068359,-0.8521969846153836
+energy,3,rule_of_law_train,AZE,Azerbaijan,5.192359447479248,-0.8484823615384605
+energy,3,rule_of_law_train,UKR,Ukraine,5.192302703857422,-0.8174106153846152
+energy,3,rule_of_law_train,DZA,Algeria,5.192238807678223,-0.8141743923076921
+energy,3,rule_of_law_train,IDN,Indonesia,5.191620826721191,-0.7183727307692304
+energy,3,rule_of_law_train,CHN,China,5.191191673278809,-0.6824532384615384
+energy,3,rule_of_law_train,VNM,Vietnam,5.192045211791992,-0.6398719538461535
+energy,3,rule_of_law_train,COL,Colombia,5.190447807312012,-0.6148672384615381
+energy,3,rule_of_law_train,PER,Peru,5.190501689910889,-0.538061646153846
+energy,3,rule_of_law_train,MKD,North Macedonia,5.191856384277344,-0.45186578461538435
+energy,3,rule_of_law_train,ARG,Argentina,5.190869331359863,-0.4509242615384613
+energy,3,rule_of_law_train,PHL,Philippines,5.189969539642334,-0.42580463846153793
+energy,3,rule_of_law_train,MEX,Mexico,5.18845272064209,-0.41989493076923046
+energy,3,rule_of_law_train,BRA,Brazil,5.189981460571289,-0.2767305076923074
+energy,3,rule_of_law_train,EGY,Egypt,5.192009925842285,-0.204750246153846
+energy,3,rule_of_law_train,MAR,Morocco,5.19122314453125,-0.20444448461538436
+energy,3,rule_of_law_train,BGR,Bulgaria,5.1897807121276855,-0.14534639230769222
+energy,3,rule_of_law_train,SAU,Saudi Arabia,5.191232204437256,-0.12994049999999976
+energy,3,rule_of_law_train,ROU,Romania,5.191855430603027,-0.05637937692307693
+energy,3,rule_of_law_train,LKA,Sri Lanka,5.191739082336426,0.001038430769230842
+energy,3,rule_of_law_train,HRV,Croatia,5.1888203620910645,0.00121642307692315
+energy,3,rule_of_law_train,TUR,Turkey,5.189482688903809,0.01615213846153856
+energy,3,rule_of_law_train,THA,Thailand,5.189266204833984,0.055406392307692474
+energy,3,rule_of_law_train,ZAF,South Africa,5.19045352935791,0.08441709999999997
+energy,3,rule_of_law_train,IND,India,5.192177772521973,0.12832539230769233
+energy,3,rule_of_law_train,TTO,Trinidad and Tobago,5.190723419189453,0.21150564615384615
+energy,3,rule_of_law_train,MYS,Malaysia,5.192263126373291,0.2592153769230769
+energy,3,rule_of_law_train,ARE,United Arab Emirates,5.191249847412109,0.29089446153846155
+energy,3,rule_of_law_train,SVK,Slovakia,5.192357063293457,0.32617760769230764
+energy,3,rule_of_law_train,OMN,Oman,5.190810203552246,0.4041133076923077
+energy,3,rule_of_law_train,LVA,Latvia,5.19223690032959,0.4258823461538462
+energy,3,rule_of_law_train,LTU,Lithuania,5.192439079284668,0.4525805461538462
+energy,3,rule_of_law_train,QAT,Qatar,5.191161155700684,0.48107376153846154
+energy,3,rule_of_law_train,KWT,Kuwait,5.191834449768066,0.48642278461538463
+energy,3,rule_of_law_train,POL,Poland,5.192399501800537,0.5531715153846154
+energy,3,rule_of_law_train,ITA,Italy,5.191278457641602,0.6238567923076922
+energy,3,rule_of_law_train,GRC,Greece,5.191829204559326,0.7564671153846153
+energy,3,rule_of_law_train,CZE,Czechia,5.189136981964111,0.7603036230769231
+energy,3,rule_of_law_train,HUN,Hungary,5.188451766967773,0.8079273461538462
+energy,3,rule_of_law_train,KOR,South Korea,5.19003438949585,0.8580974538461539
+energy,3,rule_of_law_train,SVN,Slovenia,5.189453125,0.8759170307692308
+energy,3,rule_of_law_train,ISR,Israel,5.187500953674316,0.9003304000000001
+energy,3,rule_of_law_train,EST,Estonia,5.187721252441406,0.9118709
+energy,3,rule_of_law_train,PRT,Portugal,5.188014984130859,1.1060541923076923
+energy,3,rule_of_law_train,ESP,Spain,5.187243461608887,1.113653423076923
+energy,3,rule_of_law_train,CYP,Cyprus,5.187308311462402,1.1229836384615384
+energy,3,rule_of_law_train,CHL,Chile,5.187255859375,1.2516075153846153
+energy,3,rule_of_law_train,JPN,Japan,5.188174247741699,1.2662407384615384
+energy,3,rule_of_law_train,BEL,Belgium,5.1873979568481445,1.2842136153846153
+energy,3,rule_of_law_train,FRA,France,5.1876397132873535,1.2937158076923079
+energy,3,rule_of_law_train,HKG,Hong Kong,5.186980247497559,1.336422046153846
+energy,3,rule_of_law_train,SGP,Singapore,5.187129974365234,1.434795176923077
+energy,3,rule_of_law_train,USA,United States,5.187441825866699,1.5557633923076923
+energy,3,rule_of_law_train,IRL,Ireland,5.187394142150879,1.5825062923076922
+energy,3,rule_of_law_train,GBR,United Kingdom,5.187326431274414,1.593030369230769
+energy,3,rule_of_law_train,DEU,Germany,5.187723636627197,1.6655447538461539
+energy,3,rule_of_law_train,CAN,Canada,5.18761157989502,1.7059076692307693
+energy,3,rule_of_law_train,AUS,Australia,5.18760871887207,1.714157853846154
+energy,3,rule_of_law_train,LUX,Luxembourg,5.187496185302734,1.7185453076923076
+energy,3,rule_of_law_train,NLD,Netherlands,5.187446594238281,1.7341165923076924
+energy,3,rule_of_law_train,ISL,Iceland,5.187885284423828,1.7681231230769232
+energy,3,rule_of_law_train,NZL,New Zealand,5.187593460083008,1.8224014384615386
+energy,3,rule_of_law_train,AUT,Austria,5.187765121459961,1.8429369615384616
+energy,3,rule_of_law_train,SWE,Sweden,5.1877546310424805,1.8525718076923074
+energy,3,rule_of_law_train,CHE,Switzerland,5.18768310546875,1.8672408846153845
+energy,3,rule_of_law_train,NOR,Norway,5.187969207763672,1.9000786076923077
+energy,3,rule_of_law_train,DNK,Denmark,5.187601089477539,1.9114383692307693
+energy,3,rule_of_law_train,FIN,Finland,5.187713623046875,1.956635953846154
