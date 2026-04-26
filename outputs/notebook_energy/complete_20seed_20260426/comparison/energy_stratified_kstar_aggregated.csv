@@ -1,0 +1,16 @@
+method,stratifier,n_seeds_total,n_seeds_valid,rho_mean,rho_median,abs_rho_mean,share_seeds_p_lt_05,share_seeds_p_lt_01,fisher_combined_p
+CMDL,government_effectiveness_train,20,20,0.014916467284276974,0.12911139493417972,0.7155277720207219,0.9,0.85,9.0340168721252e-77
+CMDL,log_gdp_per_capita_train,20,20,0.011460485900164224,0.18515661553636237,0.6087509482353205,0.9,0.85,1.4522589463042203e-77
+CMDL,rule_of_law_train,20,20,0.02103251073898315,0.23686440142136345,0.7346915120736472,0.95,0.9,1.788747239368012e-79
+No AC Encoder,government_effectiveness_train,20,0,,,,,,
+No AC Encoder,log_gdp_per_capita_train,20,0,,,,,,
+No AC Encoder,rule_of_law_train,20,0,,,,,,
+No Recon Reg,government_effectiveness_train,20,20,0.014953139504830343,0.12911139493417972,0.7155543277114977,0.9,0.85,9.0340168721252e-77
+No Recon Reg,log_gdp_per_capita_train,20,20,0.011536359697592553,0.18515661553636237,0.6087307149998619,0.9,0.85,1.4522589463042203e-77
+No Recon Reg,rule_of_law_train,20,20,0.02107297669018557,0.23686440142136345,0.7347041575679614,0.95,0.9,1.788747239368012e-79
+Plain LSTM,government_effectiveness_train,20,0,,,,,,
+Plain LSTM,log_gdp_per_capita_train,20,0,,,,,,
+Plain LSTM,rule_of_law_train,20,0,,,,,,
+Uniform Lag,government_effectiveness_train,20,0,,,,,,
+Uniform Lag,log_gdp_per_capita_train,20,0,,,,,,
+Uniform Lag,rule_of_law_train,20,0,,,,,,

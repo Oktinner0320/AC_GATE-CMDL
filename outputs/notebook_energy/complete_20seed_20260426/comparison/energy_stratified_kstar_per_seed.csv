@@ -1,0 +1,301 @@
+method,seed,stratifier,n_entities,spearman_rho,perm_p_two_sided,kstar_std,degenerate
+CMDL,0,log_gdp_per_capita_train,78,-0.5910165783583505,0.0,0.062237981741399856,False
+CMDL,0,government_effectiveness_train,78,-0.6443303531911126,0.0,0.062237981741399856,False
+CMDL,0,rule_of_law_train,78,-0.680117351003427,0.0,0.062237981741399856,False
+CMDL,1,log_gdp_per_capita_train,78,0.724908003389016,0.0,0.11288925756658834,False
+CMDL,1,government_effectiveness_train,78,0.8717990869889604,0.0,0.11288925756658834,False
+CMDL,1,rule_of_law_train,78,0.891576777652727,0.0,0.11288925756658834,False
+CMDL,2,log_gdp_per_capita_train,78,-0.7402091579306768,0.0,0.14451537209662677,False
+CMDL,2,government_effectiveness_train,78,-0.8705598199269083,0.0,0.14451537209662677,False
+CMDL,2,rule_of_law_train,78,-0.9193970586375649,0.0,0.14451537209662677,False
+CMDL,3,log_gdp_per_capita_train,78,-0.6494179834092267,0.0,0.002024736834193504,False
+CMDL,3,government_effectiveness_train,78,-0.8273424508723329,0.0,0.002024736834193504,False
+CMDL,3,rule_of_law_train,78,-0.8033283383128136,0.0,0.002024736834193504,False
+CMDL,4,log_gdp_per_capita_train,78,-0.7895016376029034,0.0,0.12586733214162113,False
+CMDL,4,government_effectiveness_train,78,-0.9541471187040806,0.0,0.12586733214162113,False
+CMDL,4,rule_of_law_train,78,-0.9510615966312169,0.0,0.12586733214162113,False
+CMDL,5,log_gdp_per_capita_train,78,0.6478711162255465,0.0,0.1519278177491006,False
+CMDL,5,government_effectiveness_train,78,0.7930424006373372,0.0,0.1519278177491006,False
+CMDL,5,rule_of_law_train,78,0.7497692181236485,0.0,0.1519278177491006,False
+CMDL,6,log_gdp_per_capita_train,78,0.13294300636072787,0.233,0.006602545260195929,False
+CMDL,6,government_effectiveness_train,78,-0.0038316114265481353,0.9735,0.006602545260195929,False
+CMDL,6,rule_of_law_train,78,0.15550272512297827,0.169,0.006602545260195929,False
+CMDL,7,log_gdp_per_capita_train,78,0.7746557240228126,0.0,0.11877455601218599,False
+CMDL,7,government_effectiveness_train,78,0.933990060572339,0.0,0.11877455601218599,False
+CMDL,7,rule_of_law_train,78,0.8844446692547957,0.0,0.11877455601218599,False
+CMDL,8,log_gdp_per_capita_train,78,-0.8253139265797492,0.0,0.4171236848979256,False
+CMDL,8,government_effectiveness_train,78,-0.956726817486311,0.0,0.4171236848979256,False
+CMDL,8,rule_of_law_train,78,-0.9404140163633834,0.0,0.4171236848979256,False
+CMDL,9,log_gdp_per_capita_train,78,0.7259196499702828,0.0,0.18973531906249078,False
+CMDL,9,government_effectiveness_train,78,0.8744040769357224,0.0,0.18973531906249078,False
+CMDL,9,rule_of_law_train,78,0.8603168982915818,0.0,0.18973531906249078,False
+CMDL,10,log_gdp_per_capita_train,78,0.5184056449879234,0.0,0.045497720753666204,False
+CMDL,10,government_effectiveness_train,78,0.6672947305858697,0.0,0.045497720753666204,False
+CMDL,10,rule_of_law_train,78,0.7120095094778638,0.0,0.045497720753666204,False
+CMDL,11,log_gdp_per_capita_train,78,0.584213255099331,0.0,0.08401522356478842,False
+CMDL,11,government_effectiveness_train,78,0.6461766082019246,0.0,0.08401522356478842,False
+CMDL,11,rule_of_law_train,78,0.6734657747315975,0.0,0.08401522356478842,False
+CMDL,12,log_gdp_per_capita_train,78,-0.19042982334121575,0.098,0.03310737269640147,False
+CMDL,12,government_effectiveness_train,78,-0.12922520517457226,0.254,0.03310737269640147,False
+CMDL,12,rule_of_law_train,78,-0.2839565497793346,0.0105,0.03310737269640147,False
+CMDL,13,log_gdp_per_capita_train,78,0.7758696999203328,0.0,0.14139275813066776,False
+CMDL,13,government_effectiveness_train,78,0.9270855726551929,0.0,0.14139275813066776,False
+CMDL,13,rule_of_law_train,78,0.9452699199534641,0.0,0.14139275813066776,False
+CMDL,14,log_gdp_per_capita_train,78,0.6386904235005499,0.0,0.01807882751659046,False
+CMDL,14,government_effectiveness_train,78,0.7825465673566939,0.0,0.01807882751659046,False
+CMDL,14,rule_of_law_train,78,0.8443328823075658,0.0,0.01807882751659046,False
+CMDL,15,log_gdp_per_capita_train,78,0.4412675931663273,0.0,0.14617180279745295,False
+CMDL,15,government_effectiveness_train,78,0.5460488878210397,0.0,0.14617180279745295,False
+CMDL,15,rule_of_law_train,78,0.5223257754903323,0.0,0.14617180279745295,False
+CMDL,16,log_gdp_per_capita_train,78,-0.7529306136901074,0.0,0.07176029746037203,False
+CMDL,16,government_effectiveness_train,78,-0.9177531329430063,0.0,0.07176029746037203,False
+CMDL,16,rule_of_law_train,78,-0.8884912555798631,0.0,0.07176029746037203,False
+CMDL,17,log_gdp_per_capita_train,78,-0.710315001454242,0.0,0.10418144172477126,False
+CMDL,17,government_effectiveness_train,78,-0.8254909647314711,0.0,0.10418144172477126,False
+CMDL,17,rule_of_law_train,78,-0.793295312282654,0.0,0.10418144172477126,False
+CMDL,18,log_gdp_per_capita_train,78,0.23737022471199684,0.0365,0.015543457106286117,False
+CMDL,18,government_effectiveness_train,78,0.2620544012949076,0.0245,0.015543457106286117,False
+CMDL,18,rule_of_law_train,78,0.3182260777197486,0.004,0.015543457106286117,False
+CMDL,19,log_gdp_per_capita_train,78,-0.7237699009850909,0.0,0.18075666855788625,False
+CMDL,19,government_effectiveness_train,78,-0.8767055729081045,0.0,0.18075666855788625,False
+CMDL,19,rule_of_law_train,78,-0.8765285347563828,0.0,0.18075666855788625,False
+Plain LSTM,0,log_gdp_per_capita_train,0,,,0.0,True
+Plain LSTM,0,government_effectiveness_train,0,,,0.0,True
+Plain LSTM,0,rule_of_law_train,0,,,0.0,True
+Plain LSTM,1,log_gdp_per_capita_train,0,,,0.0,True
+Plain LSTM,1,government_effectiveness_train,0,,,0.0,True
+Plain LSTM,1,rule_of_law_train,0,,,0.0,True
+Plain LSTM,2,log_gdp_per_capita_train,0,,,0.0,True
+Plain LSTM,2,government_effectiveness_train,0,,,0.0,True
+Plain LSTM,2,rule_of_law_train,0,,,0.0,True
+Plain LSTM,3,log_gdp_per_capita_train,0,,,0.0,True
+Plain LSTM,3,government_effectiveness_train,0,,,0.0,True
+Plain LSTM,3,rule_of_law_train,0,,,0.0,True
+Plain LSTM,4,log_gdp_per_capita_train,0,,,0.0,True
+Plain LSTM,4,government_effectiveness_train,0,,,0.0,True
+Plain LSTM,4,rule_of_law_train,0,,,0.0,True
+Plain LSTM,5,log_gdp_per_capita_train,0,,,0.0,True
+Plain LSTM,5,government_effectiveness_train,0,,,0.0,True
+Plain LSTM,5,rule_of_law_train,0,,,0.0,True
+Plain LSTM,6,log_gdp_per_capita_train,0,,,0.0,True
+Plain LSTM,6,government_effectiveness_train,0,,,0.0,True
+Plain LSTM,6,rule_of_law_train,0,,,0.0,True
+Plain LSTM,7,log_gdp_per_capita_train,0,,,0.0,True
+Plain LSTM,7,government_effectiveness_train,0,,,0.0,True
+Plain LSTM,7,rule_of_law_train,0,,,0.0,True
+Plain LSTM,8,log_gdp_per_capita_train,0,,,0.0,True
+Plain LSTM,8,government_effectiveness_train,0,,,0.0,True
+Plain LSTM,8,rule_of_law_train,0,,,0.0,True
+Plain LSTM,9,log_gdp_per_capita_train,0,,,0.0,True
+Plain LSTM,9,government_effectiveness_train,0,,,0.0,True
+Plain LSTM,9,rule_of_law_train,0,,,0.0,True
+Plain LSTM,10,log_gdp_per_capita_train,0,,,0.0,True
+Plain LSTM,10,government_effectiveness_train,0,,,0.0,True
+Plain LSTM,10,rule_of_law_train,0,,,0.0,True
+Plain LSTM,11,log_gdp_per_capita_train,0,,,0.0,True
+Plain LSTM,11,government_effectiveness_train,0,,,0.0,True
+Plain LSTM,11,rule_of_law_train,0,,,0.0,True
+Plain LSTM,12,log_gdp_per_capita_train,0,,,0.0,True
+Plain LSTM,12,government_effectiveness_train,0,,,0.0,True
+Plain LSTM,12,rule_of_law_train,0,,,0.0,True
+Plain LSTM,13,log_gdp_per_capita_train,0,,,0.0,True
+Plain LSTM,13,government_effectiveness_train,0,,,0.0,True
+Plain LSTM,13,rule_of_law_train,0,,,0.0,True
+Plain LSTM,14,log_gdp_per_capita_train,0,,,0.0,True
+Plain LSTM,14,government_effectiveness_train,0,,,0.0,True
+Plain LSTM,14,rule_of_law_train,0,,,0.0,True
+Plain LSTM,15,log_gdp_per_capita_train,0,,,0.0,True
+Plain LSTM,15,government_effectiveness_train,0,,,0.0,True
+Plain LSTM,15,rule_of_law_train,0,,,0.0,True
+Plain LSTM,16,log_gdp_per_capita_train,0,,,0.0,True
+Plain LSTM,16,government_effectiveness_train,0,,,0.0,True
+Plain LSTM,16,rule_of_law_train,0,,,0.0,True
+Plain LSTM,17,log_gdp_per_capita_train,0,,,0.0,True
+Plain LSTM,17,government_effectiveness_train,0,,,0.0,True
+Plain LSTM,17,rule_of_law_train,0,,,0.0,True
+Plain LSTM,18,log_gdp_per_capita_train,0,,,0.0,True
+Plain LSTM,18,government_effectiveness_train,0,,,0.0,True
+Plain LSTM,18,rule_of_law_train,0,,,0.0,True
+Plain LSTM,19,log_gdp_per_capita_train,0,,,0.0,True
+Plain LSTM,19,government_effectiveness_train,0,,,0.0,True
+Plain LSTM,19,rule_of_law_train,0,,,0.0,True
+No AC Encoder,0,log_gdp_per_capita_train,0,,,0.0,True
+No AC Encoder,0,government_effectiveness_train,0,,,0.0,True
+No AC Encoder,0,rule_of_law_train,0,,,0.0,True
+No AC Encoder,1,log_gdp_per_capita_train,0,,,0.0,True
+No AC Encoder,1,government_effectiveness_train,0,,,0.0,True
+No AC Encoder,1,rule_of_law_train,0,,,0.0,True
+No AC Encoder,2,log_gdp_per_capita_train,0,,,0.0,True
+No AC Encoder,2,government_effectiveness_train,0,,,0.0,True
+No AC Encoder,2,rule_of_law_train,0,,,0.0,True
+No AC Encoder,3,log_gdp_per_capita_train,0,,,0.0,True
+No AC Encoder,3,government_effectiveness_train,0,,,0.0,True
+No AC Encoder,3,rule_of_law_train,0,,,0.0,True
+No AC Encoder,4,log_gdp_per_capita_train,0,,,0.0,True
+No AC Encoder,4,government_effectiveness_train,0,,,0.0,True
+No AC Encoder,4,rule_of_law_train,0,,,0.0,True
+No AC Encoder,5,log_gdp_per_capita_train,0,,,0.0,True
+No AC Encoder,5,government_effectiveness_train,0,,,0.0,True
+No AC Encoder,5,rule_of_law_train,0,,,0.0,True
+No AC Encoder,6,log_gdp_per_capita_train,0,,,0.0,True
+No AC Encoder,6,government_effectiveness_train,0,,,0.0,True
+No AC Encoder,6,rule_of_law_train,0,,,0.0,True
+No AC Encoder,7,log_gdp_per_capita_train,0,,,0.0,True
+No AC Encoder,7,government_effectiveness_train,0,,,0.0,True
+No AC Encoder,7,rule_of_law_train,0,,,0.0,True
+No AC Encoder,8,log_gdp_per_capita_train,0,,,0.0,True
+No AC Encoder,8,government_effectiveness_train,0,,,0.0,True
+No AC Encoder,8,rule_of_law_train,0,,,0.0,True
+No AC Encoder,9,log_gdp_per_capita_train,0,,,0.0,True
+No AC Encoder,9,government_effectiveness_train,0,,,0.0,True
+No AC Encoder,9,rule_of_law_train,0,,,0.0,True
+No AC Encoder,10,log_gdp_per_capita_train,0,,,0.0,True
+No AC Encoder,10,government_effectiveness_train,0,,,0.0,True
+No AC Encoder,10,rule_of_law_train,0,,,0.0,True
+No AC Encoder,11,log_gdp_per_capita_train,0,,,0.0,True
+No AC Encoder,11,government_effectiveness_train,0,,,0.0,True
+No AC Encoder,11,rule_of_law_train,0,,,0.0,True
+No AC Encoder,12,log_gdp_per_capita_train,0,,,0.0,True
+No AC Encoder,12,government_effectiveness_train,0,,,0.0,True
+No AC Encoder,12,rule_of_law_train,0,,,0.0,True
+No AC Encoder,13,log_gdp_per_capita_train,0,,,0.0,True
+No AC Encoder,13,government_effectiveness_train,0,,,0.0,True
+No AC Encoder,13,rule_of_law_train,0,,,0.0,True
+No AC Encoder,14,log_gdp_per_capita_train,0,,,0.0,True
+No AC Encoder,14,government_effectiveness_train,0,,,0.0,True
+No AC Encoder,14,rule_of_law_train,0,,,0.0,True
+No AC Encoder,15,log_gdp_per_capita_train,0,,,0.0,True
+No AC Encoder,15,government_effectiveness_train,0,,,0.0,True
+No AC Encoder,15,rule_of_law_train,0,,,0.0,True
+No AC Encoder,16,log_gdp_per_capita_train,0,,,0.0,True
+No AC Encoder,16,government_effectiveness_train,0,,,0.0,True
+No AC Encoder,16,rule_of_law_train,0,,,0.0,True
+No AC Encoder,17,log_gdp_per_capita_train,0,,,0.0,True
+No AC Encoder,17,government_effectiveness_train,0,,,0.0,True
+No AC Encoder,17,rule_of_law_train,0,,,0.0,True
+No AC Encoder,18,log_gdp_per_capita_train,0,,,0.0,True
+No AC Encoder,18,government_effectiveness_train,0,,,0.0,True
+No AC Encoder,18,rule_of_law_train,0,,,0.0,True
+No AC Encoder,19,log_gdp_per_capita_train,0,,,0.0,True
+No AC Encoder,19,government_effectiveness_train,0,,,0.0,True
+No AC Encoder,19,rule_of_law_train,0,,,0.0,True
+Uniform Lag,0,log_gdp_per_capita_train,0,,,0.0,True
+Uniform Lag,0,government_effectiveness_train,0,,,0.0,True
+Uniform Lag,0,rule_of_law_train,0,,,0.0,True
+Uniform Lag,1,log_gdp_per_capita_train,0,,,0.0,True
+Uniform Lag,1,government_effectiveness_train,0,,,0.0,True
+Uniform Lag,1,rule_of_law_train,0,,,0.0,True
+Uniform Lag,2,log_gdp_per_capita_train,0,,,0.0,True
+Uniform Lag,2,government_effectiveness_train,0,,,0.0,True
+Uniform Lag,2,rule_of_law_train,0,,,0.0,True
+Uniform Lag,3,log_gdp_per_capita_train,0,,,0.0,True
+Uniform Lag,3,government_effectiveness_train,0,,,0.0,True
+Uniform Lag,3,rule_of_law_train,0,,,0.0,True
+Uniform Lag,4,log_gdp_per_capita_train,0,,,0.0,True
+Uniform Lag,4,government_effectiveness_train,0,,,0.0,True
+Uniform Lag,4,rule_of_law_train,0,,,0.0,True
+Uniform Lag,5,log_gdp_per_capita_train,0,,,0.0,True
+Uniform Lag,5,government_effectiveness_train,0,,,0.0,True
+Uniform Lag,5,rule_of_law_train,0,,,0.0,True
+Uniform Lag,6,log_gdp_per_capita_train,0,,,0.0,True
+Uniform Lag,6,government_effectiveness_train,0,,,0.0,True
+Uniform Lag,6,rule_of_law_train,0,,,0.0,True
+Uniform Lag,7,log_gdp_per_capita_train,0,,,0.0,True
+Uniform Lag,7,government_effectiveness_train,0,,,0.0,True
+Uniform Lag,7,rule_of_law_train,0,,,0.0,True
+Uniform Lag,8,log_gdp_per_capita_train,0,,,0.0,True
+Uniform Lag,8,government_effectiveness_train,0,,,0.0,True
+Uniform Lag,8,rule_of_law_train,0,,,0.0,True
+Uniform Lag,9,log_gdp_per_capita_train,0,,,0.0,True
+Uniform Lag,9,government_effectiveness_train,0,,,0.0,True
+Uniform Lag,9,rule_of_law_train,0,,,0.0,True
+Uniform Lag,10,log_gdp_per_capita_train,0,,,0.0,True
+Uniform Lag,10,government_effectiveness_train,0,,,0.0,True
+Uniform Lag,10,rule_of_law_train,0,,,0.0,True
+Uniform Lag,11,log_gdp_per_capita_train,0,,,0.0,True
+Uniform Lag,11,government_effectiveness_train,0,,,0.0,True
+Uniform Lag,11,rule_of_law_train,0,,,0.0,True
+Uniform Lag,12,log_gdp_per_capita_train,0,,,0.0,True
+Uniform Lag,12,government_effectiveness_train,0,,,0.0,True
+Uniform Lag,12,rule_of_law_train,0,,,0.0,True
+Uniform Lag,13,log_gdp_per_capita_train,0,,,0.0,True
+Uniform Lag,13,government_effectiveness_train,0,,,0.0,True
+Uniform Lag,13,rule_of_law_train,0,,,0.0,True
+Uniform Lag,14,log_gdp_per_capita_train,0,,,0.0,True
+Uniform Lag,14,government_effectiveness_train,0,,,0.0,True
+Uniform Lag,14,rule_of_law_train,0,,,0.0,True
+Uniform Lag,15,log_gdp_per_capita_train,0,,,0.0,True
+Uniform Lag,15,government_effectiveness_train,0,,,0.0,True
+Uniform Lag,15,rule_of_law_train,0,,,0.0,True
+Uniform Lag,16,log_gdp_per_capita_train,0,,,0.0,True
+Uniform Lag,16,government_effectiveness_train,0,,,0.0,True
+Uniform Lag,16,rule_of_law_train,0,,,0.0,True
+Uniform Lag,17,log_gdp_per_capita_train,0,,,0.0,True
+Uniform Lag,17,government_effectiveness_train,0,,,0.0,True
+Uniform Lag,17,rule_of_law_train,0,,,0.0,True
+Uniform Lag,18,log_gdp_per_capita_train,0,,,0.0,True
+Uniform Lag,18,government_effectiveness_train,0,,,0.0,True
+Uniform Lag,18,rule_of_law_train,0,,,0.0,True
+Uniform Lag,19,log_gdp_per_capita_train,0,,,0.0,True
+Uniform Lag,19,government_effectiveness_train,0,,,0.0,True
+Uniform Lag,19,rule_of_law_train,0,,,0.0,True
+No Recon Reg,0,log_gdp_per_capita_train,78,-0.5910165783583505,0.0,0.0622451642568383,False
+No Recon Reg,0,government_effectiveness_train,78,-0.6443303531911126,0.0,0.0622451642568383,False
+No Recon Reg,0,rule_of_law_train,78,-0.680117351003427,0.0,0.0622451642568383,False
+No Recon Reg,1,log_gdp_per_capita_train,78,0.724908003389016,0.0,0.1129123493219539,False
+No Recon Reg,1,government_effectiveness_train,78,0.8717990869889604,0.0,0.1129123493219539,False
+No Recon Reg,1,rule_of_law_train,78,0.891576777652727,0.0,0.1129123493219539,False
+No Recon Reg,2,log_gdp_per_capita_train,78,-0.7402091579306768,0.0,0.1445255941004537,False
+No Recon Reg,2,government_effectiveness_train,78,-0.8705598199269083,0.0,0.1445255941004537,False
+No Recon Reg,2,rule_of_law_train,78,-0.9193970586375649,0.0,0.1445255941004537,False
+No Recon Reg,3,log_gdp_per_capita_train,78,-0.6484569130803571,0.0,0.002026978114293323,False
+No Recon Reg,3,government_effectiveness_train,78,-0.8272412855745572,0.0,0.002026978114293323,False
+No Recon Reg,3,rule_of_law_train,78,-0.8030501337439302,0.0,0.002026978114293323,False
+No Recon Reg,4,log_gdp_per_capita_train,78,-0.7895016376029034,0.0,0.12586524762925128,False
+No Recon Reg,4,government_effectiveness_train,78,-0.9541471187040806,0.0,0.12586524762925128,False
+No Recon Reg,4,rule_of_law_train,78,-0.9510615966312169,0.0,0.12586524762925128,False
+No Recon Reg,5,log_gdp_per_capita_train,78,0.6478711162255465,0.0,0.15189073866797506,False
+No Recon Reg,5,government_effectiveness_train,78,0.7930424006373372,0.0,0.15189073866797506,False
+No Recon Reg,5,rule_of_law_train,78,0.7497692181236485,0.0,0.15189073866797506,False
+No Recon Reg,6,log_gdp_per_capita_train,78,0.13294300636072787,0.233,0.006602394602999169,False
+No Recon Reg,6,government_effectiveness_train,78,-0.0038316114265481353,0.9735,0.006602394602999169,False
+No Recon Reg,6,rule_of_law_train,78,0.15550272512297827,0.169,0.006602394602999169,False
+No Recon Reg,7,log_gdp_per_capita_train,78,0.7746557240228126,0.0,0.11878167450833524,False
+No Recon Reg,7,government_effectiveness_train,78,0.933990060572339,0.0,0.11878167450833524,False
+No Recon Reg,7,rule_of_law_train,78,0.8844446692547957,0.0,0.11878167450833524,False
+No Recon Reg,8,log_gdp_per_capita_train,78,-0.8253139265797492,0.0,0.41711229501970987,False
+No Recon Reg,8,government_effectiveness_train,78,-0.956726817486311,0.0,0.41711229501970987,False
+No Recon Reg,8,rule_of_law_train,78,-0.9404140163633834,0.0,0.41711229501970987,False
+No Recon Reg,9,log_gdp_per_capita_train,78,0.7259196499702828,0.0,0.18970884915660993,False
+No Recon Reg,9,government_effectiveness_train,78,0.8744040769357224,0.0,0.18970884915660993,False
+No Recon Reg,9,rule_of_law_train,78,0.8603168982915818,0.0,0.18970884915660993,False
+No Recon Reg,10,log_gdp_per_capita_train,78,0.5189620506076202,0.0,0.04552651856414757,False
+No Recon Reg,10,government_effectiveness_train,78,0.6679270096991615,0.0,0.04552651856414757,False
+No Recon Reg,10,rule_of_law_train,78,0.7125406239330289,0.0,0.04552651856414757,False
+No Recon Reg,11,log_gdp_per_capita_train,78,0.584213255099331,0.0,0.0840140537313344,False
+No Recon Reg,11,government_effectiveness_train,78,0.6461766082019246,0.0,0.0840140537313344,False
+No Recon Reg,11,rule_of_law_train,78,0.6734657747315975,0.0,0.0840140537313344,False
+No Recon Reg,12,log_gdp_per_capita_train,78,-0.19042982334121575,0.098,0.03310515972654813,False
+No Recon Reg,12,government_effectiveness_train,78,-0.12922520517457226,0.254,0.03310515972654813,False
+No Recon Reg,12,rule_of_law_train,78,-0.2839565497793346,0.0105,0.03310515972654813,False
+No Recon Reg,13,log_gdp_per_capita_train,78,0.7758696999203328,0.0,0.1413948107509866,False
+No Recon Reg,13,government_effectiveness_train,78,0.9270855726551929,0.0,0.1413948107509866,False
+No Recon Reg,13,rule_of_law_train,78,0.9452699199534641,0.0,0.1413948107509866,False
+No Recon Reg,14,log_gdp_per_capita_train,78,0.6386904235005499,0.0,0.018076997552086953,False
+No Recon Reg,14,government_effectiveness_train,78,0.7825465673566939,0.0,0.018076997552086953,False
+No Recon Reg,14,rule_of_law_train,78,0.8443328823075658,0.0,0.018076997552086953,False
+No Recon Reg,15,log_gdp_per_capita_train,78,0.4412675931663273,0.0,0.14618268542384524,False
+No Recon Reg,15,government_effectiveness_train,78,0.5460488878210397,0.0,0.14618268542384524,False
+No Recon Reg,15,rule_of_law_train,78,0.5223257754903323,0.0,0.14618268542384524,False
+No Recon Reg,16,log_gdp_per_capita_train,78,-0.7529306136901074,0.0,0.07176256169090417,False
+No Recon Reg,16,government_effectiveness_train,78,-0.9177531329430063,0.0,0.07176256169090417,False
+No Recon Reg,16,rule_of_law_train,78,-0.8884912555798631,0.0,0.07176256169090417,False
+No Recon Reg,17,log_gdp_per_capita_train,78,-0.710315001454242,0.0,0.10418073408918996,False
+No Recon Reg,17,government_effectiveness_train,78,-0.8254909647314711,0.0,0.10418073408918996,False
+No Recon Reg,17,rule_of_law_train,78,-0.793295312282654,0.0,0.10418073408918996,False
+No Recon Reg,18,log_gdp_per_capita_train,78,0.23737022471199684,0.0365,0.015539218142702881,False
+No Recon Reg,18,government_effectiveness_train,78,0.2620544012949076,0.0245,0.015539218142702881,False
+No Recon Reg,18,rule_of_law_train,78,0.3182260777197486,0.004,0.015539218142702881,False
+No Recon Reg,19,log_gdp_per_capita_train,78,-0.7237699009850909,0.0,0.180739049679794,False
+No Recon Reg,19,government_effectiveness_train,78,-0.8767055729081045,0.0,0.180739049679794,False
+No Recon Reg,19,rule_of_law_train,78,-0.8765285347563828,0.0,0.180739049679794,False

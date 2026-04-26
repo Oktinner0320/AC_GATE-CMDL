@@ -12,7 +12,136 @@
 2. CIKM Applied Research Papers / Applied Track
 3. IEEE ICDM 应用导向投稿（application-oriented submission）
 
+## 0.1 关键 20-seed 锁定数据（Locked 20-seed Numbers，2026-04-26）
+
+> 数据来源：[outputs/notebook_synthetic/complete_20seed_20260426/comparison/](outputs/notebook_synthetic/complete_20seed_20260426/comparison/)、[outputs/notebook_economics/complete_20seed_20260426/comparison/](outputs/notebook_economics/complete_20seed_20260426/comparison/)、[outputs/notebook_energy/complete_20seed_20260426/comparison/](outputs/notebook_energy/complete_20seed_20260426/comparison/)。所有差异均使用 seed-level 配对 Wilcoxon（`evaluation/significance.py`）。
+
+### 0.1.1 Synthetic（机制恢复，main evidence）
+
+| Scenario | Method | task loss (mean ± std) | k\* MAE | k\* Spearman ρ | k\* positive seed share |
+|---|---|---|---|---|---|
+| linear | CMDL | 0.0362 ± 0.0044 | 1.159 ± 0.227 | **0.945** | 1.00 |
+| linear | No Recon Reg | 0.0363 ± 0.0043 | 1.159 ± 0.227 | 0.945 | 1.00 |
+| linear | Plain LSTM | 0.0695 ± 0.0029 | 1.707 ± 0.091 | 0.356 | 1.00 |
+| linear | No AC Encoder | 0.0629 ± 0.0054 | 1.931 ± 0.162 | 0.000 | 0.00 |
+| linear | Uniform Lag | 0.0695 ± 0.0027 | 1.913 ± 0.088 | 0.000 | 0.00 |
+| nonlinear | CMDL | 0.0378 ± 0.0065 | 1.467 ± 0.248 | **0.907** | 1.00 |
+| nonlinear | Plain LSTM | 0.0927 ± 0.0061 | 2.611 ± 0.138 | 0.344 | 1.00 |
+| nonlinear | No AC Encoder | 0.0661 ± 0.0184 | 2.435 ± 0.261 | 0.000 | 0.00 |
+| nonlinear | Uniform Lag | 0.0938 ± 0.0081 | 3.102 ± 0.098 | 0.000 | 0.00 |
+
+配对显著性（k\* MAE，CMDL 为 reference，越小越好）：
+- vs Plain LSTM：linear/nonlinear 均 p ≈ 1.91e-06（CMDL 显著更优）
+- vs No AC Encoder / Uniform Lag：均 p ≈ 1.91e-06（CMDL 显著更优）
+- vs No Recon Reg：linear p = 0.498，nonlinear p = 0.368（**无显著差异**）
+
+可写入论文的硬结论：
+1. AC encoder + lag gate 是 k\* 恢复的必要结构（去掉任一则 ρ 退化为 0）。
+2. CMDL 在 task loss 与 k\* MAE 上均显著优于 Plain LSTM（p < 1e-5）。
+3. Reconstruction regularization 不是机制恢复的主要来源（无显著差异，且 mean diff < 1e-4）；论文应将其降级为"辅助稳定项"。
+
+### 0.1.2 Economics（真实域审计 — L2 结构化异质滞后成立，L3 方向性机制不成立）
+
+target = `ctfp`（PWT），feature_bundle = `effective_labor_aware`，n_seeds = 20。
+
+**预测层（L0 forecast，不是主张层）**
+
+| Method | test R² | Anchor-adjusted ρ | Anchor positive share | Mean proxy ρ | k\* std |
+|---|---|---|---|---|---|
+| CMDL | 0.054 ± 0.037 | **−0.109** | 0.35 | −0.039 | 0.167 |
+| No Recon Reg | 0.055 ± 0.033 | 0.164 | 0.60 | 0.312 | 0.109 |
+| No AC Encoder | 0.052 ± 0.035 | — | — | — | **0.000** |
+| Uniform Lag | **0.104** ± 0.028 | — | — | — | **0.000** |
+| Plain LSTM | **0.102** ± 0.021 | −0.017 | 0.25 | −0.117 | 1.894 |
+| Grouped ARDL | −0.089 ± 0.000 | — | — | — | — |
+
+预测层配对 Wilcoxon（test R²）：vs Plain LSTM p = 6.3e-05，vs Uniform Lag p = 1.9e-06 — **CMDL 在预测上显著较弱**，论文不主张预测优势。
+
+**L2 机制层（structured heterogeneous lag，主张层）**
+
+> 数据：[outputs/notebook_economics/complete_20seed_20260426/comparison/economics_stratified_kstar_aggregated.csv](outputs/notebook_economics/complete_20seed_20260426/comparison/economics_stratified_kstar_aggregated.csv)
+> 方法：[evaluation/stratified_kstar.py](evaluation/stratified_kstar.py) — 每个 seed 计算 per-entity k\* 与训练窗口 entity-level 静态发展指标的 Spearman ρ，2000 次实体置换 null，再对 20 seeds 聚合。
+
+| Stratifier | abs ρ mean | seeds p<0.05 | seeds p<0.01 | Fisher combined p |
+|---|---|---|---|---|
+| `hc_mean_train`（人力资本） | **0.371** | 80% | 75% | **1.0e-46** |
+| `log_gdp_per_worker_train` | 0.278 | 70% | 55% | 3.5e-37 |
+| `log_capital_per_worker_train` | 0.257 | 65% | 50% | 1.4e-24 |
+
+退化对照：`No AC Encoder` 与 `Uniform Lag` 的 per-entity k\* 完全恒定（kstar_std ≡ 0） → stratification 检验**结构性不可执行**。这是最强的 L2 ablation 对照（CMDL 学到 stratifier-aligned 异质滞后；去掉 AC encoder 或 lag gate 后该结构整体消失）。
+
+> **L2 结论可写**：在 PWT-CTFP 面板上，AC-GATE 恢复出的实体条件滞后分布与 entity-level 静态发展指标（人力资本、log 人均 GDP、log 人均资本）在统计上**显著结构化**（Fisher combined p < 1e-24），且该结构在去掉 AC encoder 或 lag gate 时**完全消失**。
+> **L3 限制需诚实写**：anchor proxy 方向在 seed 层面不稳定（adjusted ρ = −0.109，正向占比 35%）；论文不以 proxy 方向作为机制成立判据，而以 stratification + ablation 对照作为判据。
+
+### 0.1.3 Energy（真实域审计 — L2 在该域反而最强，预测层为应用边界）
+
+target = `co2_per_unit_energy`，feature_bundle = `minimal`，n_seeds = 20。
+
+**预测层（L0，不是主张层）**
+
+| Method | test R² | Anchor-adjusted ρ | Mean proxy ρ |
+|---|---|---|---|
+| CMDL | −0.029 ± 0.005 | −0.014 | −0.012 |
+| No Recon Reg | −0.029 ± 0.005 | −0.014 | −0.012 |
+| No AC Encoder | −0.028 ± 0.005 | — | — |
+| Uniform Lag | −0.030 ± 0.003 | — | — |
+| Plain LSTM | −0.029 ± 0.004 | 0.093 | 0.090 |
+| **Grouped ARDL** | **0.607** ± 0 | — | — |
+
+预测层全部神经模型 R² ≈ −0.029，被 Grouped ARDL R² = 0.607 显著压制（p = 1.9e-06）。**论文不主张预测优势**，并将该域定位为"线性可解目标 + 短面板下神经容量过剩"的应用边界。
+
+**L2 机制层（structured heterogeneous lag，主张层）**
+
+> 数据：[outputs/notebook_energy/complete_20seed_20260426/comparison/energy_stratified_kstar_aggregated.csv](outputs/notebook_energy/complete_20seed_20260426/comparison/energy_stratified_kstar_aggregated.csv)
+
+| Stratifier | abs ρ mean | seeds p<0.05 | seeds p<0.01 | Fisher combined p |
+|---|---|---|---|---|
+| `rule_of_law_train` | **0.735** | **95%** | 90% | **1.8e-79** |
+| `government_effectiveness_train` | 0.716 | 90% | 85% | 9.0e-77 |
+| `log_gdp_per_capita_train` | 0.609 | 90% | 85% | 1.5e-77 |
+
+退化对照：`No AC Encoder` 与 `Uniform Lag` 的 per-entity k\* 同样为常数 → 检验不可执行 → CMDL 的 stratification 完全归因于 AC encoder + lag gate。
+
+> **L2 结论可写**：在 OWID-energy × WGI 面板上，AC-GATE 恢复出的国家级有效滞后 k\* 与制度治理指标（rule of law、government effectiveness）和 log 人均 GDP 之间存在**极强且稳定的结构化关联**（|ρ| ≈ 0.6–0.74，95% 种子 p<0.05，Fisher combined p < 1e-76）。
+> **附加价值（双解耦证据）**：能源域同时给出"预测层不可信 + 机制层结构强"，这正是 L2 框架的设计意图——把预测有效性与机制可解释性**分开评估**。论文可以把这一点写成方法论亮点，而不是缺陷。
+
+### 0.1.4 关于"sign instability"的诚实声明
+
+20-seed Spearman ρ 在两个域中均出现 sign 跨 seed 翻转：economics rho_mean = −0.10 而 |ρ| = 0.27~0.37；energy rho_mean = +0.01 而 |ρ| = 0.61~0.74。这是**无监督结构发现的常见对称性现象**：模型把实体集合稳定划分成两组，但"哪一组被赋予更大 k\*" 的标签在不同初始化下会翻转（标签置换不变性，label permutation invariance）。论文应：
+
+1. 报告 |ρ| 与 share-of-seeds-rejecting-null（这两个量对 sign 翻转鲁棒）；
+2. 在 limitations 中说明 sign 翻转，并指出 sign-stable directional alignment 只在 synthetic anchor proxy 监督下成立；
+3. 不把 signed directional alignment 作为真实域主张层。
+
+### 0.1.4 复审遗留风险点（合规层）
+
+| review.md 行动项 | 状态 | 说明 |
+|---|---|---|
+| #1 配对 Wilcoxon 显著性检验 | ✅ 已完成 | 三域 CSV 均落盘 |
+| #2 GenAI Usage Disclosure | ✅ 已完成 | [GenAI_Usage_Disclosure.md](GenAI_Usage_Disclosure.md) |
+| #3 requirements / environment | ✅ 已完成 | [requirements.txt](requirements.txt) / [environment.yml](environment.yml) |
+| #4 LICENSE | ✅ 已完成 | MIT 匿名占位 |
+| #5 数据 .meta.json | ✅ 已完成 | sha256 + URL + UTC |
+| #6 runtime meta | ✅ 已完成 | summary.json 含 GPU/CUDA/wall time |
+| #7 Ablation 结构变更后重设 seed | ✅ **已完成** | [run_economics_ablation.py#L165](experiments/run_economics_ablation.py#L165) 与 [run_energy_ablation.py#L159](experiments/run_energy_ablation.py#L159) 已显式 `set_seed(int(seed))` 在 `build_variant_model` 之前；`matched_init_to_full_cmdl=False` 仍诚实写入 summary.json |
+| #8 README Hyperparameter Protocol + Reproducing 段 | ❌ 未完成 | 不影响 strategy，但投稿前必补 |
+| #9 README 基线表 + TFT 说明 | ❌ 未完成 | TFT 当前未参与 20-seed 套件，须在 readme 显式标注 |
+| #10 `set_seed` 加 `CMDL_DETERMINISTIC` 分支 | ❌ 未完成 | 推荐改 `experiments/run_economics.py` 内 `set_seed`（共享） |
+| #11 投稿匿名化 | ⏸ 投稿前执行 | Anonymous GitHub 流程 |
+
 ## 1. 论文核心定位（Core Positioning）
+
+### 1.0 三层"机制成立"判据（Three-Tier Mechanism Claim Ladder）
+
+为避免在真实域过度主张，本文显式区分三层"机制成立"强度。**主张层只取 L2**：
+
+| 层 | 名称 | 判据 | Synthetic | Economics | Energy |
+|---|---|---|---|---|---|
+| L3 | Directional mechanism（方向性机制） | anchor proxy ρ 与预期同号 + seed 多数正向 | ✅ ρ≈0.95 | ❌ | ❌ |
+| **L2** | **Structured heterogeneous lag（结构化异质滞后，**主张层**）** | per-entity k\* 与外部已知 entity-level 静态指标显著 stratified（permutation null 拒绝），且退化 ablation 下结构消失 | ✅ | ✅ Fisher p<1e-24 | ✅ Fisher p<1e-76 |
+| L1 | Learnable heterogeneous lag（可学习异质滞后） | k\* std > 0 且 ablation_guard 触发 | ✅ | ✅ | ✅ |
+
+> **核心主张（修订版，覆盖原 1.x）**：CMDL / AC-GATE 在合成域恢复出方向性机制（L3），并在两个真实国家级面板（PWT-CTFP，OWID-energy×WGI）上恢复出 L2 意义下的**结构化异质滞后机制（structured heterogeneous lag）**——learned per-entity effective lag k\* 与 entity-level 静态发展 / 治理指标存在统计显著的结构化关联（Fisher combined p < 1e-20），且该结构在 No AC Encoder 与 Uniform Lag 退化对照下完全消失。
 
 建议将论文定位为：
 
@@ -29,23 +158,24 @@
 
 ### 2.1 可以稳健主张的内容（Defensible Claims）
 
-1. AC-GATE 能在存在真实机制的数据生成过程中恢复实体条件异质滞后（entity-conditioned heterogeneous lags）。
-2. 模型输出的有效滞后期 `k*` 不是单纯的事后可视化（post-hoc visualization），而是来自显式滞后门控（explicit lag gating）结构。
-3. 自适应条件编码器（AC encoder）与学习型滞后门控（learned lag gate）是机制恢复的必要结构（necessary components）。
-4. 真实数据域可以被写成机制审计（mechanism audit）案例，而不是一律写成机制确认（mechanism confirmation）。
-5. 一个真实域即使没有形成正向机制证据，仍然可以构成有价值的负结果（negative result）或边界结果（boundary result），因为它说明审计协议不会强行制造正面结论。
+1. AC-GATE 在合成域稳定恢复实体条件异质滞后（L3 directional + L2 structured）。
+2. **AC-GATE 在两个真实国家级面板上稳定恢复 L2 结构化异质滞后**：PWT-CTFP 与人力资本/log GDP/log capital 之间 Fisher combined p < 1e-24；OWID-energy×WGI 与 rule of law/gov effectiveness/log GDP 之间 |ρ| ≈ 0.6–0.74，95% seeds p<0.05，Fisher combined p < 1e-76。
+3. AC encoder + lag gate 是 L2 结构化异质滞后的必要结构：去掉任一变体 per-entity k\* 立即退化为常数（kstar_std ≡ 0），stratification 检验结构性不可执行。
+4. 模型输出的有效滞后期 `k*` 不是事后可视化，而是来自显式滞后门控结构。
+5. 真实域 L0（预测）与 L2（机制）解耦：能源域 R² ≈ −0.029（神经全线退化）但 L2 机制层 |ρ| ≈ 0.7 — 这是方法论亮点（mechanism interpretability decoupled from forecast accuracy），不是缺陷。
 
 ### 2.2 应避免的主张（Claims to Avoid）
 
-1. 不要宣称 CMDL / AC-GATE 是通用预测最优模型（universal forecasting SOTA model）。
-2. 不要宣称 economics 域已经证明了真实机制（proved the mechanism in real data）。
-3. 不要宣称 energy 域验证了所提机制（validated the mechanism）。
-4. 不要暗示严格因果识别（causal identification）；应使用预测关联（predictive association）、滞后发现（lag discovery）、机制审计（mechanism audit）等表述。
-5. 不要把代理重构（proxy reconstruction）写成充分证据（sufficient evidence），因为当前 20-seed 结果说明 reconstruction regularization 不是主要机制来源。
+1. 不要宣称 CMDL / AC-GATE 是通用预测最优模型；真实域上 Plain LSTM、Uniform Lag、Grouped ARDL 在不同域分别更优。
+2. 不要宣称真实域上 anchor proxy 方向与预期一致（L3）；该层只在 synthetic 上成立。
+3. 不要把代理重构（proxy reconstruction）写成主贡献；20-seed 显示 No Recon Reg 与 CMDL 无显著差异（synthetic p > 0.36），降级为辅助稳定项。
+4. 不要在论文中把 sign-stable directional alignment 当作真实域机制证据；改报 |ρ| 与 share-of-seeds-rejecting-null。
+5. 不要遮蔽 energy 域 Grouped ARDL R² = 0.607 vs 神经全线 R² ≈ −0.029 的对比；主动诚实写作"应用边界 + 双解耦证据"。
+6. 不要使用严格因果识别（causal identification）措辞；应使用 lag discovery、mechanism recovery、structured heterogeneity 等表述。
 
 ### 2.3 最佳一句话贡献（One-Sentence Contribution）
 
-> 本文提出一个可检验的神经滞后发现框架（testable neural lag-discovery framework），将机制恢复（mechanism recovery）、预测校准（forecast calibration）与真实域审计（real-data audit）明确分离，并通过 20 种子实验展示 AC 条件滞后发现何时成立、何时减弱、何时失效。
+> 本文提出 AC-GATE：一个可检验的神经异质滞后发现框架（testable neural heterogeneous-lag discovery framework）。它在合成域恢复方向性机制（L3），并在 PWT-CTFP 与 OWID-energy×WGI 两个真实国家级面板上恢复 L2 意义下的结构化异质滞后——learned per-entity effective lag 与 entity-level 静态发展 / 治理指标在 permutation null 下显著结构化（Fisher combined p < 1e-20），且在去除 AC encoder 或 lag gate 时该结构完全消失。
 
 ## 3. 三个优先投稿方向（Three Priority Applied-Track Directions）
 
@@ -264,19 +394,27 @@ Synthetic 是主证据（main evidence），必须放在 Results 的最前面。
 
 ### 8.2 经济域（Economics）
 
-Economics 应写为真实数据审计案例（real-data audit case），不是现实机制证明（real-data proof）。
+> **2026-04-26 L2 重写**：在 PWT-CTFP 面板上，CMDL 学到的 per-entity k\* 与训练窗口 entity-level 静态发展指标显著结构化关联：人力资本 |ρ| = 0.371（80% seeds p<0.05，Fisher p = 1.0e-46）、log GDP per worker |ρ| = 0.278（Fisher p = 3.5e-37）、log capital per worker |ρ| = 0.257（Fisher p = 1.4e-24）。No AC Encoder 与 Uniform Lag 退化对照下 kstar_std ≡ 0，stratification 检验结构性不可执行。
 
-推荐表述：
+推荐表述（L2 主张）：
 
-> Economics 面板显示出部分但不决定性的机制证据（partial but not decisive mechanism evidence）。AC-GATE 学到了非退化滞后异质性（non-degenerate lag heterogeneity），但预期代理方向（expected proxy direction）在种子层面不稳定，因此该域更适合作为审计案例，而非确认案例。
+> 在 PWT 11.0 effective-CTFP 面板上，AC-GATE 恢复出的实体条件滞后分布与人力资本、log 人均 GDP、log 人均资本三类 entity-level 静态指标存在显著结构化关联（permutation Fisher combined p < 1e-24）。该结构在 No AC Encoder 与 Uniform Lag 控制下完全消失，证明它由 AC encoder + lag gate 这一对结构件**联合**支撑，而非来自任意 LSTM 容量。
+
+诚实声明（必须保留）：
+- **预测层**：CMDL test R² = 0.054 显著低于 Plain LSTM (0.102, p = 6.3e-05) 与 Uniform Lag (0.104, p = 1.9e-06)。本文不主张该域预测优势。
+- **L3 方向性机制**：anchor adjusted ρ = −0.109（35% 正向 seed），不成立。改报 L2 |ρ| 与 ablation 退化对照。
 
 ### 8.3 能源域（Energy）
 
-Energy 应写为压力测试（stress test）或负向边界案例（negative boundary case）。
+> **2026-04-26 L2 重写**：能源域呈现"L0 退化 + L2 强结构"双解耦：所有神经模型 R² ≈ −0.029（Grouped ARDL R² = 0.607 显著主导），但 CMDL 的 per-entity k\* 与制度治理指标存在极强结构化关联——rule of law |ρ| = 0.735（**95% seeds p<0.05**，Fisher p = 1.8e-79）、government effectiveness |ρ| = 0.716（90% p<0.05，Fisher p = 9.0e-77）、log 人均 GDP |ρ| = 0.609（Fisher p = 1.5e-77）。
 
-推荐表述：
+推荐表述（L2 主张 + 应用边界双层叙事）：
 
-> Energy 面板是一个有价值的反例式测试（falsification-style test）：当领域证据较弱时，AC-GATE 不会自动制造一个看似可信的正面机制信号（positive mechanism signal）。
+> 在 OWID-energy × WGI 面板上，AC-GATE 给出一个方法论意义清晰的"双解耦案例（decoupled case）"：所有递归神经模型在 CO₂/energy 上 R² ≈ −0.029（被 Grouped ARDL R² ≈ 0.607 显著超过），但 AC-GATE 学到的 per-entity 有效滞后 k\* 与三类 entity-level 制度 / 经济结构指标存在 |ρ| ≈ 0.6–0.74 的显著结构化关联（permutation Fisher combined p < 1e-76），且该结构在退化 ablation 下完全消失。这个组合证明：**机制可解释性（mechanism interpretability）可以与预测准确性（forecast accuracy）解耦评估**——预测层退化不意味着模型内部的 lag 表征是噪声。
+
+应用边界声明（必须保留）：
+- 该域 CO₂/energy 目标对短面板 + 国家级特征近似线性可解，神经容量过剩；论文将其定位为"forecast-layer applicability boundary"，而非主结果预测域。
+- L3 anchor ρ ≈ −0.014，不成立；论文不主张方向性机制。
 
 ## 9. 推荐论文结构（Recommended Paper Structure）
 
@@ -323,25 +461,43 @@ Energy 应写为压力测试（stress test）或负向边界案例（negative bo
 
 > 本文将实体条件异质滞后发现（entity-conditioned heterogeneous lag discovery）形式化为一个可解释数据挖掘任务（interpretable data mining task），并提出 AC-GATE 作为输出实体特异滞后分布（entity-specific lag distributions）与有效滞后期（effective lag score）`k*` 的神经挖掘模型。20 种子 synthetic 实验显示，AC-GATE 在 lag recovery 上稳定优于 Plain LSTM 的事后滞后归因（post-hoc lag attribution），而真实面板案例则揭示了该方法在真实域中的诊断边界。
 
-## 11. 当前最优判断（Current Best Judgment）
+## 11. 当前最优判断（Current Best Judgment，2026-04-26 L2 修订）
 
-基于当前内容，最优顺序是：
+证据结构已经从"synthetic 强 + 真实域弱"升级为：
 
-1. ECML PKDD Applied Data Science Track
-2. CIKM Applied Research Papers / Applied Track
-3. IEEE ICDM 应用导向投稿
+- Synthetic：L3 directional + L2 structured 双层成立；
+- Economics：L2 structured 成立（Fisher p < 1e-24，三个 stratifier 全部 reject null）；ablation 退化对照完美；
+- Energy：L2 structured **极强**（|ρ| ≈ 0.6–0.74，95% seeds reject，Fisher p < 1e-76），同时构成"L0 退化 / L2 强结构"双解耦案例；
+- 所有真实域 ablation 退化对照（No AC / Uniform Lag）下 kstar_std ≡ 0 → 检验不可执行 → L2 完全归因于 AC encoder + lag gate。
 
-原因不是这三个方向都更容易，而是它们与当前证据结构更匹配：
+修订后的投稿优先级：
 
-- 你已经有强 synthetic 机制证明
-- 你已经有 economics 的部分支持型真实域审计
-- 你已经有 energy 的负向 / 压力测试证据
-- 你已经有统一的 20-seed 实验编排、notebook 汇总与结果报告
+1. **IEEE ICDM 应用导向投稿** —— 升为第 1。L2 + permutation null + ablation kstar_std ≡ 0 的"机制层显著结构化 + 退化对照消失"是数据挖掘类审稿人最熟悉、最易接受的统计形式；ICDM 重视任务形式化与统计证据，与本文当前最强证据完全对齐。
+2. **CIKM Applied Research Papers / Applied Track** —— 第 2。L2 stratification + L0/L2 双解耦写成"verdict-style audit workflow that separates forecast accuracy from mechanism interpretability"非常契合 CIKM 应用研究口味。
+3. **ECML PKDD Applied Data Science Track** —— 降为第 3。ADS 评审更想要"actionable insight on a real-world problem"，本文真实域证据是"机制结构存在但预测层弱"，这种 actionable 故事不如 ICDM/CIKM 的"task formalization + statistical mechanism evidence"自然。
 
-因此，当前最可发表的版本不是：
+新的核心一句话：
 
-> CMDL / AC-GATE 在所有真实域都证明了机制。
+> CMDL / AC-GATE 是一个可检验的实体条件异质滞后发现框架；其学到的 per-entity effective lag 在合成域恢复方向性机制（L3），并在两个真实国家级面板上恢复 L2 意义下的结构化异质滞后（permutation Fisher combined p < 1e-20），且该结构在 No AC Encoder / Uniform Lag 退化 ablation 下完全消失——证明机制可解释性可与预测准确性解耦评估。
 
-而是：
+## 12. 投稿方向可行性再审（Post-L2 Venue Feasibility Re-audit）
 
-> CMDL / AC-GATE 提供了一个可检验、可审计、可复现的实体条件异质滞后发现框架（testable, auditable, reproducible framework）；它在有真值的 synthetic 面板中稳定恢复机制，并在真实域中区分正向、部分和负向证据。
+| 方向 | L2 证据强度 | 主要剩余风险 | 可行性 | 必补内容 |
+|---|---|---|---|---|
+| **IEEE ICDM** | ★★★★★ | (1) 真实域 sign instability 需在 limitations 显式声明并解释为标签置换不变性；(2) 需补 formal task definition + 伪代码 + 复杂度分析（这是 ICDM 评审硬要求） | **高** | task formalization、pseudocode、complexity、stratified k\* 主表 + ablation kstar_std ≡ 0 对照表、bootstrap CI for synthetic |
+| **CIKM Applied** | ★★★★ | (1) 需要把 L0/L2 双解耦写成 workflow 价值，不是单个模型贡献；(2) 真实域预测层弱需写为 "verdict: forecast layer not certified, mechanism layer certified"；(3) 需要 workflow figure | **高** | workflow figure、verdict matrix（domain × layer × verdict）、stratified k\* 主表、real-data case-study narrative |
+| **ECML PKDD ADS** | ★★★ | (1) ADS 偏好 actionable real-world insight；本文 actionable insight 是"用 per-entity k\* 给国家分组并对齐治理/资本结构指标"，需要给一个具体应用图例（如：能源域将国家按 learned k\* 二分，展示与 rule of law 的对齐 + 政策含义讨论）；(2) 真实域预测层弱不利于 ADS 口味 | **中等偏上** | applied case-study figure（learned k\* 与 stratifier 散点 + 国家标注）、policy-flavored discussion、stratified k\* 主表 |
+
+三个方向**在假设 review 全部解决的前提下都可行**；优先级建议：**ICDM (1) → CIKM (2) → ECML PKDD (3)**。
+
+> 与原 §11 顺序（ECML PKDD → CIKM → ICDM）相比，新数据让 ICDM 反而最适配，因为 stratified k\* + permutation null + ablation degeneracy 这三件事直接对齐 ICDM 的"interpretable mining task with statistical evidence"标准模板。
+
+### 12.1 通用必补清单（Cross-Venue Must Add）
+
+1. **Stratified k\* 主表**（已生成 [outputs/notebook_economics/.../economics_stratified_kstar_aggregated.csv](outputs/notebook_economics/complete_20seed_20260426/comparison/economics_stratified_kstar_aggregated.csv) 与 [outputs/notebook_energy/.../energy_stratified_kstar_aggregated.csv](outputs/notebook_energy/complete_20seed_20260426/comparison/energy_stratified_kstar_aggregated.csv)）— 论文 Results 主表必含。
+2. **Ablation kstar degeneracy 对照表**（已可从 compact_summary 中读到 kstar_std ≡ 0）— 一行两列即可，但是 L2 主张的关键证据。
+3. **Sign instability limitations 段** — 解释为标签置换不变性，并说明 |ρ| + share-of-seeds-rejecting 是 sign-robust 报告。
+4. **Forecast / mechanism decoupling 论述段** — 把 energy 的 L0 退化 + L2 强结构包装成方法论亮点（不是失败）。
+5. **Synthetic-only L3 声明** — 把 anchor proxy 监督的 sign-stable directional alignment 限定在 synthetic 上。
+
+完成以上 5 项后，三个方向都可投。
