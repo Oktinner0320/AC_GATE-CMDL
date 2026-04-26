@@ -70,7 +70,7 @@ All baselines share the same data loader, train/val/test split, optimiser, and 2
 | Ablation: No AC Encoder | `experiments/run_*_ablation.py` (variant `no_ac_encoder`) | This work | ✅ | Removes AC conditioning |
 | Ablation: Uniform Lag | `experiments/run_*_ablation.py` (variant `uniform_lag`) | This work | ✅ | Disables lag gate ($\omega_k = 1/K$) |
 | Ablation: No Recon Reg | `experiments/run_*_ablation.py` (variant `no_recon_regularization`) | This work | ✅ | Sets $\lambda_r = 0$ |
-
+| TFT (Temporal Fusion Transformer) | — | Lim et al. (2021) | ⚪ Reference only | Early experiments with TFT-style gated attention inspired the AC encoder + lag gate design; not included in 20-seed suite due to data scale and focus on interpretability rather than SOTA forecasting |
 
 ---
 
