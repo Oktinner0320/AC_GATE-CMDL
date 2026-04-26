@@ -2,7 +2,7 @@
 
 > A testable framework for **entity-conditioned heterogeneous lag discovery** in panel time series.
 
-This repository contains the reference implementation, baselines, real-data pipelines, ablations and 20-seed locked outputs that back the paper **AC-GATE: Auditing Heterogeneous Delays in Panel Time Series**.
+This repository contains the reference implementation, baselines, real-data pipelines, ablations and 20-seed locked outputs.
 
 ---
 
