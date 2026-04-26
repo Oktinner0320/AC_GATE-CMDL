@@ -72,8 +72,6 @@ All baselines share the same data loader, train/val/test split, optimiser, and 2
 | Ablation: No Recon Reg | `experiments/run_*_ablation.py` (variant `no_recon_regularization`) | This work | ✅ | Sets $\lambda_r = 0$ |
 
 
-**Note on TFT.** The 20-seed locked panels are small (a few thousand observations per domain) and exhibit short time dimensions (≤ 30 years post-window). Under this regime a Transformer-based forecaster offers no expressive advantage over the LSTM backbone; furthermore, TFT assumes a homogeneous lag structure across entities, which is exactly the assumption AC-GATE relaxes. We therefore cite TFT only as a design reference for the gated-residual block (`model/lag_gate.py`) and exclude it from the comparative tables to avoid a selectively unfavourable baseline. A self-implemented TFT runner is **not** maintained in this repository.
-
 ---
 
 ## 5. Hyperparameter Protocol
