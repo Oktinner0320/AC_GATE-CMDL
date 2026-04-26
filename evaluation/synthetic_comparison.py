@@ -7,10 +7,13 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
+
+from evaluation.significance import paired_wilcoxon
 
 
 _ABLATION_LABELS = {
@@ -24,6 +27,7 @@ _BASE_COLUMNS = [
     "display_name",
     "experiment",
     "scenario",
+    "seed",
     "tracking_backend",
     "best_epoch",
     "best_val_task_loss",
@@ -63,16 +67,22 @@ def _display_name(family: str, experiment: str, model: str | None, variant: str 
 
 def _normalize_summary(summary_path: Path, output_root: Path, family: str) -> dict[str, Any]:
     payload = _read_json(summary_path)
+    config = dict(payload.get("config", {}))
     metrics = dict(payload.get("metrics", {}))
     experiment = payload.get("experiment", summary_path.parent.name)
     model = payload.get("model")
     variant = payload.get("variant")
+    seed_match = re.search(r"seed(\d+)", str(experiment)) or re.search(r"seed(\d+)", str(summary_path.parent))
+    seed = config.get("seed")
+    if seed is None and seed_match is not None:
+        seed = int(seed_match.group(1))
 
     row: dict[str, Any] = {
         "family": family,
         "display_name": _display_name(family, experiment, model, variant),
         "experiment": experiment,
         "scenario": payload.get("scenario"),
+        "seed": seed,
         "tracking_backend": payload.get("tracking_backend"),
         "best_epoch": payload.get("best_epoch"),
         "best_val_task_loss": payload.get("best_val_task_loss"),
@@ -223,7 +233,38 @@ def build_identification_table(comparison_frame: pd.DataFrame) -> pd.DataFrame:
     return identification.loc[:, columns].reset_index(drop=True)
 
 
+def build_significance_tables(comparison_frame: pd.DataFrame) -> dict[str, pd.DataFrame]:
+    """Build paired seed-level Wilcoxon tables for synthetic key metrics."""
+
+    if comparison_frame.empty:
+        return {
+            "synthetic_significance_kstar_mae.csv": pd.DataFrame(),
+            "synthetic_significance_task_loss.csv": pd.DataFrame(),
+        }
+    return {
+        "synthetic_significance_kstar_mae.csv": paired_wilcoxon(
+            comparison_frame,
+            metric="effective_kstar_mae",
+            method_col="display_name",
+            seed_col="seed",
+            reference="CMDL",
+            group_cols=["scenario"],
+            greater_is_better=False,
+        ),
+        "synthetic_significance_task_loss.csv": paired_wilcoxon(
+            comparison_frame,
+            metric="task_loss",
+            method_col="display_name",
+            seed_col="seed",
+            reference="CMDL",
+            group_cols=["scenario"],
+            greater_is_better=False,
+        ),
+    }
+
+
 __all__ = [
+    "build_significance_tables",
     "build_identification_table",
     "build_recovery_table",
     "build_synthetic_comparison",

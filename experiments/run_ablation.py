@@ -24,6 +24,7 @@ import torch
 from torch import nn
 
 from config.cmdl_config import CMDLConfig
+from experiments._runtime_meta import attach_runtime_metadata, start_runtime_timer
 from experiments.run_synthetic import (
     ExperimentResult,
     evaluate,
@@ -278,6 +279,7 @@ def run_variant(
     在给定场景和随机种子下运行一个 ablation 变体。
     """
 
+    run_started_at = start_runtime_timer()
     cfg, full_panel, train_panel, val_panel, device = prepare_panels(args, scenario, seed)
     model, effective_lambda_r = build_variant_model(variant, cfg)
     model = model.to(device)
@@ -425,6 +427,7 @@ def run_variant(
         )
         summary["variant"] = variant
         summary["effective_lambda_r"] = float(effective_lambda_r)
+        attach_runtime_metadata(summary, device, started_at=run_started_at)
         save_json(summary_path, summary)
 
         return ExperimentResult(

@@ -9,6 +9,9 @@ Excel 直链，并在本地缓存为 CSV，便于下游 loader 继续使用稳�
 from __future__ import annotations
 
 import argparse
+import datetime as dt
+import hashlib
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -28,6 +31,25 @@ def _looks_like_excel_source(source: str) -> bool:
 
 	normalized = source.lower()
 	return normalized.endswith(".xlsx") or normalized.endswith(".xls") or "datafile/554105" in normalized
+
+
+def _metadata_path(cache_path: Path) -> Path:
+	return cache_path.with_suffix(cache_path.suffix + ".meta.json")
+
+
+def _write_meta(cache_path: Path, source_url: str) -> Path:
+	digest = hashlib.sha256(cache_path.read_bytes()).hexdigest()
+	meta = {
+		"dataset": "Penn World Table",
+		"version": DEFAULT_PWT_VERSION,
+		"source_url": str(source_url),
+		"downloaded_at_utc": dt.datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z"),
+		"sha256": digest,
+		"bytes": cache_path.stat().st_size,
+	}
+	meta_path = _metadata_path(cache_path)
+	meta_path.write_text(json.dumps(meta, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
+	return meta_path
 
 
 def parse_args() -> argparse.Namespace:
@@ -94,11 +116,14 @@ def download_pwt_table(
 
 	destination = Path(output_path).resolve()
 	if destination.exists() and not force:
+		if not _metadata_path(destination).exists():
+			_write_meta(destination, source)
 		return destination
 
 	dataframe = load_pwt_source(source, sheet_name=sheet_name)
 	destination.parent.mkdir(parents=True, exist_ok=True)
 	dataframe.to_csv(destination, index=False)
+	_write_meta(destination, source)
 	return destination
 
 

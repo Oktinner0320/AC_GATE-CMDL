@@ -34,6 +34,7 @@ import torch
 from config.cmdl_config import CMDLConfig
 from data.synthetic.generate import SyntheticPanel, generate_cmdl_synthetic
 from evaluation.kstar_eval import evaluate_kstar, evaluate_omega_distribution, evaluate_z_identification
+from experiments._runtime_meta import attach_runtime_metadata, start_runtime_timer
 from model.cmdl_model import CMDLModel
 from model.loss import DomainAgnosticLoss
 from visualization.kstar_distribution import plot_kstar_scatter
@@ -580,6 +581,7 @@ def run_experiment(
     完成单次 Step 4 实验的训练、评估、可视化与日志记录。
     """
 
+    run_started_at = start_runtime_timer()
     setup = setup_experiment(args, experiment_name, scenario)
     save_json(setup.run_dir / "args.json", vars(args))
 
@@ -715,6 +717,7 @@ def run_experiment(
             best_val_task_loss=best_val_task_loss,
             metrics=final_metrics,
         )
+        attach_runtime_metadata(summary, setup.device, started_at=run_started_at)
         save_json(setup.summary_path, summary)
 
         return ExperimentResult(

@@ -14,6 +14,8 @@ from typing import Any
 
 import pandas as pd
 
+from evaluation.significance import paired_wilcoxon
+
 
 _ABLATION_LABELS = {
     "no_ac_encoder": "No AC Encoder",
@@ -95,6 +97,12 @@ _IDENTITY_COLUMNS = [
     "proxy_design_columns",
     "proxy_latent_std",
     "proxy_target_std",
+    "runtime_device_name",
+    "runtime_cuda_version",
+    "runtime_torch_version",
+    "runtime_python_version",
+    "runtime_os",
+    "runtime_wall_time_seconds",
     "run_dir",
     "output_root",
 ]
@@ -337,6 +345,7 @@ def _normalize_summary(summary_path: Path, output_root: Path, family: str) -> di
     config = dict(payload.get("config", {}))
     data = dict(payload.get("data", {}))
     diagnostics = dict(payload.get("diagnostics", {}))
+    runtime = dict(payload.get("runtime", {}))
     ablation = dict(diagnostics.get("ablation") or {})
     proxy_refit = dict(diagnostics.get("proxy_refit") or {})
     training_controls = dict(diagnostics.get("training_controls") or {})
@@ -419,6 +428,12 @@ def _normalize_summary(summary_path: Path, output_root: Path, family: str) -> di
         "proxy_design_columns": proxy_refit.get("design_columns"),
         "proxy_latent_std": proxy_refit.get("latent_std"),
         "proxy_target_std": proxy_refit.get("proxy_std"),
+        "runtime_device_name": runtime.get("device_name"),
+        "runtime_cuda_version": runtime.get("cuda_version"),
+        "runtime_torch_version": runtime.get("torch_version"),
+        "runtime_python_version": runtime.get("python_version"),
+        "runtime_os": runtime.get("os"),
+        "runtime_wall_time_seconds": runtime.get("wall_time_seconds"),
         "run_dir": str(summary_path.parent),
         "output_root": str(output_root),
     }
@@ -1194,6 +1209,41 @@ def build_mechanism_result_log(comparison_frame: pd.DataFrame, split: str = "tes
     return pd.DataFrame(rows, columns=columns)
 
 
+def build_significance_tables(
+    comparison_frame: pd.DataFrame,
+    split: str = "test",
+    domain_prefix: str = "economics",
+) -> dict[str, pd.DataFrame]:
+    """Build paired seed-level Wilcoxon tables for real-data key metrics."""
+
+    if comparison_frame.empty:
+        return {
+            f"{domain_prefix}_significance_{split}_r2.csv": pd.DataFrame(),
+            f"{domain_prefix}_significance_anchor_adjusted_rho.csv": pd.DataFrame(),
+        }
+    group_cols = [column for column in ["target_column", "feature_bundle"] if column in comparison_frame.columns]
+    return {
+        f"{domain_prefix}_significance_{split}_r2.csv": paired_wilcoxon(
+            comparison_frame,
+            metric=f"{split}_r2",
+            method_col="display_name",
+            seed_col="seed",
+            reference="CMDL",
+            group_cols=group_cols,
+            greater_is_better=True,
+        ),
+        f"{domain_prefix}_significance_anchor_adjusted_rho.csv": paired_wilcoxon(
+            comparison_frame,
+            metric=f"{split}_effective_kstar_proxy_spearman_adjusted_rho",
+            method_col="display_name",
+            seed_col="seed",
+            reference="CMDL",
+            group_cols=group_cols,
+            greater_is_better=True,
+        ),
+    }
+
+
 __all__ = [
     "build_economics_comparison",
     "build_grouped_ardl_lag_trend_table",
@@ -1202,5 +1252,6 @@ __all__ = [
     "build_mechanism_summary_table",
     "build_per_proxy_audit_summary_table",
     "build_per_proxy_alignment_table",
+    "build_significance_tables",
     "build_task_table",
 ]

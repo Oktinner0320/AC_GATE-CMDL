@@ -24,6 +24,7 @@ import torch
 
 from config.cmdl_config import CMDLConfig
 from data.economics.economics_loader import DEFAULT_ECONOMICS_FEATURE_BUNDLE, SUPPORTED_ECONOMICS_FEATURE_BUNDLES
+from experiments._runtime_meta import attach_runtime_metadata, start_runtime_timer
 from experiments.run_ablation import NoACEncoderCMDLModel, UniformLagCMDLModel
 from experiments.run_economics import (
     GRAD_CLIP_MODE_CHOICES,
@@ -186,6 +187,7 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
     训练并评估单个 economics ablation 变体与随机种子。
     """
 
+    run_started_at = start_runtime_timer()
     setup, variant_args, effective_lambda_r, ablation_diagnostics = prepare_variant_setup(
         args=args,
         variant=variant,
@@ -356,6 +358,7 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
         summary["variant"] = variant
         summary["effective_lambda_r"] = float(effective_lambda_r)
         summary.setdefault("diagnostics", {})["ablation"] = dict(ablation_diagnostics)
+        attach_runtime_metadata(summary, setup.device, started_at=run_started_at)
         save_json(setup.summary_path, summary)
         return summary
     finally:

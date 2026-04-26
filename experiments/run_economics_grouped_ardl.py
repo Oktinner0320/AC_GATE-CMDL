@@ -26,6 +26,7 @@ from data.economics.economics_loader import (
     load_economics_panel,
 )
 from evaluation.realdata_diagnostics import proxy_metadata_payload
+from experiments._runtime_meta import attach_runtime_metadata, start_runtime_timer
 
 
 def parse_args() -> argparse.Namespace:
@@ -62,6 +63,7 @@ def _strip_baseline_prefix(metrics: dict[str, float]) -> dict[str, float]:
 
 
 def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
+    run_started_at = start_runtime_timer()
     panel = load_economics_panel(
         csv_path=args.csv_path,
         target_column=args.target_column,
@@ -120,6 +122,7 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
         },
         "metrics": metrics,
     }
+    attach_runtime_metadata(summary, "cpu", started_at=run_started_at)
     run_dir = Path(args.output_dir).resolve() / args.experiment_name
     save_json(run_dir / "args.json", vars(args))
     save_json(run_dir / "summary.json", summary)

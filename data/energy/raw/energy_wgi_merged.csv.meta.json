@@ -1,0 +1,17 @@
+{
+  "dataset": "OWID Energy and World Governance Indicators merged panel",
+  "source_url": "https://raw.githubusercontent.com/owid/energy-data/master/owid-energy-data.csv",
+  "source_urls": {
+    "owid_energy": "https://raw.githubusercontent.com/owid/energy-data/master/owid-energy-data.csv",
+    "governance": {
+      "government_effectiveness": "https://api.worldbank.org/v2/country/all/indicator/GOV_WGI_GE.EST?format=json&source=3",
+      "regulatory_quality": "https://api.worldbank.org/v2/country/all/indicator/GOV_WGI_RQ.EST?format=json&source=3",
+      "rule_of_law": "https://api.worldbank.org/v2/country/all/indicator/GOV_WGI_RL.EST?format=json&source=3"
+    }
+  },
+  "year_start": 1996,
+  "year_end": 2023,
+  "downloaded_at_utc": "2026-04-26T09:45:17.700669Z",
+  "sha256": "ce91491aad9b4645adc7d3df5ed3f40bccfbb1bd9f8c1879cc35bc17211cd1c4",
+  "bytes": 480557
+}

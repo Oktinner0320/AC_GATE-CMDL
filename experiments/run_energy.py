@@ -48,6 +48,7 @@ from data.energy.energy_loader import (
 )
 from evaluation.metrics import compute_mae, compute_mse, compute_r2
 from evaluation.realdata_diagnostics import build_realdata_diagnostics, proxy_metadata_payload
+from experiments._runtime_meta import attach_runtime_metadata, start_runtime_timer
 from model.cmdl_model import CMDLModel
 from model.loss import DomainAgnosticLoss
 
@@ -799,6 +800,7 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
 	完成 energy 现实数据实验的训练、评估、日志与落盘。
 	"""
 
+	run_started_at = start_runtime_timer()
 	setup = setup_experiment(args)
 	save_json(setup.run_dir / "args.json", vars(args))
 
@@ -940,6 +942,7 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
 			test_metrics=test_metrics,
 			proxy_refit_result=proxy_refit_result,
 		)
+		attach_runtime_metadata(summary, setup.device, started_at=run_started_at)
 		save_json(setup.summary_path, summary)
 		return summary
 	finally:

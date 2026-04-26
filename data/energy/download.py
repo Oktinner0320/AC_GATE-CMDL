@@ -9,6 +9,8 @@
 from __future__ import annotations
 
 import argparse
+import datetime as dt
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -31,6 +33,7 @@ DEFAULT_WGI_INDICATORS = {
 }
 _WORLD_BANK_API_ROOT = "https://api.worldbank.org/v2/country/all/indicator"
 _WORLD_BANK_WGI_SOURCE_ID = 3
+_WORLD_BANK_WGI_SOURCE_URL = "https://api.worldbank.org/v2/country/all/indicator/{indicator}?format=json&source=3"
 _DEFAULT_REQUEST_HEADERS = {
 	"User-Agent": "CMDL-Energy-Downloader/1.0",
 	"Accept": "application/json",
@@ -42,6 +45,40 @@ def _looks_like_excel_source(source: str) -> bool:
 
 	normalized = source.lower()
 	return normalized.endswith(".xlsx") or normalized.endswith(".xls")
+
+
+def _metadata_path(cache_path: Path) -> Path:
+	return cache_path.with_suffix(cache_path.suffix + ".meta.json")
+
+
+def _write_meta(
+	cache_path: Path,
+	energy_source: str,
+	governance_source: str | None,
+	year_start: int,
+	year_end: int,
+) -> Path:
+	digest = hashlib.sha256(cache_path.read_bytes()).hexdigest()
+	wgi_sources = {
+		alias: _WORLD_BANK_WGI_SOURCE_URL.format(indicator=indicator)
+		for indicator, alias in DEFAULT_WGI_INDICATORS.items()
+	}
+	meta = {
+		"dataset": "OWID Energy and World Governance Indicators merged panel",
+		"source_url": str(energy_source),
+		"source_urls": {
+			"owid_energy": str(energy_source),
+			"governance": str(governance_source) if governance_source is not None else wgi_sources,
+		},
+		"year_start": int(year_start),
+		"year_end": int(year_end),
+		"downloaded_at_utc": dt.datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z"),
+		"sha256": digest,
+		"bytes": cache_path.stat().st_size,
+	}
+	meta_path = _metadata_path(cache_path)
+	meta_path.write_text(json.dumps(meta, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
+	return meta_path
 
 
 def parse_args() -> argparse.Namespace:
@@ -320,6 +357,8 @@ def download_energy_table(
 
 	destination = Path(output_path).resolve()
 	if destination.exists() and not force:
+		if not _metadata_path(destination).exists():
+			_write_meta(destination, energy_source, governance_source, year_start, year_end)
 		return destination
 
 	energy_frame = load_energy_source(
@@ -350,6 +389,7 @@ def download_energy_table(
 
 	destination.parent.mkdir(parents=True, exist_ok=True)
 	merged_frame.to_csv(destination, index=False)
+	_write_meta(destination, energy_source, governance_source, year_start, year_end)
 	return destination
 
 

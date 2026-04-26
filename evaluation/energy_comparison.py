@@ -18,6 +18,7 @@ from evaluation.economics_comparison import (
     build_mechanism_summary_table as _build_mechanism_summary_table,
     build_per_proxy_audit_summary_table as _build_per_proxy_audit_summary_table,
     build_per_proxy_alignment_table as _build_per_proxy_alignment_table,
+    build_significance_tables as _build_significance_tables,
     build_task_table as _build_task_table,
 )
 
@@ -96,6 +97,12 @@ def build_mechanism_result_log(comparison_frame: pd.DataFrame, split: str = "tes
     return _build_mechanism_result_log(comparison_frame, split=split)
 
 
+def build_significance_tables(comparison_frame: pd.DataFrame, split: str = "test") -> dict[str, pd.DataFrame]:
+    """Build paired seed-level Wilcoxon tables for energy key metrics."""
+
+    return _build_significance_tables(comparison_frame, split=split, domain_prefix="energy")
+
+
 __all__ = [
     "build_energy_comparison",
     "build_grouped_ardl_lag_trend_table",
@@ -104,5 +111,6 @@ __all__ = [
     "build_mechanism_summary_table",
     "build_per_proxy_audit_summary_table",
     "build_per_proxy_alignment_table",
+    "build_significance_tables",
     "build_task_table",
 ]

@@ -31,6 +31,7 @@ from data.energy.energy_loader import (
     DEFAULT_YEAR_START,
     SUPPORTED_ENERGY_FEATURE_BUNDLES,
 )
+from experiments._runtime_meta import attach_runtime_metadata, start_runtime_timer
 from experiments.run_ablation import NoACEncoderCMDLModel, UniformLagCMDLModel
 from experiments.run_energy import (
     GRAD_CLIP_MODE_CHOICES,
@@ -172,6 +173,7 @@ def prepare_variant_setup(
 def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, Any]:
     """Train and evaluate one energy ablation variant for one seed."""
 
+    run_started_at = start_runtime_timer()
     setup, variant_args, effective_lambda_r, ablation_diagnostics = prepare_variant_setup(
         args=args,
         variant=variant,
@@ -340,6 +342,7 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
         summary["variant"] = variant
         summary["effective_lambda_r"] = float(effective_lambda_r)
         summary.setdefault("diagnostics", {})["ablation"] = dict(ablation_diagnostics)
+        attach_runtime_metadata(summary, setup.device, started_at=run_started_at)
         save_json(setup.summary_path, summary)
         return summary
     finally:

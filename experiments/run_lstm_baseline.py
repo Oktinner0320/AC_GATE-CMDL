@@ -30,6 +30,7 @@ from config.cmdl_config import CMDLConfig
 from data.synthetic.generate import SyntheticPanel, generate_cmdl_synthetic
 from evaluation.kstar_eval import evaluate_kstar, evaluate_omega_distribution
 from evaluation.metrics import compute_mae, compute_mse, compute_r2
+from experiments._runtime_meta import attach_runtime_metadata, start_runtime_timer
 from experiments.run_synthetic import (
     finish_mlflow,
     log_mlflow_metrics,
@@ -370,6 +371,7 @@ def run_experiment(
     完成单次 synthetic plain-LSTM baseline 的训练、评估、可视化和日志记录。
     """
 
+    run_started_at = start_runtime_timer()
     setup = setup_experiment(args, experiment_name, scenario)
     save_json(setup.run_dir / "args.json", vars(args))
 
@@ -480,6 +482,7 @@ def run_experiment(
             best_val_task_loss=best_val_task_loss,
             metrics=final_metrics,
         )
+        attach_runtime_metadata(summary, setup.device, started_at=run_started_at)
         save_json(setup.summary_path, summary)
 
         return BaselineExperimentResult(
