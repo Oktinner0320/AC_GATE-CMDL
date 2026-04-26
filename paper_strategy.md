@@ -124,9 +124,9 @@ target = `co2_per_unit_energy`，feature_bundle = `minimal`，n_seeds = 20。
 | #5 数据 .meta.json | ✅ 已完成 | sha256 + URL + UTC |
 | #6 runtime meta | ✅ 已完成 | summary.json 含 GPU/CUDA/wall time |
 | #7 Ablation 结构变更后重设 seed | ✅ **已完成** | [run_economics_ablation.py#L165](experiments/run_economics_ablation.py#L165) 与 [run_energy_ablation.py#L159](experiments/run_energy_ablation.py#L159) 已显式 `set_seed(int(seed))` 在 `build_variant_model` 之前；`matched_init_to_full_cmdl=False` 仍诚实写入 summary.json |
-| #8 README Hyperparameter Protocol + Reproducing 段 | ❌ 未完成 | 不影响 strategy，但投稿前必补 |
-| #9 README 基线表 + TFT 说明 | ❌ 未完成 | TFT 当前未参与 20-seed 套件，须在 readme 显式标注 |
-| #10 `set_seed` 加 `CMDL_DETERMINISTIC` 分支 | ❌ 未完成 | 推荐改 `experiments/run_economics.py` 内 `set_seed`（共享） |
+| #8 README Hyperparameter Protocol + Reproducing 段 | ✅ 已完成 | [readme.md](readme.md) §5 / §6；并新增 [refs.md](refs.md) 集中放置文献引用 |
+| #9 README 基线表 + TFT 说明 | ✅ 已完成 | [readme.md](readme.md) §4 基线表；TFT 已从 baseline 集合移除并降级为"仅作参考"（数据规模不需 Transformer） |
+| #10 `set_seed` 加 `CMDL_DETERMINISTIC` 分支 | ⛔ N/A | 当前训练在 CPU 上完成（无 GPU），cuDNN 确定性开关无意义；CPU LSTM 在固定种子下已是确定性的 |
 | #11 投稿匿名化 | ⏸ 投稿前执行 | Anonymous GitHub 流程 |
 
 ## 1. 论文核心定位（Core Positioning）
