@@ -1,0 +1,6 @@
+target_column,feature_bundle,metric,reference,method,n_pairs,reference_mean,method_mean,mean_diff,median_diff,wilcoxon_statistic,wilcoxon_p,greater_is_better,reference_better_mean
+ctfp,effective_labor_aware,test_r2,CMDL,Grouped ARDL,20,0.05414579722609828,-0.08910696294806322,0.1432527601741615,0.1447294120444464,0.0,1.9073486328125e-06,True,True
+ctfp,effective_labor_aware,test_r2,CMDL,No AC Encoder,20,0.05414579722609828,0.057725277137701855,-0.003579479911603578,0.002316311532083549,101.0,0.8983173370361328,True,False
+ctfp,effective_labor_aware,test_r2,CMDL,No Recon Regularization,20,0.05414579722609828,0.05525867170189134,-0.001112874475793049,0.0009470172668276967,78.0,0.3299827575683594,True,False
+ctfp,effective_labor_aware,test_r2,CMDL,Plain LSTM,20,0.05414579722609828,0.1024200233199964,-0.04827422609389813,-0.041338316185914256,9.0,6.29425048828125e-05,True,False
+ctfp,effective_labor_aware,test_r2,CMDL,Uniform Lag,20,0.05414579722609828,0.10501771399575037,-0.050871916769652116,-0.05605701031713568,13.0,0.0001678466796875,True,False

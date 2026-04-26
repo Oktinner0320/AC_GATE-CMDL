@@ -1,0 +1,7 @@
+display_name,family,variant,target_column,feature_bundle,n_seeds,test_r2_mean,test_r2_std,anchor_adjusted_rho_mean,anchor_positive_seed_share,mean_proxy_adjusted_rho_mean,mean_proxy_positive_seed_share,kstar_std_mean,entropy_mean,lag_gate_sensitivity_range_mean,proxy_signal_r2_mean
+No AC Encoder,ablation,no_ac_encoder,ctfp,effective_labor_aware,20,0.057725277137701855,0.029443838226933857,,,,,0.0,1.8579483397703782,0.0,
+No Recon Regularization,ablation,no_recon_regularization,ctfp,effective_labor_aware,20,0.05525867170189134,0.03293678214680605,0.1637728505512311,0.6,0.3116427741185587,0.7,0.1092029128666679,1.8443850112207183,0.3387750625610352,0.22078877964616747
+Uniform Lag,ablation,uniform_lag,ctfp,effective_labor_aware,20,0.10501771399575037,0.02591319887528205,,,,,0.0,2.302585112404075,0.5046096086502075,0.325478459824602
+CMDL,cmdl,,ctfp,effective_labor_aware,20,0.05414579722609828,0.03732275649988708,-0.10869306317884078,0.35,-0.038753118736253964,0.45,0.16728880060700596,1.852976734801312,0.49912182092666624,0.30519307202047286
+Grouped ARDL,grouped_ardl,,ctfp,effective_labor_aware,20,-0.08910696294806322,0.0,,,,,,,,
+Plain LSTM,plain_lstm,,ctfp,effective_labor_aware,20,0.1024200233199964,0.021352519193636118,-0.017294734488074767,0.25,-0.11703983048425366,0.05,1.8942366941108073,1.8726283457911408,,
