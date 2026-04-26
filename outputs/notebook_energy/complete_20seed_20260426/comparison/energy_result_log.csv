@@ -1,0 +1,7 @@
+layer,question,answer,evidence
+forecast_calibration,Does CMDL beat the matched LSTM?,yes,"mean CMDL test_r2=-0.028567153527486667, mean Plain LSTM test_r2=-0.028771130809167506."
+simple_baseline_calibration,Is CMDL above the simple calibrated baselines?,no,"delta_vs_persistence=-0.7874062086548632, delta_vs_panel_ols=-0.661426980987751, delta_vs_grouped_ardl=-0.6356451310348203."
+ac_gate_mechanism,Does the anchor-adjusted lag-proxy direction support the expected sign?,partial,"CMDL mean adjusted rho=-0.014338563591048481, positive_seed_share=0.5; positive means the expected anchor sign is satisfied."
+ac_gate_per_proxy,Are all named proxy adjusted correlations aligned?,no,"candidate_positive_proxies=0/3, min_adjusted_rho_mean=-0.022257868444112726, min_positive_seed_share=0.45."
+ac_gate_heterogeneity,Is the learned lag gate non-degenerate?,yes,"lag_gate_sensitivity_range=0.2690467834472656, z_std=0.17308134897207664."
+ablation_guard,Do degenerate controls expose the heterogeneity boundary?,yes,"No AC kstar_std=0.0, Uniform Lag top1_share=1.0."
