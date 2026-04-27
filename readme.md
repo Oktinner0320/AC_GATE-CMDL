@@ -175,14 +175,40 @@ These weights aggregate past inputs into a per-entity context vector:
 
 $$c_{i,t} = \sum_{k=1}^{K} \omega_{i,k} \, X_{i,t-k}$$
 
-An LSTM backbone processes the concatenation of $c_{i,t}$, entity embedding, static features, and cross-sectional context to predict $\hat{Y}_{i,t+1}$. Training minimises:
+An LSTM backbone then processes the lag-context stream together with learned entity effects, static features, and optional macro controls to predict $\hat{Y}_{i,t+1}$. In the implementation, $z_i$ also initializes the recurrent state, while the current-step raw input is intentionally excluded from the fused backbone input to avoid a shortcut path. Training minimises:
 
 $$\mathcal{L} = \mathcal{L}_\mathrm{task} + \lambda_r \mathcal{L}_\mathrm{recon}$$
 
-where $\mathcal{L}_\mathrm{recon}$ is a proxy-reconstruction MSE that anchors $z_i$ to the input proxies.
+where $\mathcal{L}_\mathrm{recon}$ is the proxy-reconstruction term that anchors $z_i$ to the input proxies.
 The interpretable byproduct is the **per-entity effective lag**, computed at inference:
 
 $$k_i^* = \sum_{k} k \, \omega_{i,k}$$
+
+### Symbol guide
+
+| Symbol | Meaning in AC-GATE | Code-level interpretation |
+|---|---|---|
+| $p_i$ | Entity-level proxy vector used to characterize absorptive capacity | Input to `AdaptiveACEncoder`; shape `[B, M]` where `M = n_proxies` |
+| $z_i$ | Scalar absorptive-capacity score for entity $i$ | Output of the encoder latent head; conditions the lag gate and is also projected into the LSTM initial state |
+| $g_\theta(\cdot)$ | Learned scalar-to-logit mapping from $z_i$ to lag scores | Implemented by the scalar GRN inside `ScaleInvariantLagGate` |
+| $k$ | Lag index | Integer lag position, `1, ..., K` |
+| $K$ | Maximum lag horizon | `max_lag` in `CMDLConfig`; also the length of $\omega_i$ |
+| $\lambda$ | Relative-position bias strength in the lag gate | Corresponds to `lag_bias_strength`; penalizes farther lags before normalization |
+| $\tau$ | Temperature controlling the sharpness of the lag distribution | Corresponds to `temperature`; smaller values make $\omega_i$ sharper |
+| $\omega_{i,k}$ | Normalized weight assigned to lag $k$ for entity $i$ | A probability simplex output over the `K` lags; locked runs use `softmax`, while code also retains optional `sparsemax` |
+| $X_{i,t-k}$ | Sequential input observed $k$ steps before time $t$ | In implementation this is first projected to `d_model`, then assembled into lag windows |
+| $c_{i,t}$ | Lag-weighted context vector for entity $i$ at time $t$ | Weighted sum of the `K` lagged windows; this is the main temporal signal consumed by the backbone |
+| $\mathrm{emb}_i$ | Learned entity embedding | Lookup embedding representing persistent entity-specific effects |
+| $s_i$ | Static entity features | Time-invariant covariates provided to the backbone for every valid step |
+| Cross-sectional context | Optional time-varying macro controls aligned with each valid time step | `macro_controls`; currently summarized and projected before fusion |
+| $\mathcal{L}_\mathrm{task}$ | Main forecasting objective | MSE between predicted and true targets on valid post-warmup steps |
+| $\mathcal{L}_\mathrm{recon}$ | Proxy reconstruction regularizer | Reconstruction term between the original proxies $p_i$ and reconstructed proxies $\hat{p}_i$; in locked runs this is standard MSE for synthetic/energy and anchor-weighted MSE for economics |
+| $\lambda_r$ | Weight on the reconstruction term | `lambda_r` in `CMDLConfig` and `DomainAgnosticLoss` |
+| $k_i^*$ | Effective lag for entity $i$ | Expected lag $\sum_k k\omega_{i,k}$; because $\omega_i$ depends only on $z_i$, it is constant across time for a fixed entity within one trained model |
+
+The two lambda symbols play different roles: $\lambda$ in the first equation is the lag-bias coefficient, while $\lambda_r$ in the loss is the reconstruction-loss weight.
+
+The repository also exposes optional $\omega$-entropy and $z$-anchor penalties, but they are set to zero in the locked 20-seed runs, so the effective objective used for the paper reduces to the form above.
 
 ---
 
