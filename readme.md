@@ -208,7 +208,7 @@ $$k_i^* = \sum_{k} k \, \omega_{i,k}$$
 
 The two lambda symbols play different roles: $\lambda$ in the first equation is the lag-bias coefficient, while $\lambda_r$ in the loss is the reconstruction-loss weight.
 
-The repository also exposes optional $\omega$-entropy and $z$-anchor penalties, but they are set to zero in the locked 20-seed runs, so the effective objective used for the paper reduces to the form above.
+Optional $\omega$-entropy and $z$-anchor penalties, but they are set to zero in the locked 20-seed runs, so the effective objective used for the paper reduces to the form above.
 
 ---
 
