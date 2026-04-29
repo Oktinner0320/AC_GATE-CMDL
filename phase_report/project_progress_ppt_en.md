@@ -104,3 +104,9 @@ Reference tables:
 - Mixed: real-data directional proxy alignment across random seeds
 - Not claimed: CMDL as a universal forecasting SOTA model
 - Next step: write the paper around lag audit, mechanism evidence, and honest boundaries
+
+## Slide 9: Next Steps and Questions
+
+- We have two workflows: (1) review -> RQ paper writing, and (2) mechanism implementation
+- For (1), we will finish reading the 24 papers and write a review paper for RQ
+- For (2), Could I also write a conference paper on the mechanism discovery and lag audit results?
