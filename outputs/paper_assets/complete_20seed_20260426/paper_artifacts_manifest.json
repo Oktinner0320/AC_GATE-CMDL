@@ -18,7 +18,8 @@
   },
   "figures": {
     "workflow_overview.png": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\figures\\workflow_overview.png",
-    "synthetic_kstar_mae_seed_distribution.png": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\figures\\synthetic_kstar_mae_seed_distribution.png",
+    "synthetic_kstar_mae_seed_distribution_linear.png": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\figures\\synthetic_kstar_mae_seed_distribution_linear.png",
+    "synthetic_kstar_mae_seed_distribution_nonlinear.png": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\figures\\synthetic_kstar_mae_seed_distribution_nonlinear.png",
     "economics_forecast_seed_distribution.png": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\figures\\economics_forecast_seed_distribution.png",
     "energy_forecast_seed_distribution.png": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\figures\\energy_forecast_seed_distribution.png",
     "economics_structured_mechanism_seed_distribution.png": "c:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\figures\\economics_structured_mechanism_seed_distribution.png",

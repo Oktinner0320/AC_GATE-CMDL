@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -575,6 +576,12 @@ def _build_case_study_frame(
 
 
 def _write_tables(tables: dict[str, pd.DataFrame], output_dir: Path) -> dict[str, Path]:
+    if output_dir.exists():
+        for child in output_dir.iterdir():
+            if child.is_dir():
+                shutil.rmtree(child)
+            else:
+                child.unlink()
     output_dir.mkdir(parents=True, exist_ok=True)
     table_paths: dict[str, Path] = {}
     for name, frame in tables.items():
@@ -596,6 +603,12 @@ def _generate_figures(
     energy_case_study: pd.DataFrame,
     energy_case_meta: dict[str, Any],
 ) -> dict[str, Path]:
+    if output_dir.exists():
+        for child in output_dir.iterdir():
+            if child.is_dir():
+                shutil.rmtree(child)
+            else:
+                child.unlink()
     output_dir.mkdir(parents=True, exist_ok=True)
     figure_paths: dict[str, Path] = {}
 
@@ -607,17 +620,22 @@ def _generate_figures(
         for method in ["CMDL", "No Recon Regularization", "Plain LSTM", "No AC Encoder", "Uniform Lag"]
         if method in synthetic_frame["display_name"].dropna().unique().tolist()
     ]
-    figure_paths["synthetic_kstar_mae_seed_distribution.png"] = output_dir / "synthetic_kstar_mae_seed_distribution.png"
-    plt.close(plot_seed_distribution(
-        synthetic_frame,
-        value_col="effective_kstar_mae",
-        category_col="display_name",
-        facet_col="scenario",
-        order=synthetic_order,
-        title="Synthetic Seed Distribution: k* MAE",
-        ylabel="k* MAE",
-        save_path=figure_paths["synthetic_kstar_mae_seed_distribution.png"],
-    ))
+    for scenario_name in ("linear", "nonlinear"):
+        scenario_frame = synthetic_frame.loc[synthetic_frame["scenario"] == scenario_name].copy()
+        if scenario_frame.empty:
+            continue
+        file_name = f"synthetic_kstar_mae_seed_distribution_{scenario_name}.png"
+        figure_paths[file_name] = output_dir / file_name
+        plt.close(plot_seed_distribution(
+            scenario_frame,
+            value_col="effective_kstar_mae",
+            category_col="display_name",
+            order=synthetic_order,
+            title=f"Synthetic Seed Distribution: k* MAE ({scenario_name})",
+            ylabel="k* MAE",
+            save_path=figure_paths[file_name],
+            figsize=(6.2, 4.8),
+        ))
 
     realdata_order = [
         method

@@ -24,35 +24,35 @@ def _finalize_figure(fig: plt.Figure, save_path: str | Path | None) -> plt.Figur
 def plot_workflow_overview(save_path: str | Path | None = None) -> plt.Figure:
     """Render the reporting workflow used by the venue-specific paper variants."""
 
-    fig, ax = plt.subplots(figsize=(14, 4.6))
+    fig, ax = plt.subplots(figsize=(6.4, 10.2))
     ax.axis("off")
 
     boxes = [
-        (0.04, "Data and Splits", "balanced panel\ntrain/val/test windows\nproxy metadata"),
-        (0.25, "CMDL and Baselines", "CMDL\nPlain LSTM\nGrouped ARDL\nablations"),
-        (0.46, "Diagnostics", "significance\nstratified k*\nablation guard\nseed stability"),
-        (0.67, "Paper Artifacts", "main tables\nCI summaries\nverdict matrix\ncase-study sources"),
-        (0.88, "Venue Packaging", "ICDM formalization\nCIKM workflow framing\nECML case-study framing"),
+        (0.86, "Data and Splits", "balanced panel\ntrain/val/test windows\nproxy metadata"),
+        (0.68, "CMDL and Baselines", "CMDL\nPlain LSTM\nGrouped ARDL\nablations"),
+        (0.50, "Diagnostics", "significance\nstratified k*\nablation guard\nseed stability"),
+        (0.32, "Paper Artifacts", "main tables\nCI summaries\nverdict matrix\ncase-study sources"),
+        (0.14, "Venue Packaging", "ICDM formalization\nCIKM workflow framing\nECML case-study framing"),
     ]
 
-    for x_pos, title, body in boxes:
+    for y_pos, title, body in boxes:
         patch = FancyBboxPatch(
-            (x_pos - 0.085, 0.2),
-            0.17,
-            0.55,
+            (0.17, y_pos - 0.065),
+            0.66,
+            0.11,
             boxstyle="round,pad=0.02,rounding_size=0.03",
             linewidth=1.4,
             edgecolor="#1F3A5F",
             facecolor="#F4F7FB",
         )
         ax.add_patch(patch)
-        ax.text(x_pos, 0.63, title, ha="center", va="center", fontsize=12, fontweight="bold", color="#1F3A5F")
-        ax.text(x_pos, 0.43, body, ha="center", va="center", fontsize=10, color="#22313F")
+        ax.text(0.50, y_pos + 0.022, title, ha="center", va="center", fontsize=13, fontweight="bold", color="#1F3A5F")
+        ax.text(0.50, y_pos - 0.020, body, ha="center", va="center", fontsize=10.5, color="#22313F")
 
-    for left, right in zip(boxes[:-1], boxes[1:]):
+    for upper, lower in zip(boxes[:-1], boxes[1:]):
         arrow = FancyArrowPatch(
-            (left[0] + 0.095, 0.475),
-            (right[0] - 0.095, 0.475),
+            (0.50, upper[0] - 0.075),
+            (0.50, lower[0] + 0.055),
             arrowstyle="-|>",
             mutation_scale=18,
             linewidth=1.6,
@@ -75,6 +75,7 @@ def plot_seed_distribution(
     order: Sequence[str] | None = None,
     palette: str = "Set2",
     rotate_labels: bool = True,
+    figsize: tuple[float, float] | None = None,
 ) -> plt.Figure:
     """Draw box-and-strip seed distributions, optionally faceted by one column."""
 
@@ -95,7 +96,8 @@ def plot_seed_distribution(
     if facet_col is not None and facet_col in plot_frame.columns:
         facet_values = [value for value in plot_frame[facet_col].dropna().unique().tolist()]
         n_panels = max(1, len(facet_values))
-        fig, axes = plt.subplots(1, n_panels, figsize=(6.3 * n_panels, 5.2), sharey=True)
+        figure_size = figsize if figsize is not None else (6.3 * n_panels, 5.2)
+        fig, axes = plt.subplots(1, n_panels, figsize=figure_size, sharey=True)
         axes_array = np.atleast_1d(axes)
         for axis, facet_value in zip(axes_array, facet_values):
             facet_frame = plot_frame.loc[plot_frame[facet_col] == facet_value].copy()
@@ -129,7 +131,8 @@ def plot_seed_distribution(
             if rotate_labels:
                 axis.tick_params(axis="x", rotation=20)
     else:
-        fig, axis = plt.subplots(figsize=(8.6, 5.2))
+        figure_size = figsize if figsize is not None else (8.6, 5.2)
+        fig, axis = plt.subplots(figsize=figure_size)
         sns.boxplot(
             data=plot_frame,
             x=category_col,
