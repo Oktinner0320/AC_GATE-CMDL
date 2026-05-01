@@ -30,7 +30,6 @@
 | `akram2020energy` | Akram, R., Chen, F., Khalid, F., Ye, Z., & Majeed, M. T. (2020). Heterogeneous effects of energy efficiency and renewable energy on carbon emissions: Evidence from developing countries. *Journal of Cleaner Production*, 247, 119122. | 能源域 Panel NARDL 变量构造对标 |
 | `mirziyoyeva2022re` | Mirziyoyeva, Z., & Salahodjaev, R. (2022). Renewable energy and CO₂ emissions intensity in the top carbon intense countries. *Renewable Energy*, 192, 507–512. | 能源域直接竞品 |
 | `appiah2023renewable` | Appiah-Otoo, I., Acheampong, A. O., Song, N., & Obeng, C. K. (2023). Modelling the impact of renewable energy investment on global CO₂ emissions. *Energy Reports*, 9, 5159–5170. | 能源域实证设计参考 |
-| `sheng2025capital` | Sheng, Y. (2025). Technological change, capital deepening, and agricultural TFP growth: cross-country evidence. *Applied Economic Perspectives and Policy*. | 经济域 capital deepening → TFP 假说 |
 | `kaufmann2010wgi` | Kaufmann, D., Kraay, A., & Mastruzzi, M. (2010). The Worldwide Governance Indicators: Methodology and Analytical Issues. *World Bank Policy Research Working Paper 5430*. | WGI 治理指标方法论；能源域 stratifier 的官方文档 |
 
 > Medina & Schneider (2018) 与 Elgin et al. (2021) 等影子经济文献保留在 `plan.md` 历史记录中；当前 20-seed 实验体系并未启用影子经济域，故未列入本表。如后续重启该域，请补回。
