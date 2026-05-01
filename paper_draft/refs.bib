@@ -1,0 +1,217 @@
+@article{lim2021tft,
+title = {Temporal Fusion Transformers for interpretable multi-horizon time series forecasting},
+journal = {International Journal of Forecasting},
+volume = {37},
+number = {4},
+pages = {1748-1764},
+year = {2021},
+issn = {0169-2070},
+doi = {https://doi.org/10.1016/j.ijforecast.2021.03.012},
+url = {https://www.sciencedirect.com/science/article/pii/S0169207021000637},
+author = {Bryan Lim and Sercan Ö. Arık and Nicolas Loeff and Tomas Pfister},
+keywords = {Deep learning, Interpretability, Time series, Multi-horizon forecasting, Attention mechanisms, Explainable AI},
+abstract = {Multi-horizon forecasting often contains a complex mix of inputs – including static (i.e. time-invariant) covariates, known future inputs, and other exogenous time series that are only observed in the past – without any prior information on how they interact with the target. Several deep learning methods have been proposed, but they are typically ‘black-box’ models that do not shed light on how they use the full range of inputs present in practical scenarios. In this paper, we introduce the Temporal Fusion Transformer (TFT) – a novel attention-based architecture that combines high-performance multi-horizon forecasting with interpretable insights into temporal dynamics. To learn temporal relationships at different scales, TFT uses recurrent layers for local processing and interpretable self-attention layers for long-term dependencies. TFT utilizes specialized components to select relevant features and a series of gating layers to suppress unnecessary components, enabling high performance in a wide range of scenarios. On a variety of real-world datasets, we demonstrate significant performance improvements over existing benchmarks, and highlight three practical interpretability use cases of TFT.}
+}
+
+
+@article{xue2020gated, 
+title={Not All Attention Is Needed: Gated Attention Network for Sequence Data}, 
+volume={34}, 
+url={https://ojs.aaai.org/index.php/AAAI/article/view/6129}, 
+DOI={10.1609/aaai.v34i04.6129}, 
+abstractNote={&lt;p&gt;Although deep neural networks generally have fixed network structures, the concept of dynamic mechanism has drawn more and more attention in recent years. Attention mechanisms compute input-dependent dynamic attention weights for aggregating a sequence of hidden states. Dynamic network configuration in convolutional neural networks (CNNs) selectively activates only part of the network at a time for different inputs. In this paper, we combine the two dynamic mechanisms for text classification tasks. Traditional attention mechanisms attend to the whole sequence of hidden states for an input sentence, while in most cases not all attention is needed especially for long sequences. We propose a novel method called Gated Attention Network (GA-Net) to dynamically select a subset of elements to attend to using an auxiliary network, and compute attention weights to aggregate the selected elements. It avoids a significant amount of unnecessary computation on unattended elements, and allows the model to pay attention to important parts of the sequence. Experiments in various datasets show that the proposed method achieves better performance compared with all baseline models with global or local attention while requiring less computation and achieving better interpretability. It is also promising to extend the idea to more complex attention-based models, such as transformers and seq-to-seq models.&lt;/p&gt;}, 
+number={04}, 
+journal={Proceedings of the AAAI Conference on Artificial Intelligence}, 
+author={Xue, Lanqing and Li, Xiaopeng and Zhang, Nevin L.}, 
+year={2020}, 
+month={Apr.}, 
+pages={6550-6557} 
+}
+
+@misc{yang2020panelnn,
+      title={Interpretable Neural Networks for Panel Data Analysis in Economics}, 
+      author={Yucheng Yang and Zhong Zheng and Weinan E},
+      year={2020},
+      eprint={2010.05311},
+      archivePrefix={arXiv},
+      primaryClass={econ.EM},
+      url={https://arxiv.org/abs/2010.05311}, 
+}
+
+@misc{chronopoulos2023dnnpanel,
+      title={Deep Neural Network Estimation in Panel Data Models}, 
+      author={Ilias Chronopoulos and Katerina Chrysikou and George Kapetanios and James Mitchell and Aristeidis Raftapostolos},
+      year={2023},
+      eprint={2305.19921},
+      archivePrefix={arXiv},
+      primaryClass={econ.EM},
+      url={https://arxiv.org/abs/2305.19921}, 
+}
+
+@article{pesaran1995pmg,
+title = {Estimating long-run relationships from dynamic heterogeneous panels},
+journal = {Journal of Econometrics},
+volume = {68},
+number = {1},
+pages = {79-113},
+year = {1995},
+issn = {0304-4076},
+doi = {https://doi.org/10.1016/0304-4076(94)01644-F},
+url = {https://www.sciencedirect.com/science/article/pii/030440769401644F},
+author = {M.Hashem Pesaran and Ron Smith},
+keywords = {Dynamic panels, Parameter heterogeneity, Data fields, Sectoral employment equations},
+abstract = {In panel data four procedures are widely used: pooling, aggregating, averaging group estimates, and cross-section regression. In the static case, if the coefficients differ randomly, all four procedures give unbiased estimates of coefficient means. In the dynamic case, when the coefficients differ across groups, pooling and aggregating give inconsistent and potentially highly misleading estimates of the coefficients, though the cross-section can provide consistent estimates of the long-run effects. The theoretical results on the properties of the four procedures are illustrated by UK labour demand functions for 38 industries over 30 years.}
+}
+
+@misc{babii2021mlpanel,
+      title={Machine Learning Panel Data Regressions with Heavy-tailed Dependent Data: Theory and Application}, 
+      author={Andrii Babii and Ryan T. Ball and Eric Ghysels and Jonas Striaukas},
+      year={2021},
+      eprint={2008.03600},
+      archivePrefix={arXiv},
+      primaryClass={econ.EM},
+      url={https://arxiv.org/abs/2008.03600}, 
+}
+
+@misc{zhou2025codeal,
+      title={Covariate-Adjusted Deep Causal Learning for Heterogeneous Panel Data Models}, 
+      author={Guanhao Zhou and Yuefeng Han and Xiufan Yu},
+      year={2025},
+      eprint={2505.20536},
+      archivePrefix={arXiv},
+      primaryClass={stat.ML},
+      url={https://arxiv.org/abs/2505.20536}, 
+}
+
+@article{cerqua2025mlpanel,
+author = {Cerqua, Augusto and Letta, Marco and Pinto, Gabriele},
+title = {On the (Mis)Use of Machine Learning With Panel Data},
+journal = {Oxford Bulletin of Economics and Statistics},
+volume = {n/a},
+number = {n/a},
+pages = {},
+keywords = {data leakage, machine learning, panel data, prediction policy problems},
+doi = {https://doi.org/10.1111/obes.70019},
+url = {https://onlinelibrary.wiley.com/doi/abs/10.1111/obes.70019},
+eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1111/obes.70019},
+abstract = {ABSTRACT We provide the first systematic assessment of data leakage issues in the use of machine learning on panel data. Our organising framework clarifies why neglecting the cross-sectional and longitudinal structure of these data leads to hard-to-detect data leakage, inflated out-of-sample performance, and an inadvertent overestimation of the real-world usefulness and applicability of machine learning models. We then offer empirical guidelines for practitioners to ensure the correct implementation of supervised machine learning in panel data environments. An empirical application, using data from over 3000 U.S. counties spanning 2000 to 2019 and focused on income prediction, illustrates the practical relevance of these points across nearly 500 models for both classification and regression tasks.}
+}
+
+@article{thayasivam2025panelsurvey,
+author = {Thayasivam, Uthayasanker and Johnson, Shabthana and Balabavan, Kajaani and Uthayakumar, Sathurgini},
+title = {A comprehensive survey on statistical and deep learning models for panel data analysis: A comprehensive survey on statistical and deep learning...},
+year = {2025},
+issue_date = {Dec 2025},
+publisher = {Springer-Verlag},
+address = {Berlin, Heidelberg},
+volume = {67},
+number = {12},
+issn = {0219-1377},
+url = {https://doi.org/10.1007/s10115-025-02607-y},
+doi = {10.1007/s10115-025-02607-y},
+abstract = {Panel time-series data, characterized by observations across multiple entities over time, have become essential in various fields such as economics, finance, and healthcare. Traditional statistical models such as Fixed and Random Effects have long been used to analyze panel data, addressing key challenges such as heterogeneity, endogeneity, and cross-sectional dependence. However, recent advancements in deep learning models, including Long Short-Term Memory (LSTM), Gated Recurrent Units (GRU), and Temporal Fusion Transformers (TFT), offer new capabilities for capturing complex temporal and cross-sectional relationships. To the best of our knowledge, this is the first paper that surveys both statistical and deep learning models in panel data analysis. This survey provides a comprehensive comparison of these models, highlighting their respective strengths and weaknesses, with deep learning models excelling in handling nonlinear relationships, high-dimensional datasets, and time-varying effects. The paper also identifies key challenges in panel data forecasting and proposes future research directions, including hybrid modeling approaches and improvements in model interpretability. This work serves as a valuable guide for researchers and practitioners aiming to enhance forecasting accuracy in panel data applications.},
+journal = {Knowl. Inf. Syst.},
+month = oct,
+pages = {11359–11379},
+numpages = {21},
+keywords = {Panel time series, Statistical models, Deep learning, Cross-sectional dependence, Non-stationarity}
+}
+
+
+@article{cohen1990absorptive,
+ ISSN = {00018392},
+ URL = {http://www.jstor.org/stable/2393553},
+ abstract = {In this paper, we argue that the ability of a firm to recognize the value of new, external information, assimilate it, and apply it to commercial ends is critical to its innovative capabilities. We label this capability a firm's absorptive capacity and suggest that it is largely a function of the firm's level of prior related knowledge. The discussion focuses first on the cognitive basis for an individual's absorptive capacity including, in particular, prior related knowledge and diversity of background. We then characterize the factors that influence absorptive capacity at the organizational level, how an organization's absorptive capacity differs from that of its individual members, and the role of diversity of expertise within an organization. We argue that the development of absorptive capacity, and, in turn, innovative performance are history- or path-dependent and argue how lack of investment in an area of expertise early on may foreclose the future development of a technical capability in that area. We formulate a model of firm investment in research and development (R&D), in which R&D contributes to a firm's absorptive capacity, and test predictions relating a firm's investment in R&D to the knowledge underlying technical change within an industry. Discussion focuses on the implications of absorptive capacity for the analysis of other related innovative activities, including basic research, the adoption and diffusion of innovations, and decisions to participate in cooperative R&D ventures.},
+ author = {Wesley M. Cohen and Daniel A. Levinthal},
+ journal = {Administrative Science Quarterly},
+ number = {1},
+ pages = {128--152},
+ publisher = {[Sage Publications, Inc., Johnson Graduate School of Management, Cornell University]},
+ title = {Absorptive Capacity: A New Perspective on Learning and Innovation},
+ urldate = {2026-05-01},
+ volume = {35},
+ year = {1990}
+}
+
+@article{schweikl2020lessons,
+  title={Lessons from three decades of IT productivity research: towards a better understanding of IT-induced productivity effects: S. Schweikl, R. Obermaier},
+  author={Schweikl, Stefan and Obermaier, Robert},
+  journal={Management review quarterly},
+  volume={70},
+  number={4},
+  pages={461--507},
+  year={2020},
+  publisher={Springer},
+  doi={10.1007/s11301-019-00173-6},
+  url={https://doi.org/10.1007/s11301-019-00173-6}
+}
+
+
+@article{feenstra2015pwt,
+Author = {Feenstra, Robert C. and Inklaar, Robert and Timmer, Marcel P.},
+Title = {The Next Generation of the Penn World Table},
+Journal = {American Economic Review},
+Volume = {105},
+Number = {10},
+Year = {2015},
+Month = {October},
+Pages = {3150–82},
+DOI = {10.1257/aer.20130954},
+URL = {https://www.aeaweb.org/articles?id=10.1257/aer.20130954}
+}
+
+@article{akram2020energy,
+title = {Heterogeneous effects of energy efficiency and renewable energy on carbon emissions: Evidence from developing countries},
+journal = {Journal of Cleaner Production},
+volume = {247},
+pages = {119122},
+year = {2020},
+issn = {0959-6526},
+doi = {https://doi.org/10.1016/j.jclepro.2019.119122},
+url = {https://www.sciencedirect.com/science/article/pii/S0959652619339927},
+author = {Rabia Akram and Fuzhong Chen and Fahad Khalid and Zhiwei Ye and Muhammad Tariq Majeed},
+keywords = {Energy efficiency, Environment kuznets curve, Fixed effect panel quantile regression},
+abstract = {The adoption of energy-efficient and clean energy resources is crucial in reducing greenhouse gas emissions. The study analyzes the heterogeneous effects of energy efficiency (EE), renewable energy (RE), and other variables on carbon emissions within the context of the environment Kuznets curve (EKC) hypothesis in 66 developing countries from 1990 to 2014. This study incorporates the role of EE in the construction of the EKC hypothesis, which has been neglected in the previous literature. By using panel ordinary least squares and fixed-effect panel quantile regression (PQR), we find that the impact of the decisive factors of CO2 emissions are heterogeneous across different quantiles. Specifically, EE reduces CO2 emissions across all quantiles, but the mitigation effect is strongest at the 90th quantile. RE reduces CO2 emissions and shows a substantial effect at the 10th quantile. Nuclear energy consumption reduces CO2 emissions but significantly influences carbon emissions only at the 50th quantile. GDP (Y) increases CO2 emissions, but the escalating effect of Y increases at the upper quantiles. The squared of GDP (Y2) reduces CO2 emissions and shows the strongest mitigation effect at the upper quantiles. The quantile coefficients of Y and Y2 are significantly positive and negative, respectively, thereby verifying the existence of the EKC hypothesis in developing countries. In sum, EE and RE contribute to reducing carbon emissions in developing countries. These results also verify EE as an essential factor in the formation of the EKC hypothesis in developing countries and offer some important recommendations for designing and implementing appropriate economic and energy policies to achieve environment sustainability in these countries.}
+}
+
+@article{mirziyoyeva2022re,
+title = {Renewable energy and CO2 emissions intensity in the top carbon intense countries},
+journal = {Renewable Energy},
+volume = {192},
+pages = {507-512},
+year = {2022},
+issn = {0960-1481},
+doi = {https://doi.org/10.1016/j.renene.2022.04.137},
+url = {https://www.sciencedirect.com/science/article/pii/S096014812200605X},
+author = {Ziroat Mirziyoyeva and Raufhon Salahodjaev},
+keywords = {Renewable energy, CO emissions, Carbon intensity},
+abstract = {This study employed panel data techniques to explore the relationship between renewable energy and CO2 emissions intensity in the top carbon intense countries over the period 2000–2015. The results based on fixed effects regression and two-step GMM estimator show that renewable energy has significant negative effect on CO2 emissions. The estimates suggest that a percentage increase in renewable energy consumption leads to a decrease of 0.98% in CO2 emissions. GDP per capita has negative impact on carbon emissions. A 1% increase in GDP per capita leads to 0.21% decrease in CO2 emissions. We also find that increase in the share of women in parliament has positive effect on environmental quality.}
+}
+
+@article{appiah2023renewable,
+title = {Modelling the impact of renewable energy investment on global carbon dioxide emissions},
+journal = {Energy Reports},
+volume = {10},
+pages = {3787-3799},
+year = {2023},
+issn = {2352-4847},
+doi = {https://doi.org/10.1016/j.egyr.2023.10.043},
+url = {https://www.sciencedirect.com/science/article/pii/S2352484723014749},
+author = {Isaac Appiah-Otoo and Xudong Chen and Matthew Biniyam Kursah},
+keywords = {Renewable energy investment, Carbon emissions, Environmental sustainability},
+abstract = {The adversities of climate change facing the world highlight the importance of reducing the rise of global carbon emissions (CO2E), which is a top priority for policymakers and researchers. Renewable energy is hailed as a remedy to the rise in global CO2E. However, there are persistently low levels of global renewable energy investment (REI). This study, therefore, examines the linear and non-linear effect of REI (measured by solar, wind, small hydropower, geothermal, biomass, marine, and biofuel energy investment) on CO2E using a global dataset from 2004Q1 to 2018Q1. The study also examines the economic growth mechanism through which REI influences CO2E. Using the Ordinarily Least Squares model, the findings show that all the measures of REI significantly increase CO2E from the linear analysis. However, the non-linear analysis showed that solar and wind energy investment have a statistically significant inverted U-shaped relationship with CO2E while small hydropower and biofuel energy investment have a statistically significant U-shaped relationship with CO2E. Thus, solar and wind energy investment reduce CO2E only after attaining a threshold of investment with the threshold value of solar and wind energy investment being 28.125 (representing about $1.64 trillion) and 26.308 (representing about $266.3 billion), respectively. Also, the threshold value of small hydropower and biofuel energy investment beyond which they increase CO2E are 20.071 (representing about $520.9 million) and 22.8 (representing about $7.978 billion), respectively. Finally, solar, wind and geothermal energy investment indirectly reduce CO2E by increasing green economic growth while the reverse exists for biofuel energy investment. Solar and wind energy investment is, therefore, recommended for attaining carbon neutrality targets. Policymakers should incentivize production tax credits, investment tax credits, feed-in-tariffs, subsidies, affordable loans, and research and development to drive solar and wind energy investment.}
+}
+
+@article{kaufmann2011wgi, 
+title={The Worldwide Governance Indicators: Methodology and Analytical Issues},
+volume={3}, 
+DOI={10.1017/S1876404511200046}, 
+number={2}, 
+journal={Hague Journal on the Rule of Law}, 
+author={Kaufmann, Daniel and Kraay, Aart and Mastruzzi, Massimo}, 
+year={2011}, 
+pages={220–246}
+} 
+
+
+
