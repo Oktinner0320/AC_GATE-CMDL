@@ -119,6 +119,13 @@ Because $omega_i = omega(dot mid(|) z_i)$ depends only on the time-invariant pro
 
 The protocol assigns a *verdict* to each (domain, layer) pair rather than a single accept/reject decision for the whole model. We use four building blocks; references to the implementation are `evaluation/significance.py` for paired tests and `evaluation/stratified_kstar.py` for the permutation test.
 
+The shared reporting workflow is summarized in Fig.~@fig:workflow. It is intentionally separated from model training: the reporting stage consumes fixed experiment outputs, computes diagnostics, and packages the resulting artifacts for venue-specific variants without changing the underlying runs.
+
+#colimg(
+  "img/workflow_overview.png",
+  [Shared reporting workflow used to turn locked experiment outputs into paper-facing artifacts. The diagram summarizes the sequence from data and splits to model outputs, diagnostics, artifact assembly, and venue-specific packaging.],
+) <fig:workflow>
+
 == L0 --- Forecast Calibration
 
 For each method we report seed-level mean and standard deviation of test~$R^2$ over 20 seeds. Pairwise comparisons against CMDL use the two-sided Wilcoxon signed-rank test on seed-level differences. L0 is reported only as calibration: a method that fails L0 may still be certified at L2.
@@ -155,14 +162,16 @@ Baselines comprise Plain~LSTM (the AC-GATE backbone with the AC encoder and lag 
 
 == Synthetic --- Mechanism Recovery (L3 + L2)
 
+The two synthetic regimes are shown separately in Fig.~@fig:syn-linear and Fig.~@fig:syn-nonlinear so that the linear and nonlinear recovery patterns can be read without cross-panel compression.
+
 #colimg(
   "img/synthetic_kstar_mae_seed_distribution_linear.png",
-  [Synthetic linear seed-level $k^*$ MAE distribution. CMDL and No-Recon-Reg overlap closely, while Plain LSTM and the structural ablations shift upward.],
+  [Seed-level distribution of synthetic linear $k^*$ MAE. Boxes show interquartile ranges, center lines medians, whiskers Tukey ranges, and points individual seeds.],
 ) <fig:syn-linear>
 
 #colimg(
   "img/synthetic_kstar_mae_seed_distribution_nonlinear.png",
-  [Synthetic nonlinear seed-level $k^*$ MAE distribution. The separation between CMDL and the degenerate controls remains visible under the harder nonlinear regime.],
+  [Seed-level distribution of synthetic nonlinear $k^*$ MAE. Boxes show interquartile ranges, center lines medians, whiskers Tukey ranges, and points individual seeds.],
 ) <fig:syn-nonlinear>
 
 In both regimes CMDL recovers the ground-truth heterogeneous lag structure with Spearman $rho approx 0.91$--$0.95$, while *every* degenerate ablation collapses $rho$ to exactly zero. Paired Wilcoxon tests on $k^*$~MAE return $p approx 1.91 times 10^(-6)$ for CMDL versus No-AC-Encoder, Uniform-Lag, and Plain~LSTM, in both regimes. The No-Recon-Reg variant is statistically indistinguishable from CMDL ($p = 0.498$ in linear, $p = 0.368$ in nonlinear), confirming that the reconstruction term is auxiliary and that the mechanism is carried by the AC encoder and the lag gate jointly. Plain~LSTM, despite enjoying identical backbone capacity, can only recover a weak post-hoc lag signal ($rho approx 0.34$--$0.36$) that is roughly five times farther from the ground truth than CMDL on $k^*$~MAE.
@@ -171,14 +180,14 @@ In both regimes CMDL recovers the ground-truth heterogeneous lag structure with 
 
 #colimg(
   "img/economics_forecast_seed_distribution.png",
-  [Economics forecast-layer seed distribution. Plain LSTM and Uniform Lag dominate CMDL on test $R^2$, while Grouped ARDL under-performs all neural variants.],
+  [Seed-level distribution of economics test $R^2$. Boxes show interquartile ranges, center lines medians, whiskers Tukey ranges, and points individual seeds.],
 ) <fig:eco-l0>
 
 The forecast layer is *not* certified for CMDL: paired Wilcoxon yields $p = 6.3 times 10^(-5)$ versus Plain~LSTM and $p = 1.91 times 10^(-6)$ versus Uniform-Lag, both in favour of the baselines. Conversely, the L1 degeneracy guard separates CMDL (kstar_std $approx 0.17$) from the No-AC-Encoder and Uniform-Lag variants, whose per-entity $k^*$ collapses to a constant (kstar_std $equiv 0$) and which therefore cannot be evaluated at L2 by construction.
 
 #colimg(
   "img/economics_structured_mechanism_seed_distribution.png",
-  [Economics L2 mechanism-layer seed distribution. Human capital is the strongest stratifier, followed by log GDP per worker and log capital per worker.],
+  [Seed-level distribution of economics $|rho|$ across train-window stratifiers. Boxes show interquartile ranges, center lines medians, whiskers Tukey ranges, and points individual seeds.],
 ) <fig:eco-l2>
 
 All three economics stratifiers are L2-supported under our acceptance criterion. The strongest alignment is with mean human capital ($|rho| = 0.371$), which is consistent with the absorptive-capacity intuition that motivates the AC encoder. The anchor-direction test (L3) fails: signed adj.~$rho = -0.109$ with only 35% of seeds positive --- exactly the label-permutation symmetry disclosed in Section~5.5. The verdict for this domain is therefore *L0 not certified, L2 certified on three independent stratifiers, L3 not claimed*.
@@ -187,12 +196,12 @@ All three economics stratifiers are L2-supported under our acceptance criterion.
 
 #colimg(
   "img/energy_forecast_seed_distribution.png",
-  [Energy forecast-layer seed distribution. Grouped ARDL is visually separated from all neural variants, which cluster around negative test $R^2$.],
+  [Seed-level distribution of energy test $R^2$. Boxes show interquartile ranges, center lines medians, whiskers Tukey ranges, and points individual seeds.],
 ) <fig:eng-l0>
 
 #colimg(
   "img/energy_structured_mechanism_seed_distribution.png",
-  [Energy L2 mechanism-layer seed distribution. Rule of law and government effectiveness dominate, with log GDP per capita slightly weaker but still strongly supported.],
+  [Seed-level distribution of energy $|rho|$ across train-window stratifiers. Boxes show interquartile ranges, center lines medians, whiskers Tukey ranges, and points individual seeds.],
 ) <fig:eng-l2>
 
 The energy domain is the cleanest illustration of the protocol's design intent. *No* recurrent neural model achieves a positive test $R^2$: CMDL, Plain~LSTM, and both ablations all sit at $R^2 approx -0.029$, while Grouped~ARDL reaches $R^2 = 0.607$ --- unsurprising, given that the $"CO"_2$ intensity target is approximately linear in the available country-level features over a short panel. By any classical reading, the neural family has "failed" on this domain.
@@ -224,7 +233,7 @@ Yet the L2 layer tells the opposite story: CMDL's per-entity $k^*$ aligns with t
     [#verdict(rgb(215, 242, 220), [yes])],
     [#verdict(rgb(230, 230, 230), [n/a])],
   ),
-  caption: [Single-column verdict matrix. Green = supported, amber = not certified, red = ruled out, gray = not claimed. L2 and L3 are structurally undefined for No-AC-Encoder and Uniform-Lag in every real domain.],
+  caption: [Single-column verdict matrix summarizing L0--L3 outcomes across domains. Green denotes supported, amber not certified, red ruled out, and gray not claimed.],
 ) <fig:verdict>
 
 The verdict matrix is the punchline of the experimental section: across three domains, CMDL is the *only* method whose lag heterogeneity is both non-degenerate (L1) and stratifier-aligned (L2), while no method dominates the other two layers simultaneously. The protocol thus separates "the model captures something real about lag heterogeneity" from "the model forecasts well", and shows that the two questions admit different answers on the same data.
