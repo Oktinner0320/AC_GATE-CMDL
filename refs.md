@@ -14,7 +14,6 @@
 | `chronopoulos2023dnnpanel` | Chronopoulos, I., Chrysikou, K., & Kapetanios, G. (2023). Deep Neural Network Estimation in Panel Data Models. *arXiv:2305.05083*. | Method, Discussion | 面板 DNN 中实体固定效应的处理 |
 | `pesaran1995pmg` | Pesaran, M. H., & Smith, R. (1995). Estimating Long-Run Relationships from Dynamic Heterogeneous Panels. *Journal of Econometrics*, 68(1), 79–113. | Baseline | Pooled Mean Group / 异质系数面板模型——Grouped ARDL 基线的理论基础 |
 | `babii2020mlpanel` | Babii, A., Ball, R. T., Ghysels, E., & Striaukas, J. (2020). Machine Learning Panel Data Regressions with an Application to Nowcasting Price–Earnings Ratios. *arXiv:2008.03600*. | Related Work | 组级滞后选择方法——计量经济学竞品 |
-| `huang2023metapanel` | Huang, R. (2023). Time and Entity Adaptation on Panel Data Forecasting Via Meta Learning. *Master Thesis, Seoul National University*. | Related Work | 元学习处理面板异质性——思路相近但机制不同的竞品 |
 | `zhou2025codeal` | Zhou, J., Lin, X., Cao, Y., Lin, Z., & Ong, Y.-S. (2025). Covariate-Adjusted Deep Causal Learning for Heterogeneous Panel Data Models. *arXiv:2502.xxxxx*. | Related Work | 异质处理效应的深度学习方法——因果方向的竞品 |
 | `cerqua2025mlpanel` | Cerqua, A., Letta, M., & Menchetti, F. (2025). On the (mis)use of machine learning with panel data. *Oxford Bulletin of Economics and Statistics* (forthcoming). | Discussion | ML 面板应用的常见陷阱——加强自我批判 |
 | `thayasivam2025panelsurvey` | Thayasivam, U., et al. (2025). A Comprehensive Survey on Statistical and Deep Learning Models for Panel Data Analysis. *Knowledge and Information Systems* (forthcoming). | Related Work | 最新综述——确保 Related Work 不遗漏最新进展 |
