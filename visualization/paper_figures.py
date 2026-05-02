@@ -22,46 +22,64 @@ def _finalize_figure(fig: plt.Figure, save_path: str | Path | None) -> plt.Figur
 
 
 def plot_workflow_overview(save_path: str | Path | None = None) -> plt.Figure:
-    """Render the reporting workflow used by the venue-specific paper variants."""
+    """Render a paper-ready overview of the experiment workflow."""
 
-    fig, ax = plt.subplots(figsize=(6.4, 10.2))
+    fig, ax = plt.subplots(figsize=(4.6, 6.0))
     ax.axis("off")
+    ax.set_xlim(0.0, 1.0)
+    ax.set_ylim(0.0, 1.0)
 
     boxes = [
-        (0.86, "Data and Splits", "balanced panel\ntrain/val/test windows\nproxy metadata"),
-        (0.68, "CMDL and Baselines", "CMDL\nPlain LSTM\nGrouped ARDL\nablations"),
-        (0.50, "Diagnostics", "significance\nstratified k*\nablation guard\nseed stability"),
-        (0.32, "Paper Artifacts", "main tables\nCI summaries\nverdict matrix\ncase-study sources"),
-        (0.14, "Venue Packaging", "ICDM formalization\nCIKM workflow framing\nECML case-study framing"),
+        (0.80, "Data and Splits", "balanced panel\ntrain/val/test windows\nproxy metadata", "#EAF2FB"),
+        (0.50, "CMDL and Baselines", "CMDL\nPlain LSTM\nGrouped ARDL\nablations", "#EAF6EE"),
+        (0.20, "Diagnostics", "significance\nstratified k*\nablation guard\nseed stability", "#FFF3D8"),
     ]
+    box_left = 0.15
+    box_width = 0.70
+    box_height = 0.18
+    text_x = box_left + box_width / 2.0
+    arrow_gap = 0.016
 
-    for y_pos, title, body in boxes:
+    for y_pos, title, body, facecolor in boxes:
         patch = FancyBboxPatch(
-            (0.17, y_pos - 0.065),
-            0.66,
-            0.11,
+            (box_left, y_pos - box_height / 2.0),
+            box_width,
+            box_height,
             boxstyle="round,pad=0.02,rounding_size=0.03",
             linewidth=1.4,
             edgecolor="#1F3A5F",
-            facecolor="#F4F7FB",
+            facecolor=facecolor,
         )
         ax.add_patch(patch)
-        ax.text(0.50, y_pos + 0.022, title, ha="center", va="center", fontsize=13, fontweight="bold", color="#1F3A5F")
-        ax.text(0.50, y_pos - 0.020, body, ha="center", va="center", fontsize=10.5, color="#22313F")
+        ax.text(text_x, y_pos + 0.040, title, ha="center", va="center", fontsize=12.2, fontweight="bold", color="#1F3A5F")
+        ax.text(text_x, y_pos - 0.038, body, ha="center", va="center", fontsize=10.0, color="#22313F")
 
     for upper, lower in zip(boxes[:-1], boxes[1:]):
         arrow = FancyArrowPatch(
-            (0.50, upper[0] - 0.075),
-            (0.50, lower[0] + 0.055),
+            (text_x, upper[0] - box_height / 2.0 - arrow_gap),
+            (text_x, lower[0] + box_height / 2.0 + arrow_gap),
             arrowstyle="-|>",
-            mutation_scale=18,
+            mutation_scale=15,
             linewidth=1.6,
             color="#2E6F95",
         )
         ax.add_patch(arrow)
 
-    ax.set_title("Shared Reporting Workflow for ICDM, CIKM, and ECML Variants", fontsize=14, fontweight="bold")
-    return _finalize_figure(fig, save_path)
+    if save_path is not None:
+        target = Path(save_path)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        fig.tight_layout(pad=0.15)
+        export_paths = [target]
+        if target.suffix.lower() == ".png":
+            export_paths.append(target.with_suffix(".svg"))
+        elif target.suffix.lower() == ".svg":
+            export_paths.append(target.with_suffix(".png"))
+        for output_path in export_paths:
+            save_kwargs = {"bbox_inches": "tight"}
+            if output_path.suffix.lower() == ".png":
+                save_kwargs["dpi"] = 220
+            fig.savefig(output_path, **save_kwargs)
+    return fig
 
 
 def plot_seed_distribution(
