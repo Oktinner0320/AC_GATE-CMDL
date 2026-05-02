@@ -169,17 +169,17 @@ tests/              Pytest suites for loaders, baselines, ablations, comparisons
 For each entity $i$, AC-GATE encodes a set of static proxy variables into a scalar absorption score $z_i$.
 A **scale-invariant lag gate** maps $z_i$ to an entity-specific lag-weight distribution:
 
-$$\omega(k \mid z_i) = \mathrm{Softmax}\left(\frac{g_\theta(z_i) - \lambda \cdot k/K}{\tau}\right), \quad k = 1, \ldots, K$$
+$$\omega_{i,k} = \mathrm{Softmax}_k\left(\frac{g_\theta(z_i)_k - \lambda \cdot k/K}{\tau}\right), \quad k = 1, \ldots, K$$
 
 These weights aggregate past inputs into a per-entity context vector:
 
 $$c_{i,t} = \sum_{k=1}^{K} \omega_{i,k} \, X_{i,t-k}$$
 
-An LSTM backbone then processes the lag-context stream together with learned entity effects, static features, and optional macro controls to predict $\hat{Y}_{i,t+1}$. In the implementation, $z_i$ also initializes the recurrent state, while the current-step raw input is intentionally excluded from the fused backbone input to avoid a shortcut path. Training minimises:
+An LSTM backbone then processes the lag-context stream together with learned entity effects, static features, and optional macro controls to predict $\hat{Y}_{i,t+1}$. In the implementation, $z_i$ also initializes the recurrent state, while the current-step raw input is intentionally excluded from the fused backbone input so the backbone cannot bypass the lag gate through a shortcut path. Training minimises:
 
 $$\mathcal{L} = \mathcal{L}_\mathrm{task} + \lambda_r \mathcal{L}_\mathrm{recon}$$
 
-where $\mathcal{L}_\mathrm{recon}$ is the proxy-reconstruction term that anchors $z_i$ to the input proxies.
+where $\mathcal{L}_\mathrm{recon}$ is the proxy-reconstruction term between the original proxies $p_i$ and reconstructed proxies $\hat{p}_i$. In the default detached variant it acts as a lightweight diagnostic head on $z_i$ by training only the proxy decoder; when `reconstruction_detach=False`, it also regularises $z_i$ to retain proxy information.
 The interpretable byproduct is the **per-entity effective lag**, computed at inference:
 
 $$k_i^* = \sum_{k} k \, \omega_{i,k}$$
@@ -188,8 +188,14 @@ $$k_i^* = \sum_{k} k \, \omega_{i,k}$$
 
 | Symbol | Meaning in AC-GATE | Code-level interpretation |
 |---|---|---|
+| $N$ | Number of entities in the panel | `cfg.n_entities`; also the size of the entity embedding table |
+| $T$ | Number of time steps in the panel sequence | Raw sequence length before warm-up trimming; the valid prediction segment has length $T-K$ |
+| $d_x$ | Sequential input feature dimension | `cfg.seq_features`; width of the raw per-step input $X_{i,t}$ before projection |
+| $d_s$ | Static feature dimension | `cfg.static_dim`; width of the time-invariant static vector $s_i$ |
 | $p_i$ | Entity-level proxy vector used to characterize absorptive capacity | Input to `AdaptiveACEncoder`; shape `[B, M]` where `M = n_proxies` |
+| $M$ | Proxy feature dimension | `n_proxies`; number of entity-level proxy variables in $p_i$ |
 | $z_i$ | Scalar absorptive-capacity score for entity $i$ | Output of the encoder latent head; conditions the lag gate and is also projected into the LSTM initial state |
+| $\hat{p}_i$ | Reconstructed proxy vector | Output of `proxy_reconstructor`; equals the decoder prediction from $z_i$ or `z_i.detach()` depending on `reconstruction_detach` |
 | $g_\theta(\cdot)$ | Learned scalar-to-logit mapping from $z_i$ to lag scores | Implemented by the scalar GRN inside `ScaleInvariantLagGate` |
 | $k$ | Lag index | Integer lag position, `1, ..., K` |
 | $K$ | Maximum lag horizon | `max_lag` in `CMDLConfig`; also the length of $\omega_i$ |
@@ -198,6 +204,8 @@ $$k_i^* = \sum_{k} k \, \omega_{i,k}$$
 | $\omega_{i,k}$ | Normalized weight assigned to lag $k$ for entity $i$ | A probability simplex output over the `K` lags; locked runs use `softmax`, while code also retains optional `sparsemax` |
 | $X_{i,t-k}$ | Sequential input observed $k$ steps before time $t$ | In implementation this is first projected to `d_model`, then assembled into lag windows |
 | $c_{i,t}$ | Lag-weighted context vector for entity $i$ at time $t$ | Weighted sum of the `K` lagged windows; this is the main temporal signal consumed by the backbone |
+| $Y_{i,t}$ | Scalar target observed for entity $i$ at time $t$ | Supervision target used by `DomainAgnosticLoss`; shape `[B, T]` before warm-up alignment |
+| $\hat{Y}_{i,t+1}$ | One-step-ahead forecast | `CMDLModelOutput.y_pred`; produced by the regression head from the backbone hidden sequence |
 | $\mathrm{emb}_i$ | Learned entity embedding | Lookup embedding representing persistent entity-specific effects |
 | $s_i$ | Static entity features | Time-invariant covariates provided to the backbone for every valid step |
 | Cross-sectional context | Optional time-varying macro controls aligned with each valid time step | `macro_controls`; currently summarized and projected before fusion |
@@ -205,6 +213,8 @@ $$k_i^* = \sum_{k} k \, \omega_{i,k}$$
 | $\mathcal{L}_\mathrm{recon}$ | Proxy reconstruction regularizer | Reconstruction term between the original proxies $p_i$ and reconstructed proxies $\hat{p}_i$; in locked runs this is standard MSE for synthetic/energy and anchor-weighted MSE for economics |
 | $\lambda_r$ | Weight on the reconstruction term | `lambda_r` in `CMDLConfig` and `DomainAgnosticLoss` |
 | $k_i^*$ | Effective lag for entity $i$ | Expected lag $\sum_k k\omega_{i,k}$; because $\omega_i$ depends only on $z_i$, it is constant across time for a fixed entity within one trained model |
+
+The fused backbone input intentionally excludes the current-step raw input $X_{i,t}$ and instead consumes only the lag-weighted context together with entity/static/macro signals, preventing a direct shortcut around the lag gate.
 
 The two lambda symbols play different roles: $\lambda$ in the first equation is the lag-bias coefficient, while $\lambda_r$ in the loss is the reconstruction-loss weight.
 
