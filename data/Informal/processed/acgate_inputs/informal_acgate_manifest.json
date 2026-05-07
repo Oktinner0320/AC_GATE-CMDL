@@ -1,0 +1,39 @@
+{
+  "acgate_output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\acgate_inputs",
+  "single_feature_ready_path": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\acgate_inputs\\informal_acgate_single_feature_ready.csv",
+  "multiseq_ready_path": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\acgate_inputs\\informal_acgate_multiseq_ready.csv",
+  "multiseq_overlap_ready_path": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\acgate_inputs\\informal_acgate_multiseq_overlap_ready.csv",
+  "legacy_primary_sequence_column": "x_t",
+  "sequence_columns": [
+    "x_t",
+    "x_seq_rpcyd_total_income",
+    "x_seq_rydgdp_disposable_income",
+    "x_seq_rydgdp_disposable_income_per_capita",
+    "x_seq_rydgdp_grdp",
+    "x_seq_rydgdp_grdp_per_capita",
+    "x_seq_rydgdp_ratio"
+  ],
+  "proxy_columns": [
+    "proxy_atm_count",
+    "proxy_terminal_count",
+    "proxy_credit_card_depth"
+  ],
+  "static_columns": [
+    "static_noncash_value",
+    "static_withdrawal_value"
+  ],
+  "full_panel_rows": 378,
+  "full_panel_entities": 21,
+  "full_panel_year_span": [
+    2006,
+    2023
+  ],
+  "overlap_panel_rows": 105,
+  "overlap_panel_entities": 21,
+  "overlap_panel_year_span": [
+    2019,
+    2023
+  ],
+  "td_status": "TD remains an audit-only sparse candidate and is excluded from the curated multiseq bundle.",
+  "knn_recommendation": "Do not impute workbook parsing gaps here. If you later need KNN, fit it year-wise or on the train/reference window inside the loader to avoid temporal leakage."
+}

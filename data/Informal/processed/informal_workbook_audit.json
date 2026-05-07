@@ -1,0 +1,83 @@
+{
+  "workbook_path": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\black_economy_structure - Final 20250819.xlsx",
+  "sheet_name": "Sheet1",
+  "row_count": 51030,
+  "column_count": 1977,
+  "observed_block_codes": [
+    "ISET_ISEMT_ISEFT",
+    "PRID",
+    "PRIME",
+    "RCW",
+    "RIFM",
+    "RPCYD",
+    "RYDGDP",
+    "TD",
+    "TI"
+  ],
+  "mapped_variable_codes": [
+    "ISET_ISEMT_ISEFT",
+    "PRIID",
+    "PRIME",
+    "RCV",
+    "RIFM",
+    "RPCYD",
+    "RYDGDP",
+    "TD",
+    "TII"
+  ],
+  "codebook_codes_not_observed": [
+    "BA",
+    "BRC",
+    "BRCR",
+    "CPC",
+    "IMP",
+    "ISEFT",
+    "ISEMT",
+    "ISET",
+    "PRID",
+    "RCW",
+    "SCR",
+    "TDR",
+    "TI",
+    "TIR",
+    "U",
+    "VOP"
+  ],
+  "observed_codes_not_in_codebook": [
+    "ISET_ISEMT_ISEFT",
+    "PRIID",
+    "RCV",
+    "TII"
+  ],
+  "raw_block_paths": {
+    "ISET_ISEMT_ISEFT": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\blocks\\iset_isemt_iseft_block_raw.csv",
+    "PRID": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\blocks\\prid_block_raw.csv",
+    "PRIME": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\blocks\\prime_block_raw.csv",
+    "RCW": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\blocks\\rcw_block_raw.csv",
+    "RIFM": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\blocks\\rifm_block_raw.csv",
+    "RPCYD": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\blocks\\rpcyd_block_raw.csv",
+    "RYDGDP": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\blocks\\rydgdp_block_raw.csv",
+    "TD": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\blocks\\td_block_raw.csv",
+    "TI": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\blocks\\ti_block_raw.csv"
+  },
+  "year_long_block_paths": {
+    "ISET_ISEMT_ISEFT": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\blocks\\iset_isemt_iseft_block_year_long.csv",
+    "PRIME": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\blocks\\prime_block_year_long.csv",
+    "RPCYD": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\blocks\\rpcyd_block_year_long.csv",
+    "RYDGDP": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\blocks\\rydgdp_block_year_long.csv",
+    "TD": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\blocks\\td_block_year_long.csv"
+  },
+  "rcw_candidate_panel_path": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\informal_rcw_candidate_panel.csv",
+  "rcw_cleaned_panel_path": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\informal_rcw_cleaned_panel.csv",
+  "rcw_model_ready_path": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\informal_rcw_model_ready_panel.csv",
+  "td_candidate_panel_path": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\informal_td_candidate_panel.csv",
+  "rydgdp_candidate_panel_path": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\informal_rydgdp_candidate_panel.csv",
+  "rpcyd_panel_path": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\informal_rpcyd_panel.csv",
+  "merged_long_panel_path": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\informal_formal_merged_long.csv",
+  "acgate_ready_panel_path": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\informal_acgate_ready_panel.csv",
+  "acgate_output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\acgate_inputs",
+  "acgate_single_feature_panel_path": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\acgate_inputs\\informal_acgate_single_feature_ready.csv",
+  "acgate_multiseq_panel_path": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\acgate_inputs\\informal_acgate_multiseq_ready.csv",
+  "acgate_multiseq_overlap_panel_path": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\acgate_inputs\\informal_acgate_multiseq_overlap_ready.csv",
+  "acgate_manifest_path": "C:\\DevSpace\\PyDevspace\\CMDL\\data\\Informal\\processed\\acgate_inputs\\informal_acgate_manifest.json"
+}

@@ -1,0 +1,11 @@
+entity_code,entity_name,year,x_td_direct_taxes_on_labour_raw,x_td_indirect_taxes_on_labour_raw,x_td_taxes_on_capital_raw,x_td_total_tax_revenues_raw,qa_x_td_direct_taxes_on_labour_raw_candidate_count,qa_x_td_indirect_taxes_on_labour_raw_candidate_count,qa_x_td_taxes_on_capital_raw_candidate_count,qa_x_td_total_tax_revenues_raw_candidate_count
+SE110,Stockholm,2019,660753.0,,,,1.0,,,
+SE122,Södermanland,2019,,604805.0,282152.0,2163073.0,,1.0,1.0,1.0
+SE110,Stockholm,2020,668744.0,,,,1.0,,,
+SE122,Södermanland,2020,,581753.0,271762.0,2137696.0,,1.0,1.0,1.0
+SE110,Stockholm,2021,694336.0,,,,1.0,,,
+SE122,Södermanland,2021,,634746.0,355889.0,2336928.0,,1.0,1.0,1.0
+SE110,Stockholm,2022,724071.0,,,,1.0,,,
+SE122,Södermanland,2022,,676483.0,365602.0,2493416.0,,1.0,1.0,1.0
+SE110,Stockholm,2023,749687.0,,,,1.0,,,
+SE122,Södermanland,2023,,723854.0,356757.0,2562107.0,,1.0,1.0,1.0

@@ -1,0 +1,1978 @@
+column_index,flattened_name,first_level,second_level,observed_block_code,mapped_variable_code,is_global_key,is_year_like_subcolumn,period_year,period_label,codebook_match
+0,year,year,Unnamed: 0_level_1,YEAR,YEAR,True,False,,,False
+1,county,county,Unnamed: 1_level_1,COUNTY,COUNTY,True,False,,,False
+2,rcw__card,rcw,Card,RCW,RCV,False,False,,,False
+3,rcw__bank_card,rcw,Bank card,RCW,RCV,False,False,,,False
+4,rcw__credit_card,rcw,Credit Card,RCW,RCV,False,False,,,False
+5,rcw__transfers,rcw,Transfers,RCW,RCV,False,False,,,False
+6,rcw__electronic,rcw,Electronic,RCW,RCV,False,False,,,False
+7,rcw__check,rcw,Check,RCW,RCV,False,False,,,False
+8,rcw__autogiro,rcw,Autogiro,RCW,RCV,False,False,,,False
+9,rcw__check_s_including_money_orders,rcw,Check’s including. money orders,RCW,RCV,False,False,,,False
+10,rcw__total,rcw,Total,RCW,RCV,False,False,,,False
+11,rcw__card_1,rcw,Card.1,RCW,RCV,False,False,,,False
+12,rcw__bank_card_1,rcw,Bank card.1,RCW,RCV,False,False,,,False
+13,rcw__credit_card_1,rcw,Credit Card.1,RCW,RCV,False,False,,,False
+14,rcw__gireringar,rcw,Gireringar,RCW,RCV,False,False,,,False
+15,rcw__electronic_1,rcw,Electronic.1,RCW,RCV,False,False,,,False
+16,rcw__check_1,rcw,Check.1,RCW,RCV,False,False,,,False
+17,rcw__autogiro_1,rcw,Autogiro.1,RCW,RCV,False,False,,,False
+18,rcw__check_s_including_money_orders_1,rcw,Check’s including. money orders.1,RCW,RCV,False,False,,,False
+19,rcw__total_1,rcw,Total.1,RCW,RCV,False,False,,,False
+20,rcw__amount_of_atm_s,rcw,Amount of ATM’s,RCW,RCV,False,False,,,False
+21,rcw__amount_of_transactions_millions,rcw,Amount of transactions (millions),RCW,RCV,False,False,,,False
+22,rcw__transaction_value_billions_of_kronor,rcw,Transaction value (billions of kronor),RCW,RCV,False,False,,,False
+23,rcw__payment_terminals,rcw,Payment terminals,RCW,RCV,False,False,,,False
+24,rcw__amount_of_terminals,rcw,Amount of terminals,RCW,RCV,False,False,,,False
+25,rcw__amount_of_transactions_millions__dup2,rcw,Amount of transactions (millions),RCW,RCV,False,False,,,False
+26,rcw__service_method,rcw,service_method,RCW,RCV,False,False,,,False
+27,rcw__service_type,rcw,service_type,RCW,RCV,False,False,,,False
+28,rcw__service_location_id,rcw,service_location_id,RCW,RCV,False,False,,,False
+29,rcw__bank,rcw,bank,RCW,RCV,False,False,,,False
+30,rcw__name,rcw,name,RCW,RCV,False,False,,,False
+31,rcw__address,rcw,address,RCW,RCV,False,False,,,False
+32,rcw__postal_number,rcw,postal_number,RCW,RCV,False,False,,,False
+33,rcw__postal_region,rcw,postal_region,RCW,RCV,False,False,,,False
+34,rcw__municipality,rcw,municipality,RCW,RCV,False,False,,,False
+35,rcw__county_1,rcw,county_1,RCW,RCV,False,False,,,False
+36,rcw__support,rcw,support,RCW,RCV,False,False,,,False
+37,rcw__x,rcw,x,RCW,RCV,False,False,,,False
+38,rcw__y,rcw,y,RCW,RCV,False,False,,,False
+39,rcw__county_match,rcw,county_match,RCW,RCV,False,False,,,False
+40,rcw__number_of_atms,rcw,number of atms,RCW,RCV,False,False,,,False
+41,rcw__number_of_transactions_withdrawals_millions,rcw,"number of transactions, withdrawals (millions)",RCW,RCV,False,False,,,False
+42,rcw__transaction_value_withdrawals_sek_billions,rcw,"transaction value, withdrawals (sek billions)",RCW,RCV,False,False,,,False
+43,rcw__number_of_payment_terminals,rcw,number of payment terminals,RCW,RCV,False,False,,,False
+44,rcw__number_of_transactions_millions,rcw,number of transactions (millions),RCW,RCV,False,False,,,False
+45,rcw__transaction_value_sek_billions,rcw,transaction value (sek billions),RCW,RCV,False,False,,,False
+46,rcw__unnamed_46,rcw,unnamed: 46,RCW,RCV,False,False,,,False
+47,rcw__unnamed_47,rcw,unnamed: 47,RCW,RCV,False,False,,,False
+48,rcw__unnamed_48,rcw,unnamed: 48,RCW,RCV,False,False,,,False
+49,rcw__unnamed_49,rcw,unnamed: 49,RCW,RCV,False,False,,,False
+50,rcw__unnamed_50,rcw,unnamed: 50,RCW,RCV,False,False,,,False
+51,rcw__unnamed_51,rcw,unnamed: 51,RCW,RCV,False,False,,,False
+52,rcw__unnamed_52,rcw,unnamed: 52,RCW,RCV,False,False,,,False
+53,rcw__unnamed_53,rcw,unnamed: 53,RCW,RCV,False,False,,,False
+54,rcw__unnamed_54,rcw,unnamed: 54,RCW,RCV,False,False,,,False
+55,rcw__card__dup2,rcw,card,RCW,RCV,False,False,,,False
+56,rcw__debet_cards,rcw,debet cards,RCW,RCV,False,False,,,False
+57,rcw__credit_cards,rcw,credit cards,RCW,RCV,False,False,,,False
+58,rcw__credit_transfers,rcw,credit transfers,RCW,RCV,False,False,,,False
+59,rcw__electronic__dup2,rcw,electronic,RCW,RCV,False,False,,,False
+60,rcw__paper_based_form,rcw,paper-based form,RCW,RCV,False,False,,,False
+61,rcw__direct_debet,rcw,direct debet,RCW,RCV,False,False,,,False
+62,rcw__cheques_including_bank_drafts,rcw,"cheques, including bank drafts",RCW,RCV,False,False,,,False
+63,rcw__total__dup2,rcw,total,RCW,RCV,False,False,,,False
+64,rcw__cards,rcw,cards,RCW,RCV,False,False,,,False
+65,rcw__debet_cards_1,rcw,debet cards.1,RCW,RCV,False,False,,,False
+66,rcw__credit_cards_1,rcw,credit cards.1,RCW,RCV,False,False,,,False
+67,rcw__credit_transfers_1,rcw,credit transfers.1,RCW,RCV,False,False,,,False
+68,rcw__electronic_1__dup2,rcw,electronic.1,RCW,RCV,False,False,,,False
+69,rcw__paper_based_form_1,rcw,paper-based form.1,RCW,RCV,False,False,,,False
+70,rcw__direct_debet_1,rcw,direct debet.1,RCW,RCV,False,False,,,False
+71,rcw__cheques_including_bank_drafts_1,rcw,"cheques, including bank drafts.1",RCW,RCV,False,False,,,False
+72,rcw__total_1__dup2,rcw,total.1,RCW,RCV,False,False,,,False
+73,rpcyd__unnamed_73_level_1,RPCYD,Unnamed: 73_level_1,RPCYD,RPCYD,False,False,,,True
+74,rpcyd__unnamed_74_level_1,RPCYD,Unnamed: 74_level_1,RPCYD,RPCYD,False,False,,,True
+75,rpcyd__unnamed_75_level_1,RPCYD,Unnamed: 75_level_1,RPCYD,RPCYD,False,False,,,True
+76,rpcyd__all_persons,RPCYD,All persons,RPCYD,RPCYD,False,False,,,True
+77,rpcyd__unnamed_77_level_1,RPCYD,Unnamed: 77_level_1,RPCYD,RPCYD,False,False,,,True
+78,rpcyd__unnamed_78_level_1,RPCYD,Unnamed: 78_level_1,RPCYD,RPCYD,False,False,,,True
+79,rpcyd__unnamed_79_level_1,RPCYD,Unnamed: 79_level_1,RPCYD,RPCYD,False,False,,,True
+80,rpcyd__unnamed_80_level_1,RPCYD,Unnamed: 80_level_1,RPCYD,RPCYD,False,False,,,True
+81,rpcyd__unnamed_81_level_1,RPCYD,Unnamed: 81_level_1,RPCYD,RPCYD,False,False,,,True
+82,rpcyd__unnamed_82_level_1,RPCYD,Unnamed: 82_level_1,RPCYD,RPCYD,False,False,,,True
+83,rpcyd__unnamed_83_level_1,RPCYD,Unnamed: 83_level_1,RPCYD,RPCYD,False,False,,,True
+84,rpcyd__born_in_sweden,RPCYD,Born in Sweden,RPCYD,RPCYD,False,False,,,True
+85,rpcyd__unnamed_85_level_1,RPCYD,Unnamed: 85_level_1,RPCYD,RPCYD,False,False,,,True
+86,rpcyd__unnamed_86_level_1,RPCYD,Unnamed: 86_level_1,RPCYD,RPCYD,False,False,,,True
+87,rpcyd__unnamed_87_level_1,RPCYD,Unnamed: 87_level_1,RPCYD,RPCYD,False,False,,,True
+88,rpcyd__unnamed_88_level_1,RPCYD,Unnamed: 88_level_1,RPCYD,RPCYD,False,False,,,True
+89,rpcyd__unnamed_89_level_1,RPCYD,Unnamed: 89_level_1,RPCYD,RPCYD,False,False,,,True
+90,rpcyd__unnamed_90_level_1,RPCYD,Unnamed: 90_level_1,RPCYD,RPCYD,False,False,,,True
+91,rpcyd__unnamed_91_level_1,RPCYD,Unnamed: 91_level_1,RPCYD,RPCYD,False,False,,,True
+92,rpcyd__foreign_born,RPCYD,Foreign-born,RPCYD,RPCYD,False,False,,,True
+93,rpcyd__unnamed_93_level_1,RPCYD,Unnamed: 93_level_1,RPCYD,RPCYD,False,False,,,True
+94,rpcyd__unnamed_94_level_1,RPCYD,Unnamed: 94_level_1,RPCYD,RPCYD,False,False,,,True
+95,rpcyd__unnamed_95_level_1,RPCYD,Unnamed: 95_level_1,RPCYD,RPCYD,False,False,,,True
+96,rpcyd__unnamed_96_level_1,RPCYD,Unnamed: 96_level_1,RPCYD,RPCYD,False,False,,,True
+97,rpcyd__unnamed_97_level_1,RPCYD,Unnamed: 97_level_1,RPCYD,RPCYD,False,False,,,True
+98,rpcyd__unnamed_98_level_1,RPCYD,Unnamed: 98_level_1,RPCYD,RPCYD,False,False,,,True
+99,rpcyd__unnamed_99_level_1,RPCYD,Unnamed: 99_level_1,RPCYD,RPCYD,False,False,,,True
+100,rpcyd__women_and_men,RPCYD,Women and men,RPCYD,RPCYD,False,False,,,True
+101,rpcyd__unnamed_101_level_1,RPCYD,Unnamed: 101_level_1,RPCYD,RPCYD,False,False,,,True
+102,rpcyd__unnamed_102_level_1,RPCYD,Unnamed: 102_level_1,RPCYD,RPCYD,False,False,,,True
+103,rpcyd__unnamed_103_level_1,RPCYD,Unnamed: 103_level_1,RPCYD,RPCYD,False,False,,,True
+104,rpcyd__unnamed_104_level_1,RPCYD,Unnamed: 104_level_1,RPCYD,RPCYD,False,False,,,True
+105,rpcyd__unnamed_105_level_1,RPCYD,Unnamed: 105_level_1,RPCYD,RPCYD,False,False,,,True
+106,rpcyd__women,RPCYD,Women,RPCYD,RPCYD,False,False,,,True
+107,rpcyd__unnamed_107_level_1,RPCYD,Unnamed: 107_level_1,RPCYD,RPCYD,False,False,,,True
+108,rpcyd__unnamed_108_level_1,RPCYD,Unnamed: 108_level_1,RPCYD,RPCYD,False,False,,,True
+109,rpcyd__unnamed_109_level_1,RPCYD,Unnamed: 109_level_1,RPCYD,RPCYD,False,False,,,True
+110,rpcyd__unnamed_110_level_1,RPCYD,Unnamed: 110_level_1,RPCYD,RPCYD,False,False,,,True
+111,rpcyd__unnamed_111_level_1,RPCYD,Unnamed: 111_level_1,RPCYD,RPCYD,False,False,,,True
+112,rpcyd__men,RPCYD,Men,RPCYD,RPCYD,False,False,,,True
+113,rpcyd__unnamed_113_level_1,RPCYD,Unnamed: 113_level_1,RPCYD,RPCYD,False,False,,,True
+114,rpcyd__unnamed_114_level_1,RPCYD,Unnamed: 114_level_1,RPCYD,RPCYD,False,False,,,True
+115,rpcyd__unnamed_115_level_1,RPCYD,Unnamed: 115_level_1,RPCYD,RPCYD,False,False,,,True
+116,rpcyd__unnamed_116_level_1,RPCYD,Unnamed: 116_level_1,RPCYD,RPCYD,False,False,,,True
+117,rpcyd__unnamed_117_level_1,RPCYD,Unnamed: 117_level_1,RPCYD,RPCYD,False,False,,,True
+118,rpcyd__unnamed_118_level_1,RPCYD,Unnamed: 118_level_1,RPCYD,RPCYD,False,False,,,True
+119,rpcyd__unnamed_119_level_1,RPCYD,Unnamed: 119_level_1,RPCYD,RPCYD,False,False,,,True
+120,rpcyd__all_persons_1,RPCYD,All persons.1,RPCYD,RPCYD,False,False,,,True
+121,rpcyd__unnamed_121_level_1,RPCYD,Unnamed: 121_level_1,RPCYD,RPCYD,False,False,,,True
+122,rpcyd__unnamed_122_level_1,RPCYD,Unnamed: 122_level_1,RPCYD,RPCYD,False,False,,,True
+123,rpcyd__unnamed_123_level_1,RPCYD,Unnamed: 123_level_1,RPCYD,RPCYD,False,False,,,True
+124,rpcyd__unnamed_124_level_1,RPCYD,Unnamed: 124_level_1,RPCYD,RPCYD,False,False,,,True
+125,rpcyd__unnamed_125_level_1,RPCYD,Unnamed: 125_level_1,RPCYD,RPCYD,False,False,,,True
+126,rpcyd__unnamed_126_level_1,RPCYD,Unnamed: 126_level_1,RPCYD,RPCYD,False,False,,,True
+127,rpcyd__unnamed_127_level_1,RPCYD,Unnamed: 127_level_1,RPCYD,RPCYD,False,False,,,True
+128,rpcyd__born_in_sweden_1,RPCYD,Born in Sweden.1,RPCYD,RPCYD,False,False,,,True
+129,rpcyd__unnamed_129_level_1,RPCYD,Unnamed: 129_level_1,RPCYD,RPCYD,False,False,,,True
+130,rpcyd__unnamed_130_level_1,RPCYD,Unnamed: 130_level_1,RPCYD,RPCYD,False,False,,,True
+131,rpcyd__unnamed_131_level_1,RPCYD,Unnamed: 131_level_1,RPCYD,RPCYD,False,False,,,True
+132,rpcyd__unnamed_132_level_1,RPCYD,Unnamed: 132_level_1,RPCYD,RPCYD,False,False,,,True
+133,rpcyd__unnamed_133_level_1,RPCYD,Unnamed: 133_level_1,RPCYD,RPCYD,False,False,,,True
+134,rpcyd__unnamed_134_level_1,RPCYD,Unnamed: 134_level_1,RPCYD,RPCYD,False,False,,,True
+135,rpcyd__unnamed_135_level_1,RPCYD,Unnamed: 135_level_1,RPCYD,RPCYD,False,False,,,True
+136,rpcyd__foreign_born_1,RPCYD,Foreign-born.1,RPCYD,RPCYD,False,False,,,True
+137,rpcyd__unnamed_137_level_1,RPCYD,Unnamed: 137_level_1,RPCYD,RPCYD,False,False,,,True
+138,rpcyd__unnamed_138_level_1,RPCYD,Unnamed: 138_level_1,RPCYD,RPCYD,False,False,,,True
+139,rpcyd__unnamed_139_level_1,RPCYD,Unnamed: 139_level_1,RPCYD,RPCYD,False,False,,,True
+140,rpcyd__unnamed_140_level_1,RPCYD,Unnamed: 140_level_1,RPCYD,RPCYD,False,False,,,True
+141,rpcyd__unnamed_141_level_1,RPCYD,Unnamed: 141_level_1,RPCYD,RPCYD,False,False,,,True
+142,rpcyd__unnamed_142_level_1,RPCYD,Unnamed: 142_level_1,RPCYD,RPCYD,False,False,,,True
+143,rpcyd__unnamed_143_level_1,RPCYD,Unnamed: 143_level_1,RPCYD,RPCYD,False,False,,,True
+144,rpcyd__1991,RPCYD,1991,RPCYD,RPCYD,False,True,1991.0,1991,True
+145,rpcyd__unnamed_145_level_1,RPCYD,Unnamed: 145_level_1,RPCYD,RPCYD,False,False,,,True
+146,rpcyd__unnamed_146_level_1,RPCYD,Unnamed: 146_level_1,RPCYD,RPCYD,False,False,,,True
+147,rpcyd__unnamed_147_level_1,RPCYD,Unnamed: 147_level_1,RPCYD,RPCYD,False,False,,,True
+148,rpcyd__1992,RPCYD,1992,RPCYD,RPCYD,False,True,1992.0,1992,True
+149,rpcyd__unnamed_149_level_1,RPCYD,Unnamed: 149_level_1,RPCYD,RPCYD,False,False,,,True
+150,rpcyd__unnamed_150_level_1,RPCYD,Unnamed: 150_level_1,RPCYD,RPCYD,False,False,,,True
+151,rpcyd__unnamed_151_level_1,RPCYD,Unnamed: 151_level_1,RPCYD,RPCYD,False,False,,,True
+152,rpcyd__1993,RPCYD,1993,RPCYD,RPCYD,False,True,1993.0,1993,True
+153,rpcyd__unnamed_153_level_1,RPCYD,Unnamed: 153_level_1,RPCYD,RPCYD,False,False,,,True
+154,rpcyd__unnamed_154_level_1,RPCYD,Unnamed: 154_level_1,RPCYD,RPCYD,False,False,,,True
+155,rpcyd__unnamed_155_level_1,RPCYD,Unnamed: 155_level_1,RPCYD,RPCYD,False,False,,,True
+156,rpcyd__1994,RPCYD,1994,RPCYD,RPCYD,False,True,1994.0,1994,True
+157,rpcyd__unnamed_157_level_1,RPCYD,Unnamed: 157_level_1,RPCYD,RPCYD,False,False,,,True
+158,rpcyd__unnamed_158_level_1,RPCYD,Unnamed: 158_level_1,RPCYD,RPCYD,False,False,,,True
+159,rpcyd__unnamed_159_level_1,RPCYD,Unnamed: 159_level_1,RPCYD,RPCYD,False,False,,,True
+160,rpcyd__1995,RPCYD,1995,RPCYD,RPCYD,False,True,1995.0,1995,True
+161,rpcyd__unnamed_161_level_1,RPCYD,Unnamed: 161_level_1,RPCYD,RPCYD,False,False,,,True
+162,rpcyd__unnamed_162_level_1,RPCYD,Unnamed: 162_level_1,RPCYD,RPCYD,False,False,,,True
+163,rpcyd__unnamed_163_level_1,RPCYD,Unnamed: 163_level_1,RPCYD,RPCYD,False,False,,,True
+164,rpcyd__1996,RPCYD,1996,RPCYD,RPCYD,False,True,1996.0,1996,True
+165,rpcyd__unnamed_165_level_1,RPCYD,Unnamed: 165_level_1,RPCYD,RPCYD,False,False,,,True
+166,rpcyd__unnamed_166_level_1,RPCYD,Unnamed: 166_level_1,RPCYD,RPCYD,False,False,,,True
+167,rpcyd__unnamed_167_level_1,RPCYD,Unnamed: 167_level_1,RPCYD,RPCYD,False,False,,,True
+168,rpcyd__1997,RPCYD,1997,RPCYD,RPCYD,False,True,1997.0,1997,True
+169,rpcyd__unnamed_169_level_1,RPCYD,Unnamed: 169_level_1,RPCYD,RPCYD,False,False,,,True
+170,rpcyd__unnamed_170_level_1,RPCYD,Unnamed: 170_level_1,RPCYD,RPCYD,False,False,,,True
+171,rpcyd__unnamed_171_level_1,RPCYD,Unnamed: 171_level_1,RPCYD,RPCYD,False,False,,,True
+172,rpcyd__1998,RPCYD,1998,RPCYD,RPCYD,False,True,1998.0,1998,True
+173,rpcyd__unnamed_173_level_1,RPCYD,Unnamed: 173_level_1,RPCYD,RPCYD,False,False,,,True
+174,rpcyd__unnamed_174_level_1,RPCYD,Unnamed: 174_level_1,RPCYD,RPCYD,False,False,,,True
+175,rpcyd__unnamed_175_level_1,RPCYD,Unnamed: 175_level_1,RPCYD,RPCYD,False,False,,,True
+176,rpcyd__1999,RPCYD,1999,RPCYD,RPCYD,False,True,1999.0,1999,True
+177,rpcyd__unnamed_177_level_1,RPCYD,Unnamed: 177_level_1,RPCYD,RPCYD,False,False,,,True
+178,rpcyd__unnamed_178_level_1,RPCYD,Unnamed: 178_level_1,RPCYD,RPCYD,False,False,,,True
+179,rpcyd__unnamed_179_level_1,RPCYD,Unnamed: 179_level_1,RPCYD,RPCYD,False,False,,,True
+180,rpcyd__2000,RPCYD,2000,RPCYD,RPCYD,False,True,2000.0,2000,True
+181,rpcyd__unnamed_181_level_1,RPCYD,Unnamed: 181_level_1,RPCYD,RPCYD,False,False,,,True
+182,rpcyd__unnamed_182_level_1,RPCYD,Unnamed: 182_level_1,RPCYD,RPCYD,False,False,,,True
+183,rpcyd__unnamed_183_level_1,RPCYD,Unnamed: 183_level_1,RPCYD,RPCYD,False,False,,,True
+184,rpcyd__2001,RPCYD,2001,RPCYD,RPCYD,False,True,2001.0,2001,True
+185,rpcyd__unnamed_185_level_1,RPCYD,Unnamed: 185_level_1,RPCYD,RPCYD,False,False,,,True
+186,rpcyd__unnamed_186_level_1,RPCYD,Unnamed: 186_level_1,RPCYD,RPCYD,False,False,,,True
+187,rpcyd__unnamed_187_level_1,RPCYD,Unnamed: 187_level_1,RPCYD,RPCYD,False,False,,,True
+188,rpcyd__2002,RPCYD,2002,RPCYD,RPCYD,False,True,2002.0,2002,True
+189,rpcyd__unnamed_189_level_1,RPCYD,Unnamed: 189_level_1,RPCYD,RPCYD,False,False,,,True
+190,rpcyd__unnamed_190_level_1,RPCYD,Unnamed: 190_level_1,RPCYD,RPCYD,False,False,,,True
+191,rpcyd__unnamed_191_level_1,RPCYD,Unnamed: 191_level_1,RPCYD,RPCYD,False,False,,,True
+192,rpcyd__2003,RPCYD,2003,RPCYD,RPCYD,False,True,2003.0,2003,True
+193,rpcyd__unnamed_193_level_1,RPCYD,Unnamed: 193_level_1,RPCYD,RPCYD,False,False,,,True
+194,rpcyd__unnamed_194_level_1,RPCYD,Unnamed: 194_level_1,RPCYD,RPCYD,False,False,,,True
+195,rpcyd__unnamed_195_level_1,RPCYD,Unnamed: 195_level_1,RPCYD,RPCYD,False,False,,,True
+196,rpcyd__2004,RPCYD,2004,RPCYD,RPCYD,False,True,2004.0,2004,True
+197,rpcyd__unnamed_197_level_1,RPCYD,Unnamed: 197_level_1,RPCYD,RPCYD,False,False,,,True
+198,rpcyd__unnamed_198_level_1,RPCYD,Unnamed: 198_level_1,RPCYD,RPCYD,False,False,,,True
+199,rpcyd__unnamed_199_level_1,RPCYD,Unnamed: 199_level_1,RPCYD,RPCYD,False,False,,,True
+200,rpcyd__2005,RPCYD,2005,RPCYD,RPCYD,False,True,2005.0,2005,True
+201,rpcyd__unnamed_201_level_1,RPCYD,Unnamed: 201_level_1,RPCYD,RPCYD,False,False,,,True
+202,rpcyd__unnamed_202_level_1,RPCYD,Unnamed: 202_level_1,RPCYD,RPCYD,False,False,,,True
+203,rpcyd__unnamed_203_level_1,RPCYD,Unnamed: 203_level_1,RPCYD,RPCYD,False,False,,,True
+204,rpcyd__2006,RPCYD,2006,RPCYD,RPCYD,False,True,2006.0,2006,True
+205,rpcyd__unnamed_205_level_1,RPCYD,Unnamed: 205_level_1,RPCYD,RPCYD,False,False,,,True
+206,rpcyd__unnamed_206_level_1,RPCYD,Unnamed: 206_level_1,RPCYD,RPCYD,False,False,,,True
+207,rpcyd__unnamed_207_level_1,RPCYD,Unnamed: 207_level_1,RPCYD,RPCYD,False,False,,,True
+208,rpcyd__2007,RPCYD,2007,RPCYD,RPCYD,False,True,2007.0,2007,True
+209,rpcyd__unnamed_209_level_1,RPCYD,Unnamed: 209_level_1,RPCYD,RPCYD,False,False,,,True
+210,rpcyd__unnamed_210_level_1,RPCYD,Unnamed: 210_level_1,RPCYD,RPCYD,False,False,,,True
+211,rpcyd__unnamed_211_level_1,RPCYD,Unnamed: 211_level_1,RPCYD,RPCYD,False,False,,,True
+212,rpcyd__2008,RPCYD,2008,RPCYD,RPCYD,False,True,2008.0,2008,True
+213,rpcyd__unnamed_213_level_1,RPCYD,Unnamed: 213_level_1,RPCYD,RPCYD,False,False,,,True
+214,rpcyd__unnamed_214_level_1,RPCYD,Unnamed: 214_level_1,RPCYD,RPCYD,False,False,,,True
+215,rpcyd__unnamed_215_level_1,RPCYD,Unnamed: 215_level_1,RPCYD,RPCYD,False,False,,,True
+216,rpcyd__2009,RPCYD,2009,RPCYD,RPCYD,False,True,2009.0,2009,True
+217,rpcyd__unnamed_217_level_1,RPCYD,Unnamed: 217_level_1,RPCYD,RPCYD,False,False,,,True
+218,rpcyd__unnamed_218_level_1,RPCYD,Unnamed: 218_level_1,RPCYD,RPCYD,False,False,,,True
+219,rpcyd__unnamed_219_level_1,RPCYD,Unnamed: 219_level_1,RPCYD,RPCYD,False,False,,,True
+220,rpcyd__2010,RPCYD,2010,RPCYD,RPCYD,False,True,2010.0,2010,True
+221,rpcyd__unnamed_221_level_1,RPCYD,Unnamed: 221_level_1,RPCYD,RPCYD,False,False,,,True
+222,rpcyd__unnamed_222_level_1,RPCYD,Unnamed: 222_level_1,RPCYD,RPCYD,False,False,,,True
+223,rpcyd__unnamed_223_level_1,RPCYD,Unnamed: 223_level_1,RPCYD,RPCYD,False,False,,,True
+224,rpcyd__2011,RPCYD,2011,RPCYD,RPCYD,False,True,2011.0,2011,True
+225,rpcyd__unnamed_225_level_1,RPCYD,Unnamed: 225_level_1,RPCYD,RPCYD,False,False,,,True
+226,rpcyd__unnamed_226_level_1,RPCYD,Unnamed: 226_level_1,RPCYD,RPCYD,False,False,,,True
+227,rpcyd__unnamed_227_level_1,RPCYD,Unnamed: 227_level_1,RPCYD,RPCYD,False,False,,,True
+228,rpcyd__2012,RPCYD,2012,RPCYD,RPCYD,False,True,2012.0,2012,True
+229,rpcyd__unnamed_229_level_1,RPCYD,Unnamed: 229_level_1,RPCYD,RPCYD,False,False,,,True
+230,rpcyd__unnamed_230_level_1,RPCYD,Unnamed: 230_level_1,RPCYD,RPCYD,False,False,,,True
+231,rpcyd__unnamed_231_level_1,RPCYD,Unnamed: 231_level_1,RPCYD,RPCYD,False,False,,,True
+232,rpcyd__2013,RPCYD,2013,RPCYD,RPCYD,False,True,2013.0,2013,True
+233,rpcyd__unnamed_233_level_1,RPCYD,Unnamed: 233_level_1,RPCYD,RPCYD,False,False,,,True
+234,rpcyd__unnamed_234_level_1,RPCYD,Unnamed: 234_level_1,RPCYD,RPCYD,False,False,,,True
+235,rpcyd__unnamed_235_level_1,RPCYD,Unnamed: 235_level_1,RPCYD,RPCYD,False,False,,,True
+236,rpcyd__2014,RPCYD,2014,RPCYD,RPCYD,False,True,2014.0,2014,True
+237,rpcyd__unnamed_237_level_1,RPCYD,Unnamed: 237_level_1,RPCYD,RPCYD,False,False,,,True
+238,rpcyd__unnamed_238_level_1,RPCYD,Unnamed: 238_level_1,RPCYD,RPCYD,False,False,,,True
+239,rpcyd__unnamed_239_level_1,RPCYD,Unnamed: 239_level_1,RPCYD,RPCYD,False,False,,,True
+240,rpcyd__2015,RPCYD,2015,RPCYD,RPCYD,False,True,2015.0,2015,True
+241,rpcyd__unnamed_241_level_1,RPCYD,Unnamed: 241_level_1,RPCYD,RPCYD,False,False,,,True
+242,rpcyd__unnamed_242_level_1,RPCYD,Unnamed: 242_level_1,RPCYD,RPCYD,False,False,,,True
+243,rpcyd__unnamed_243_level_1,RPCYD,Unnamed: 243_level_1,RPCYD,RPCYD,False,False,,,True
+244,rpcyd__2016,RPCYD,2016,RPCYD,RPCYD,False,True,2016.0,2016,True
+245,rpcyd__unnamed_245_level_1,RPCYD,Unnamed: 245_level_1,RPCYD,RPCYD,False,False,,,True
+246,rpcyd__unnamed_246_level_1,RPCYD,Unnamed: 246_level_1,RPCYD,RPCYD,False,False,,,True
+247,rpcyd__unnamed_247_level_1,RPCYD,Unnamed: 247_level_1,RPCYD,RPCYD,False,False,,,True
+248,rpcyd__2017,RPCYD,2017,RPCYD,RPCYD,False,True,2017.0,2017,True
+249,rpcyd__unnamed_249_level_1,RPCYD,Unnamed: 249_level_1,RPCYD,RPCYD,False,False,,,True
+250,rpcyd__unnamed_250_level_1,RPCYD,Unnamed: 250_level_1,RPCYD,RPCYD,False,False,,,True
+251,rpcyd__unnamed_251_level_1,RPCYD,Unnamed: 251_level_1,RPCYD,RPCYD,False,False,,,True
+252,rpcyd__2018,RPCYD,2018,RPCYD,RPCYD,False,True,2018.0,2018,True
+253,rpcyd__unnamed_253_level_1,RPCYD,Unnamed: 253_level_1,RPCYD,RPCYD,False,False,,,True
+254,rpcyd__unnamed_254_level_1,RPCYD,Unnamed: 254_level_1,RPCYD,RPCYD,False,False,,,True
+255,rpcyd__unnamed_255_level_1,RPCYD,Unnamed: 255_level_1,RPCYD,RPCYD,False,False,,,True
+256,rpcyd__2019,RPCYD,2019,RPCYD,RPCYD,False,True,2019.0,2019,True
+257,rpcyd__unnamed_257_level_1,RPCYD,Unnamed: 257_level_1,RPCYD,RPCYD,False,False,,,True
+258,rpcyd__unnamed_258_level_1,RPCYD,Unnamed: 258_level_1,RPCYD,RPCYD,False,False,,,True
+259,rpcyd__unnamed_259_level_1,RPCYD,Unnamed: 259_level_1,RPCYD,RPCYD,False,False,,,True
+260,rpcyd__2020,RPCYD,2020,RPCYD,RPCYD,False,True,2020.0,2020,True
+261,rpcyd__unnamed_261_level_1,RPCYD,Unnamed: 261_level_1,RPCYD,RPCYD,False,False,,,True
+262,rpcyd__unnamed_262_level_1,RPCYD,Unnamed: 262_level_1,RPCYD,RPCYD,False,False,,,True
+263,rpcyd__unnamed_263_level_1,RPCYD,Unnamed: 263_level_1,RPCYD,RPCYD,False,False,,,True
+264,rpcyd__2021,RPCYD,2021,RPCYD,RPCYD,False,True,2021.0,2021,True
+265,rpcyd__unnamed_265_level_1,RPCYD,Unnamed: 265_level_1,RPCYD,RPCYD,False,False,,,True
+266,rpcyd__unnamed_266_level_1,RPCYD,Unnamed: 266_level_1,RPCYD,RPCYD,False,False,,,True
+267,rpcyd__unnamed_267_level_1,RPCYD,Unnamed: 267_level_1,RPCYD,RPCYD,False,False,,,True
+268,rpcyd__2022,RPCYD,2022,RPCYD,RPCYD,False,True,2022.0,2022,True
+269,rpcyd__unnamed_269_level_1,RPCYD,Unnamed: 269_level_1,RPCYD,RPCYD,False,False,,,True
+270,rpcyd__unnamed_270_level_1,RPCYD,Unnamed: 270_level_1,RPCYD,RPCYD,False,False,,,True
+271,rpcyd__unnamed_271_level_1,RPCYD,Unnamed: 271_level_1,RPCYD,RPCYD,False,False,,,True
+272,rpcyd__2023,RPCYD,2023,RPCYD,RPCYD,False,True,2023.0,2023,True
+273,rpcyd__unnamed_273_level_1,RPCYD,Unnamed: 273_level_1,RPCYD,RPCYD,False,False,,,True
+274,rpcyd__unnamed_274_level_1,RPCYD,Unnamed: 274_level_1,RPCYD,RPCYD,False,False,,,True
+275,rpcyd__unnamed_275_level_1,RPCYD,Unnamed: 275_level_1,RPCYD,RPCYD,False,False,,,True
+276,rpcyd__women_and_men_1,RPCYD,Women and men.1,RPCYD,RPCYD,False,False,,,True
+277,rpcyd__unnamed_277_level_1,RPCYD,Unnamed: 277_level_1,RPCYD,RPCYD,False,False,,,True
+278,rpcyd__unnamed_278_level_1,RPCYD,Unnamed: 278_level_1,RPCYD,RPCYD,False,False,,,True
+279,rpcyd__unnamed_279_level_1,RPCYD,Unnamed: 279_level_1,RPCYD,RPCYD,False,False,,,True
+280,rpcyd__unnamed_280_level_1,RPCYD,Unnamed: 280_level_1,RPCYD,RPCYD,False,False,,,True
+281,rpcyd__unnamed_281_level_1,RPCYD,Unnamed: 281_level_1,RPCYD,RPCYD,False,False,,,True
+282,rpcyd__women_1,RPCYD,Women.1,RPCYD,RPCYD,False,False,,,True
+283,rpcyd__unnamed_283_level_1,RPCYD,Unnamed: 283_level_1,RPCYD,RPCYD,False,False,,,True
+284,rpcyd__unnamed_284_level_1,RPCYD,Unnamed: 284_level_1,RPCYD,RPCYD,False,False,,,True
+285,rpcyd__unnamed_285_level_1,RPCYD,Unnamed: 285_level_1,RPCYD,RPCYD,False,False,,,True
+286,rpcyd__unnamed_286_level_1,RPCYD,Unnamed: 286_level_1,RPCYD,RPCYD,False,False,,,True
+287,rpcyd__unnamed_287_level_1,RPCYD,Unnamed: 287_level_1,RPCYD,RPCYD,False,False,,,True
+288,rpcyd__men_1,RPCYD,Men.1,RPCYD,RPCYD,False,False,,,True
+289,rpcyd__unnamed_289_level_1,RPCYD,Unnamed: 289_level_1,RPCYD,RPCYD,False,False,,,True
+290,rpcyd__unnamed_290_level_1,RPCYD,Unnamed: 290_level_1,RPCYD,RPCYD,False,False,,,True
+291,rpcyd__unnamed_291_level_1,RPCYD,Unnamed: 291_level_1,RPCYD,RPCYD,False,False,,,True
+292,rpcyd__unnamed_292_level_1,RPCYD,Unnamed: 292_level_1,RPCYD,RPCYD,False,False,,,True
+293,rpcyd__unnamed_293_level_1,RPCYD,Unnamed: 293_level_1,RPCYD,RPCYD,False,False,,,True
+294,rpcyd__unnamed_294_level_1,RPCYD,Unnamed: 294_level_1,RPCYD,RPCYD,False,False,,,True
+295,rpcyd__unnamed_295_level_1,RPCYD,Unnamed: 295_level_1,RPCYD,RPCYD,False,False,,,True
+296,rpcyd__persistent_at_risk_of_poverty,RPCYD,Persistent at risk of poverty (%),RPCYD,RPCYD,False,False,,,True
+297,rpcyd__unnamed_297_level_1,RPCYD,Unnamed: 297_level_1,RPCYD,RPCYD,False,False,,,True
+298,rpcyd__unnamed_298_level_1,RPCYD,Unnamed: 298_level_1,RPCYD,RPCYD,False,False,,,True
+299,rpcyd__unnamed_299_level_1,RPCYD,Unnamed: 299_level_1,RPCYD,RPCYD,False,False,,,True
+300,rpcyd__number_of_persons,RPCYD,Number of persons,RPCYD,RPCYD,False,False,,,True
+301,rpcyd__unnamed_301_level_1,RPCYD,Unnamed: 301_level_1,RPCYD,RPCYD,False,False,,,True
+302,rpcyd__unnamed_302_level_1,RPCYD,Unnamed: 302_level_1,RPCYD,RPCYD,False,False,,,True
+303,rpcyd__unnamed_303_level_1,RPCYD,Unnamed: 303_level_1,RPCYD,RPCYD,False,False,,,True
+304,rpcyd__unnamed_304_level_1,RPCYD,Unnamed: 304_level_1,RPCYD,RPCYD,False,False,,,True
+305,rpcyd__unnamed_305_level_1,RPCYD,Unnamed: 305_level_1,RPCYD,RPCYD,False,False,,,True
+306,rpcyd__number_of_households,RPCYD,Number of households,RPCYD,RPCYD,False,False,,,True
+307,rpcyd__mean_value_sek_thousands,RPCYD,"Mean value, SEK thousands",RPCYD,RPCYD,False,False,,,True
+308,rpcyd__mean_value_household_with_interest_deduction_sek_thousands,RPCYD,"Mean value, household with interest deduction, SEK thousands",RPCYD,RPCYD,False,False,,,True
+309,rpcyd__share_of_households_according_to_the_size_of_the_deduction_sek_thousands,RPCYD,"Share of households according to the size of the deduction, SEK thousands",RPCYD,RPCYD,False,False,,,True
+310,rpcyd__unnamed_310_level_1,RPCYD,Unnamed: 310_level_1,RPCYD,RPCYD,False,False,,,True
+311,rpcyd__unnamed_311_level_1,RPCYD,Unnamed: 311_level_1,RPCYD,RPCYD,False,False,,,True
+312,rpcyd__unnamed_312_level_1,RPCYD,Unnamed: 312_level_1,RPCYD,RPCYD,False,False,,,True
+313,rpcyd__unnamed_313_level_1,RPCYD,Unnamed: 313_level_1,RPCYD,RPCYD,False,False,,,True
+314,rpcyd__unnamed_314_level_1,RPCYD,Unnamed: 314_level_1,RPCYD,RPCYD,False,False,,,True
+315,rpcyd__unnamed_315_level_1,RPCYD,Unnamed: 315_level_1,RPCYD,RPCYD,False,False,,,True
+316,rpcyd__unnamed_316_level_1,RPCYD,Unnamed: 316_level_1,RPCYD,RPCYD,False,False,,,True
+317,rpcyd__share_with_capital_income,RPCYD,Share (%) with capital income,RPCYD,RPCYD,False,False,,,True
+318,rpcyd__unnamed_318_level_1,RPCYD,Unnamed: 318_level_1,RPCYD,RPCYD,False,False,,,True
+319,rpcyd__unnamed_319_level_1,RPCYD,Unnamed: 319_level_1,RPCYD,RPCYD,False,False,,,True
+320,rpcyd__unnamed_320_level_1,RPCYD,Unnamed: 320_level_1,RPCYD,RPCYD,False,False,,,True
+321,rpcyd__mean_value_capital_income_sek,RPCYD,"Mean value capital income, SEK",RPCYD,RPCYD,False,False,,,True
+322,rpcyd__unnamed_322_level_1,RPCYD,Unnamed: 322_level_1,RPCYD,RPCYD,False,False,,,True
+323,rpcyd__unnamed_323_level_1,RPCYD,Unnamed: 323_level_1,RPCYD,RPCYD,False,False,,,True
+324,rpcyd__unnamed_324_level_1,RPCYD,Unnamed: 324_level_1,RPCYD,RPCYD,False,False,,,True
+325,rpcyd__median_value_capital_income_sek,RPCYD,"Median value capital income, SEK",RPCYD,RPCYD,False,False,,,True
+326,rpcyd__unnamed_326_level_1,RPCYD,Unnamed: 326_level_1,RPCYD,RPCYD,False,False,,,True
+327,rpcyd__unnamed_327_level_1,RPCYD,Unnamed: 327_level_1,RPCYD,RPCYD,False,False,,,True
+328,rpcyd__unnamed_328_level_1,RPCYD,Unnamed: 328_level_1,RPCYD,RPCYD,False,False,,,True
+329,rpcyd__unnamed_329_level_1,RPCYD,Unnamed: 329_level_1,RPCYD,RPCYD,False,False,,,True
+330,rpcyd__unnamed_330_level_1,RPCYD,Unnamed: 330_level_1,RPCYD,RPCYD,False,False,,,True
+331,rpcyd__persistent_low_income_standard,RPCYD,Persistent low income standard (%),RPCYD,RPCYD,False,False,,,True
+332,rpcyd__unnamed_332_level_1,RPCYD,Unnamed: 332_level_1,RPCYD,RPCYD,False,False,,,True
+333,rpcyd__unnamed_333_level_1,RPCYD,Unnamed: 333_level_1,RPCYD,RPCYD,False,False,,,True
+334,rpcyd__unnamed_334_level_1,RPCYD,Unnamed: 334_level_1,RPCYD,RPCYD,False,False,,,True
+335,rpcyd__number_of_persons_1,RPCYD,Number of persons.1,RPCYD,RPCYD,False,False,,,True
+336,rpcyd__unnamed_336_level_1,RPCYD,Unnamed: 336_level_1,RPCYD,RPCYD,False,False,,,True
+337,rpcyd__unnamed_337_level_1,RPCYD,Unnamed: 337_level_1,RPCYD,RPCYD,False,False,,,True
+338,rpcyd__unnamed_338_level_1,RPCYD,Unnamed: 338_level_1,RPCYD,RPCYD,False,False,,,True
+339,rpcyd__unnamed_339_level_1,RPCYD,Unnamed: 339_level_1,RPCYD,RPCYD,False,False,,,True
+340,rpcyd__unnamed_340_level_1,RPCYD,Unnamed: 340_level_1,RPCYD,RPCYD,False,False,,,True
+341,rpcyd__unnamed_341_level_1,RPCYD,Unnamed: 341_level_1,RPCYD,RPCYD,False,False,,,True
+342,rpcyd__unnamed_342_level_1,RPCYD,Unnamed: 342_level_1,RPCYD,RPCYD,False,False,,,True
+343,rpcyd__upper_bound_value_sek_thousands,RPCYD,"Upper bound value, SEK thousands",RPCYD,RPCYD,False,False,,,True
+344,rpcyd__unnamed_344_level_1,RPCYD,Unnamed: 344_level_1,RPCYD,RPCYD,False,False,,,True
+345,rpcyd__unnamed_345_level_1,RPCYD,Unnamed: 345_level_1,RPCYD,RPCYD,False,False,,,True
+346,rpcyd__unnamed_346_level_1,RPCYD,Unnamed: 346_level_1,RPCYD,RPCYD,False,False,,,True
+347,rpcyd__unnamed_347_level_1,RPCYD,Unnamed: 347_level_1,RPCYD,RPCYD,False,False,,,True
+348,rpcyd__mean_value_sek_thousands_1,RPCYD,"Mean value, SEK thousands.1",RPCYD,RPCYD,False,False,,,True
+349,rpcyd__unnamed_349_level_1,RPCYD,Unnamed: 349_level_1,RPCYD,RPCYD,False,False,,,True
+350,rpcyd__unnamed_350_level_1,RPCYD,Unnamed: 350_level_1,RPCYD,RPCYD,False,False,,,True
+351,rpcyd__unnamed_351_level_1,RPCYD,Unnamed: 351_level_1,RPCYD,RPCYD,False,False,,,True
+352,rpcyd__unnamed_352_level_1,RPCYD,Unnamed: 352_level_1,RPCYD,RPCYD,False,False,,,True
+353,rpcyd__income_share_percent,RPCYD,"Income share, percent",RPCYD,RPCYD,False,False,,,True
+354,rpcyd__unnamed_354_level_1,RPCYD,Unnamed: 354_level_1,RPCYD,RPCYD,False,False,,,True
+355,rpcyd__unnamed_355_level_1,RPCYD,Unnamed: 355_level_1,RPCYD,RPCYD,False,False,,,True
+356,rpcyd__unnamed_356_level_1,RPCYD,Unnamed: 356_level_1,RPCYD,RPCYD,False,False,,,True
+357,rpcyd__unnamed_357_level_1,RPCYD,Unnamed: 357_level_1,RPCYD,RPCYD,False,False,,,True
+358,rpcyd__unnamed_358_level_1,RPCYD,Unnamed: 358_level_1,RPCYD,RPCYD,False,False,,,True
+359,rpcyd__unnamed_359_level_1,RPCYD,Unnamed: 359_level_1,RPCYD,RPCYD,False,False,,,True
+360,rpcyd__unnamed_360_level_1,RPCYD,Unnamed: 360_level_1,RPCYD,RPCYD,False,False,,,True
+361,rpcyd__unnamed_361_level_1,RPCYD,Unnamed: 361_level_1,RPCYD,RPCYD,False,False,,,True
+362,rpcyd__unnamed_362_level_1,RPCYD,Unnamed: 362_level_1,RPCYD,RPCYD,False,False,,,True
+363,rpcyd__upper_bound_value_sek_thousands_1,RPCYD,"Upper bound value, SEK thousands.1",RPCYD,RPCYD,False,False,,,True
+364,rpcyd__unnamed_364_level_1,RPCYD,Unnamed: 364_level_1,RPCYD,RPCYD,False,False,,,True
+365,rpcyd__unnamed_365_level_1,RPCYD,Unnamed: 365_level_1,RPCYD,RPCYD,False,False,,,True
+366,rpcyd__unnamed_366_level_1,RPCYD,Unnamed: 366_level_1,RPCYD,RPCYD,False,False,,,True
+367,rpcyd__unnamed_367_level_1,RPCYD,Unnamed: 367_level_1,RPCYD,RPCYD,False,False,,,True
+368,rpcyd__mean_value_sek_thousands_2,RPCYD,"Mean value, SEK thousands.2",RPCYD,RPCYD,False,False,,,True
+369,rpcyd__unnamed_369_level_1,RPCYD,Unnamed: 369_level_1,RPCYD,RPCYD,False,False,,,True
+370,rpcyd__unnamed_370_level_1,RPCYD,Unnamed: 370_level_1,RPCYD,RPCYD,False,False,,,True
+371,rpcyd__unnamed_371_level_1,RPCYD,Unnamed: 371_level_1,RPCYD,RPCYD,False,False,,,True
+372,rpcyd__unnamed_372_level_1,RPCYD,Unnamed: 372_level_1,RPCYD,RPCYD,False,False,,,True
+373,rpcyd__income_share_percent_1,RPCYD,"Income share, percent.1",RPCYD,RPCYD,False,False,,,True
+374,rpcyd__unnamed_374_level_1,RPCYD,Unnamed: 374_level_1,RPCYD,RPCYD,False,False,,,True
+375,rpcyd__unnamed_375_level_1,RPCYD,Unnamed: 375_level_1,RPCYD,RPCYD,False,False,,,True
+376,rpcyd__unnamed_376_level_1,RPCYD,Unnamed: 376_level_1,RPCYD,RPCYD,False,False,,,True
+377,rpcyd__unnamed_377_level_1,RPCYD,Unnamed: 377_level_1,RPCYD,RPCYD,False,False,,,True
+378,rpcyd__unnamed_378_level_1,RPCYD,Unnamed: 378_level_1,RPCYD,RPCYD,False,False,,,True
+379,rpcyd__unnamed_379_level_1,RPCYD,Unnamed: 379_level_1,RPCYD,RPCYD,False,False,,,True
+380,rpcyd__unnamed_380_level_1,RPCYD,Unnamed: 380_level_1,RPCYD,RPCYD,False,False,,,True
+381,rpcyd__mean_value_sek_thousands_3,RPCYD,"Mean value, SEK thousands.3",RPCYD,RPCYD,False,False,,,True
+382,rpcyd__unnamed_382_level_1,RPCYD,Unnamed: 382_level_1,RPCYD,RPCYD,False,False,,,True
+383,rpcyd__unnamed_383_level_1,RPCYD,Unnamed: 383_level_1,RPCYD,RPCYD,False,False,,,True
+384,rpcyd__unnamed_384_level_1,RPCYD,Unnamed: 384_level_1,RPCYD,RPCYD,False,False,,,True
+385,rpcyd__unnamed_385_level_1,RPCYD,Unnamed: 385_level_1,RPCYD,RPCYD,False,False,,,True
+386,rpcyd__unnamed_386_level_1,RPCYD,Unnamed: 386_level_1,RPCYD,RPCYD,False,False,,,True
+387,rpcyd__share_with_income_percent,RPCYD,"Share with income, percent",RPCYD,RPCYD,False,False,,,True
+388,rpcyd__unnamed_388_level_1,RPCYD,Unnamed: 388_level_1,RPCYD,RPCYD,False,False,,,True
+389,rpcyd__unnamed_389_level_1,RPCYD,Unnamed: 389_level_1,RPCYD,RPCYD,False,False,,,True
+390,rpcyd__unnamed_390_level_1,RPCYD,Unnamed: 390_level_1,RPCYD,RPCYD,False,False,,,True
+391,rpcyd__unnamed_391_level_1,RPCYD,Unnamed: 391_level_1,RPCYD,RPCYD,False,False,,,True
+392,rpcyd__unnamed_392_level_1,RPCYD,Unnamed: 392_level_1,RPCYD,RPCYD,False,False,,,True
+393,rpcyd__number_of_persons_2,RPCYD,Number of persons.2,RPCYD,RPCYD,False,False,,,True
+394,rpcyd__unnamed_394_level_1,RPCYD,Unnamed: 394_level_1,RPCYD,RPCYD,False,False,,,True
+395,rpcyd__unnamed_395_level_1,RPCYD,Unnamed: 395_level_1,RPCYD,RPCYD,False,False,,,True
+396,rpcyd__unnamed_396_level_1,RPCYD,Unnamed: 396_level_1,RPCYD,RPCYD,False,False,,,True
+397,rpcyd__unnamed_397_level_1,RPCYD,Unnamed: 397_level_1,RPCYD,RPCYD,False,False,,,True
+398,rpcyd__unnamed_398_level_1,RPCYD,Unnamed: 398_level_1,RPCYD,RPCYD,False,False,,,True
+399,rpcyd__unnamed_399_level_1,RPCYD,Unnamed: 399_level_1,RPCYD,RPCYD,False,False,,,True
+400,rpcyd__unnamed_400_level_1,RPCYD,Unnamed: 400_level_1,RPCYD,RPCYD,False,False,,,True
+401,rpcyd__unnamed_401_level_1,RPCYD,Unnamed: 401_level_1,RPCYD,RPCYD,False,False,,,True
+402,rpcyd__unnamed_402_level_1,RPCYD,Unnamed: 402_level_1,RPCYD,RPCYD,False,False,,,True
+403,rpcyd__unnamed_403_level_1,RPCYD,Unnamed: 403_level_1,RPCYD,RPCYD,False,False,,,True
+404,rpcyd__mean_income_sek_thousands,RPCYD,"mean income, SEK thousands",RPCYD,RPCYD,False,False,,,True
+405,rpcyd__median_value_sek_thousands,RPCYD,"median value, SEK thousands",RPCYD,RPCYD,False,False,,,True
+406,rpcyd__total_sum_sek_million,RPCYD,"total sum, SEK million",RPCYD,RPCYD,False,False,,,True
+407,rpcyd__number_of_persons__dup2,RPCYD,number of persons,RPCYD,RPCYD,False,False,,,True
+408,rpcyd__unnamed_408_level_1,RPCYD,Unnamed: 408_level_1,RPCYD,RPCYD,False,False,,,True
+409,rpcyd__unnamed_409_level_1,RPCYD,Unnamed: 409_level_1,RPCYD,RPCYD,False,False,,,True
+410,rpcyd__unnamed_410_level_1,RPCYD,Unnamed: 410_level_1,RPCYD,RPCYD,False,False,,,True
+411,rpcyd__unnamed_411_level_1,RPCYD,Unnamed: 411_level_1,RPCYD,RPCYD,False,False,,,True
+412,rpcyd__unnamed_412_level_1,RPCYD,Unnamed: 412_level_1,RPCYD,RPCYD,False,False,,,True
+413,rpcyd__mean_income_sek_thousands_1,RPCYD,"mean income, SEK thousands.1",RPCYD,RPCYD,False,False,,,True
+414,rpcyd__median_value_sek_thousands_1,RPCYD,"median value, SEK thousands.1",RPCYD,RPCYD,False,False,,,True
+415,rpcyd__total_sum_sek_million_1,RPCYD,"total sum, SEK million.1",RPCYD,RPCYD,False,False,,,True
+416,rpcyd__number_of_persons_1__dup2,RPCYD,number of persons.1,RPCYD,RPCYD,False,False,,,True
+417,rpcyd__unnamed_417_level_1,RPCYD,Unnamed: 417_level_1,RPCYD,RPCYD,False,False,,,True
+418,rpcyd__unnamed_418_level_1,RPCYD,Unnamed: 418_level_1,RPCYD,RPCYD,False,False,,,True
+419,rpcyd__unnamed_419_level_1,RPCYD,Unnamed: 419_level_1,RPCYD,RPCYD,False,False,,,True
+420,rpcyd__unnamed_420_level_1,RPCYD,Unnamed: 420_level_1,RPCYD,RPCYD,False,False,,,True
+421,rpcyd__unnamed_421_level_1,RPCYD,Unnamed: 421_level_1,RPCYD,RPCYD,False,False,,,True
+422,rpcyd__mean_income_sek_thousands_2,RPCYD,"mean income, SEK thousands.2",RPCYD,RPCYD,False,False,,,True
+423,rpcyd__median_value_sek_thousands_2,RPCYD,"median value, SEK thousands.2",RPCYD,RPCYD,False,False,,,True
+424,rpcyd__total_sum_sek_million_2,RPCYD,"total sum, SEK million.2",RPCYD,RPCYD,False,False,,,True
+425,rpcyd__number_of_persons_2__dup2,RPCYD,number of persons.2,RPCYD,RPCYD,False,False,,,True
+426,rpcyd__unnamed_426_level_1,RPCYD,Unnamed: 426_level_1,RPCYD,RPCYD,False,False,,,True
+427,rpcyd__unnamed_427_level_1,RPCYD,Unnamed: 427_level_1,RPCYD,RPCYD,False,False,,,True
+428,rpcyd__unnamed_428_level_1,RPCYD,Unnamed: 428_level_1,RPCYD,RPCYD,False,False,,,True
+429,rpcyd__unnamed_429_level_1,RPCYD,Unnamed: 429_level_1,RPCYD,RPCYD,False,False,,,True
+430,rpcyd__unnamed_430_level_1,RPCYD,Unnamed: 430_level_1,RPCYD,RPCYD,False,False,,,True
+431,rpcyd__mean_income_sek_thousands_3,RPCYD,"mean income, SEK thousands.3",RPCYD,RPCYD,False,False,,,True
+432,rpcyd__median_value_sek_thousands_3,RPCYD,"median value, SEK thousands.3",RPCYD,RPCYD,False,False,,,True
+433,rpcyd__total_sum_sek_million_3,RPCYD,"total sum, SEK million.3",RPCYD,RPCYD,False,False,,,True
+434,rpcyd__number_of_persons_3,RPCYD,number of persons.3,RPCYD,RPCYD,False,False,,,True
+435,rpcyd__unnamed_435_level_1,RPCYD,Unnamed: 435_level_1,RPCYD,RPCYD,False,False,,,True
+436,rpcyd__unnamed_436_level_1,RPCYD,Unnamed: 436_level_1,RPCYD,RPCYD,False,False,,,True
+437,rpcyd__unnamed_437_level_1,RPCYD,Unnamed: 437_level_1,RPCYD,RPCYD,False,False,,,True
+438,rpcyd__unnamed_438_level_1,RPCYD,Unnamed: 438_level_1,RPCYD,RPCYD,False,False,,,True
+439,rpcyd__unnamed_439_level_1,RPCYD,Unnamed: 439_level_1,RPCYD,RPCYD,False,False,,,True
+440,rpcyd__mean_income_sek_thousands_4,RPCYD,"mean income, SEK thousands.4",RPCYD,RPCYD,False,False,,,True
+441,rpcyd__median_value_sek_thousands_4,RPCYD,"median value, SEK thousands.4",RPCYD,RPCYD,False,False,,,True
+442,rpcyd__total_sum_sek_million_4,RPCYD,"total sum, SEK million.4",RPCYD,RPCYD,False,False,,,True
+443,rpcyd__number_of_persons_4,RPCYD,number of persons.4,RPCYD,RPCYD,False,False,,,True
+444,rpcyd__unnamed_444_level_1,RPCYD,Unnamed: 444_level_1,RPCYD,RPCYD,False,False,,,True
+445,rpcyd__unnamed_445_level_1,RPCYD,Unnamed: 445_level_1,RPCYD,RPCYD,False,False,,,True
+446,rpcyd__unnamed_446_level_1,RPCYD,Unnamed: 446_level_1,RPCYD,RPCYD,False,False,,,True
+447,rpcyd__unnamed_447_level_1,RPCYD,Unnamed: 447_level_1,RPCYD,RPCYD,False,False,,,True
+448,rpcyd__mean_income_sek_thousands__dup2,RPCYD,"Mean income, SEK thousands",RPCYD,RPCYD,False,False,,,True
+449,rpcyd__unnamed_449_level_1,RPCYD,Unnamed: 449_level_1,RPCYD,RPCYD,False,False,,,True
+450,rpcyd__unnamed_450_level_1,RPCYD,Unnamed: 450_level_1,RPCYD,RPCYD,False,False,,,True
+451,rpcyd__unnamed_451_level_1,RPCYD,Unnamed: 451_level_1,RPCYD,RPCYD,False,False,,,True
+452,rpcyd__unnamed_452_level_1,RPCYD,Unnamed: 452_level_1,RPCYD,RPCYD,False,False,,,True
+453,rpcyd__median_income_sek_thousands,RPCYD,"Median income, SEK thousands",RPCYD,RPCYD,False,False,,,True
+454,rpcyd__unnamed_454_level_1,RPCYD,Unnamed: 454_level_1,RPCYD,RPCYD,False,False,,,True
+455,rpcyd__unnamed_455_level_1,RPCYD,Unnamed: 455_level_1,RPCYD,RPCYD,False,False,,,True
+456,rpcyd__unnamed_456_level_1,RPCYD,Unnamed: 456_level_1,RPCYD,RPCYD,False,False,,,True
+457,rpcyd__unnamed_457_level_1,RPCYD,Unnamed: 457_level_1,RPCYD,RPCYD,False,False,,,True
+458,rpcyd__total_sum_sek_millions,RPCYD,"Total sum, SEK millions",RPCYD,RPCYD,False,False,,,True
+459,rpcyd__unnamed_459_level_1,RPCYD,Unnamed: 459_level_1,RPCYD,RPCYD,False,False,,,True
+460,rpcyd__unnamed_460_level_1,RPCYD,Unnamed: 460_level_1,RPCYD,RPCYD,False,False,,,True
+461,rpcyd__unnamed_461_level_1,RPCYD,Unnamed: 461_level_1,RPCYD,RPCYD,False,False,,,True
+462,rpcyd__unnamed_462_level_1,RPCYD,Unnamed: 462_level_1,RPCYD,RPCYD,False,False,,,True
+463,rpcyd__number_of_persons_3__dup2,RPCYD,Number of persons.3,RPCYD,RPCYD,False,False,,,True
+464,rpcyd__unnamed_464_level_1,RPCYD,Unnamed: 464_level_1,RPCYD,RPCYD,False,False,,,True
+465,rpcyd__unnamed_465_level_1,RPCYD,Unnamed: 465_level_1,RPCYD,RPCYD,False,False,,,True
+466,rpcyd__unnamed_466_level_1,RPCYD,Unnamed: 466_level_1,RPCYD,RPCYD,False,False,,,True
+467,rpcyd__unnamed_467_level_1,RPCYD,Unnamed: 467_level_1,RPCYD,RPCYD,False,False,,,True
+468,rpcyd__unnamed_468_level_1,RPCYD,Unnamed: 468_level_1,RPCYD,RPCYD,False,False,,,True
+469,rpcyd__unnamed_469_level_1,RPCYD,Unnamed: 469_level_1,RPCYD,RPCYD,False,False,,,True
+470,rpcyd__unnamed_470_level_1,RPCYD,Unnamed: 470_level_1,RPCYD,RPCYD,False,False,,,True
+471,rpcyd__unnamed_471_level_1,RPCYD,Unnamed: 471_level_1,RPCYD,RPCYD,False,False,,,True
+472,rpcyd__2020m01,RPCYD,2020M01,RPCYD,RPCYD,False,True,2020.0,2020-01,True
+473,rpcyd__2020m02,RPCYD,2020M02,RPCYD,RPCYD,False,True,2020.0,2020-02,True
+474,rpcyd__2020m03,RPCYD,2020M03,RPCYD,RPCYD,False,True,2020.0,2020-03,True
+475,rpcyd__2020m04,RPCYD,2020M04,RPCYD,RPCYD,False,True,2020.0,2020-04,True
+476,rpcyd__2020m05,RPCYD,2020M05,RPCYD,RPCYD,False,True,2020.0,2020-05,True
+477,rpcyd__2020m06,RPCYD,2020M06,RPCYD,RPCYD,False,True,2020.0,2020-06,True
+478,rpcyd__2020m07,RPCYD,2020M07,RPCYD,RPCYD,False,True,2020.0,2020-07,True
+479,rpcyd__2020m08,RPCYD,2020M08,RPCYD,RPCYD,False,True,2020.0,2020-08,True
+480,rpcyd__2020m09,RPCYD,2020M09,RPCYD,RPCYD,False,True,2020.0,2020-09,True
+481,rpcyd__2020m10,RPCYD,2020M10,RPCYD,RPCYD,False,True,2020.0,2020-10,True
+482,rpcyd__2020m11,RPCYD,2020M11,RPCYD,RPCYD,False,True,2020.0,2020-11,True
+483,rpcyd__2020m12,RPCYD,2020M12,RPCYD,RPCYD,False,True,2020.0,2020-12,True
+484,rpcyd__2021m01,RPCYD,2021M01,RPCYD,RPCYD,False,True,2021.0,2021-01,True
+485,rpcyd__2021m02,RPCYD,2021M02,RPCYD,RPCYD,False,True,2021.0,2021-02,True
+486,rpcyd__2021m03,RPCYD,2021M03,RPCYD,RPCYD,False,True,2021.0,2021-03,True
+487,rpcyd__2021m04,RPCYD,2021M04,RPCYD,RPCYD,False,True,2021.0,2021-04,True
+488,rpcyd__2021m05,RPCYD,2021M05,RPCYD,RPCYD,False,True,2021.0,2021-05,True
+489,rpcyd__2021m06,RPCYD,2021M06,RPCYD,RPCYD,False,True,2021.0,2021-06,True
+490,rpcyd__2021m07,RPCYD,2021M07,RPCYD,RPCYD,False,True,2021.0,2021-07,True
+491,rpcyd__2021m08,RPCYD,2021M08,RPCYD,RPCYD,False,True,2021.0,2021-08,True
+492,rpcyd__2021m09,RPCYD,2021M09,RPCYD,RPCYD,False,True,2021.0,2021-09,True
+493,rpcyd__2021m10,RPCYD,2021M10,RPCYD,RPCYD,False,True,2021.0,2021-10,True
+494,rpcyd__2021m11,RPCYD,2021M11,RPCYD,RPCYD,False,True,2021.0,2021-11,True
+495,rpcyd__2021m12,RPCYD,2021M12,RPCYD,RPCYD,False,True,2021.0,2021-12,True
+496,rpcyd__2022m01,RPCYD,2022M01,RPCYD,RPCYD,False,True,2022.0,2022-01,True
+497,rpcyd__2022m02,RPCYD,2022M02,RPCYD,RPCYD,False,True,2022.0,2022-02,True
+498,rpcyd__2022m03,RPCYD,2022M03,RPCYD,RPCYD,False,True,2022.0,2022-03,True
+499,rpcyd__2022m04,RPCYD,2022M04,RPCYD,RPCYD,False,True,2022.0,2022-04,True
+500,rpcyd__2022m05,RPCYD,2022M05,RPCYD,RPCYD,False,True,2022.0,2022-05,True
+501,rpcyd__2022m06,RPCYD,2022M06,RPCYD,RPCYD,False,True,2022.0,2022-06,True
+502,rpcyd__2022m07,RPCYD,2022M07,RPCYD,RPCYD,False,True,2022.0,2022-07,True
+503,rpcyd__2022m08,RPCYD,2022M08,RPCYD,RPCYD,False,True,2022.0,2022-08,True
+504,rpcyd__2022m09,RPCYD,2022M09,RPCYD,RPCYD,False,True,2022.0,2022-09,True
+505,rpcyd__2022m10,RPCYD,2022M10,RPCYD,RPCYD,False,True,2022.0,2022-10,True
+506,rpcyd__2022m11,RPCYD,2022M11,RPCYD,RPCYD,False,True,2022.0,2022-11,True
+507,rpcyd__2022m12,RPCYD,2022M12,RPCYD,RPCYD,False,True,2022.0,2022-12,True
+508,rpcyd__2023m01,RPCYD,2023M01,RPCYD,RPCYD,False,True,2023.0,2023-01,True
+509,rpcyd__2023m02,RPCYD,2023M02,RPCYD,RPCYD,False,True,2023.0,2023-02,True
+510,rpcyd__2023m03,RPCYD,2023M03,RPCYD,RPCYD,False,True,2023.0,2023-03,True
+511,rpcyd__2023m04,RPCYD,2023M04,RPCYD,RPCYD,False,True,2023.0,2023-04,True
+512,rpcyd__2023m05,RPCYD,2023M05,RPCYD,RPCYD,False,True,2023.0,2023-05,True
+513,rpcyd__2023m06,RPCYD,2023M06,RPCYD,RPCYD,False,True,2023.0,2023-06,True
+514,rpcyd__2023m07,RPCYD,2023M07,RPCYD,RPCYD,False,True,2023.0,2023-07,True
+515,rpcyd__2023m08,RPCYD,2023M08,RPCYD,RPCYD,False,True,2023.0,2023-08,True
+516,rpcyd__2023m09,RPCYD,2023M09,RPCYD,RPCYD,False,True,2023.0,2023-09,True
+517,rpcyd__2023m10,RPCYD,2023M10,RPCYD,RPCYD,False,True,2023.0,2023-10,True
+518,rpcyd__2023m11,RPCYD,2023M11,RPCYD,RPCYD,False,True,2023.0,2023-11,True
+519,rpcyd__2023m12,RPCYD,2023M12,RPCYD,RPCYD,False,True,2023.0,2023-12,True
+520,rpcyd__2024m01,RPCYD,2024M01,RPCYD,RPCYD,False,True,2024.0,2024-01,True
+521,rpcyd__2024m02,RPCYD,2024M02,RPCYD,RPCYD,False,True,2024.0,2024-02,True
+522,rpcyd__2024m03,RPCYD,2024M03,RPCYD,RPCYD,False,True,2024.0,2024-03,True
+523,rpcyd__2024m04,RPCYD,2024M04,RPCYD,RPCYD,False,True,2024.0,2024-04,True
+524,rpcyd__2024m05,RPCYD,2024M05,RPCYD,RPCYD,False,True,2024.0,2024-05,True
+525,rpcyd__2024m06,RPCYD,2024M06,RPCYD,RPCYD,False,True,2024.0,2024-06,True
+526,rpcyd__2024m07,RPCYD,2024M07,RPCYD,RPCYD,False,True,2024.0,2024-07,True
+527,rpcyd__2024m08,RPCYD,2024M08,RPCYD,RPCYD,False,True,2024.0,2024-08,True
+528,rpcyd__2024m09,RPCYD,2024M09,RPCYD,RPCYD,False,True,2024.0,2024-09,True
+529,rpcyd__2024m10,RPCYD,2024M10,RPCYD,RPCYD,False,True,2024.0,2024-10,True
+530,rpcyd__2024m11,RPCYD,2024M11,RPCYD,RPCYD,False,True,2024.0,2024-11,True
+531,rpcyd__2024m12,RPCYD,2024M12,RPCYD,RPCYD,False,True,2024.0,2024-12,True
+532,rpcyd__unnamed_532_level_1,RPCYD,Unnamed: 532_level_1,RPCYD,RPCYD,False,False,,,True
+533,rpcyd__unnamed_533_level_1,RPCYD,Unnamed: 533_level_1,RPCYD,RPCYD,False,False,,,True
+534,rpcyd__unnamed_534_level_1,RPCYD,Unnamed: 534_level_1,RPCYD,RPCYD,False,False,,,True
+535,rpcyd__unnamed_535_level_1,RPCYD,Unnamed: 535_level_1,RPCYD,RPCYD,False,False,,,True
+536,rpcyd__2020m01_1,RPCYD,2020M01.1,RPCYD,RPCYD,False,False,,,True
+537,rpcyd__2020m02_1,RPCYD,2020M02.1,RPCYD,RPCYD,False,False,,,True
+538,rpcyd__2020m03_1,RPCYD,2020M03.1,RPCYD,RPCYD,False,False,,,True
+539,rpcyd__2020m04_1,RPCYD,2020M04.1,RPCYD,RPCYD,False,False,,,True
+540,rpcyd__2020m05_1,RPCYD,2020M05.1,RPCYD,RPCYD,False,False,,,True
+541,rpcyd__2020m06_1,RPCYD,2020M06.1,RPCYD,RPCYD,False,False,,,True
+542,rpcyd__2020m07_1,RPCYD,2020M07.1,RPCYD,RPCYD,False,False,,,True
+543,rpcyd__2020m08_1,RPCYD,2020M08.1,RPCYD,RPCYD,False,False,,,True
+544,rpcyd__2020m09_1,RPCYD,2020M09.1,RPCYD,RPCYD,False,False,,,True
+545,rpcyd__2020m10_1,RPCYD,2020M10.1,RPCYD,RPCYD,False,False,,,True
+546,rpcyd__2020m11_1,RPCYD,2020M11.1,RPCYD,RPCYD,False,False,,,True
+547,rpcyd__2020m12_1,RPCYD,2020M12.1,RPCYD,RPCYD,False,False,,,True
+548,rpcyd__2021m01_1,RPCYD,2021M01.1,RPCYD,RPCYD,False,False,,,True
+549,rpcyd__2021m02_1,RPCYD,2021M02.1,RPCYD,RPCYD,False,False,,,True
+550,rpcyd__2021m03_1,RPCYD,2021M03.1,RPCYD,RPCYD,False,False,,,True
+551,rpcyd__2021m04_1,RPCYD,2021M04.1,RPCYD,RPCYD,False,False,,,True
+552,rpcyd__2021m05_1,RPCYD,2021M05.1,RPCYD,RPCYD,False,False,,,True
+553,rpcyd__2021m06_1,RPCYD,2021M06.1,RPCYD,RPCYD,False,False,,,True
+554,rpcyd__2021m07_1,RPCYD,2021M07.1,RPCYD,RPCYD,False,False,,,True
+555,rpcyd__2021m08_1,RPCYD,2021M08.1,RPCYD,RPCYD,False,False,,,True
+556,rpcyd__2021m09_1,RPCYD,2021M09.1,RPCYD,RPCYD,False,False,,,True
+557,rpcyd__2021m10_1,RPCYD,2021M10.1,RPCYD,RPCYD,False,False,,,True
+558,rpcyd__2021m11_1,RPCYD,2021M11.1,RPCYD,RPCYD,False,False,,,True
+559,rpcyd__2021m12_1,RPCYD,2021M12.1,RPCYD,RPCYD,False,False,,,True
+560,rpcyd__2022m01_1,RPCYD,2022M01.1,RPCYD,RPCYD,False,False,,,True
+561,rpcyd__2022m02_1,RPCYD,2022M02.1,RPCYD,RPCYD,False,False,,,True
+562,rpcyd__2022m03_1,RPCYD,2022M03.1,RPCYD,RPCYD,False,False,,,True
+563,rpcyd__2022m04_1,RPCYD,2022M04.1,RPCYD,RPCYD,False,False,,,True
+564,rpcyd__2022m05_1,RPCYD,2022M05.1,RPCYD,RPCYD,False,False,,,True
+565,rpcyd__2022m06_1,RPCYD,2022M06.1,RPCYD,RPCYD,False,False,,,True
+566,rpcyd__2022m07_1,RPCYD,2022M07.1,RPCYD,RPCYD,False,False,,,True
+567,rpcyd__2022m08_1,RPCYD,2022M08.1,RPCYD,RPCYD,False,False,,,True
+568,rpcyd__2022m09_1,RPCYD,2022M09.1,RPCYD,RPCYD,False,False,,,True
+569,rpcyd__2022m10_1,RPCYD,2022M10.1,RPCYD,RPCYD,False,False,,,True
+570,rpcyd__2022m11_1,RPCYD,2022M11.1,RPCYD,RPCYD,False,False,,,True
+571,rpcyd__2022m12_1,RPCYD,2022M12.1,RPCYD,RPCYD,False,False,,,True
+572,rpcyd__2023m01_1,RPCYD,2023M01.1,RPCYD,RPCYD,False,False,,,True
+573,rpcyd__2023m02_1,RPCYD,2023M02.1,RPCYD,RPCYD,False,False,,,True
+574,rpcyd__2023m03_1,RPCYD,2023M03.1,RPCYD,RPCYD,False,False,,,True
+575,rpcyd__2023m04_1,RPCYD,2023M04.1,RPCYD,RPCYD,False,False,,,True
+576,rpcyd__2023m05_1,RPCYD,2023M05.1,RPCYD,RPCYD,False,False,,,True
+577,rpcyd__2023m06_1,RPCYD,2023M06.1,RPCYD,RPCYD,False,False,,,True
+578,rpcyd__2023m07_1,RPCYD,2023M07.1,RPCYD,RPCYD,False,False,,,True
+579,rpcyd__2023m08_1,RPCYD,2023M08.1,RPCYD,RPCYD,False,False,,,True
+580,rpcyd__2023m09_1,RPCYD,2023M09.1,RPCYD,RPCYD,False,False,,,True
+581,rpcyd__2023m10_1,RPCYD,2023M10.1,RPCYD,RPCYD,False,False,,,True
+582,rpcyd__2023m11_1,RPCYD,2023M11.1,RPCYD,RPCYD,False,False,,,True
+583,rpcyd__2023m12_1,RPCYD,2023M12.1,RPCYD,RPCYD,False,False,,,True
+584,rpcyd__2024m01_1,RPCYD,2024M01.1,RPCYD,RPCYD,False,False,,,True
+585,rpcyd__2024m02_1,RPCYD,2024M02.1,RPCYD,RPCYD,False,False,,,True
+586,rpcyd__2024m03_1,RPCYD,2024M03.1,RPCYD,RPCYD,False,False,,,True
+587,rpcyd__2024m04_1,RPCYD,2024M04.1,RPCYD,RPCYD,False,False,,,True
+588,rpcyd__2024m05_1,RPCYD,2024M05.1,RPCYD,RPCYD,False,False,,,True
+589,rpcyd__2024m06_1,RPCYD,2024M06.1,RPCYD,RPCYD,False,False,,,True
+590,rpcyd__2024m07_1,RPCYD,2024M07.1,RPCYD,RPCYD,False,False,,,True
+591,rpcyd__2024m08_1,RPCYD,2024M08.1,RPCYD,RPCYD,False,False,,,True
+592,rpcyd__2024m09_1,RPCYD,2024M09.1,RPCYD,RPCYD,False,False,,,True
+593,rpcyd__2024m10_1,RPCYD,2024M10.1,RPCYD,RPCYD,False,False,,,True
+594,rpcyd__2024m11_1,RPCYD,2024M11.1,RPCYD,RPCYD,False,False,,,True
+595,rpcyd__2024m12_1,RPCYD,2024M12.1,RPCYD,RPCYD,False,False,,,True
+596,rpcyd__unnamed_596_level_1,RPCYD,Unnamed: 596_level_1,RPCYD,RPCYD,False,False,,,True
+597,rpcyd__unnamed_597_level_1,RPCYD,Unnamed: 597_level_1,RPCYD,RPCYD,False,False,,,True
+598,rpcyd__unnamed_598_level_1,RPCYD,Unnamed: 598_level_1,RPCYD,RPCYD,False,False,,,True
+599,rpcyd__unnamed_599_level_1,RPCYD,Unnamed: 599_level_1,RPCYD,RPCYD,False,False,,,True
+600,rpcyd__2020m01_2,RPCYD,2020M01.2,RPCYD,RPCYD,False,False,,,True
+601,rpcyd__2020m02_2,RPCYD,2020M02.2,RPCYD,RPCYD,False,False,,,True
+602,rpcyd__2020m03_2,RPCYD,2020M03.2,RPCYD,RPCYD,False,False,,,True
+603,rpcyd__2020m04_2,RPCYD,2020M04.2,RPCYD,RPCYD,False,False,,,True
+604,rpcyd__2020m05_2,RPCYD,2020M05.2,RPCYD,RPCYD,False,False,,,True
+605,rpcyd__2020m06_2,RPCYD,2020M06.2,RPCYD,RPCYD,False,False,,,True
+606,rpcyd__2020m07_2,RPCYD,2020M07.2,RPCYD,RPCYD,False,False,,,True
+607,rpcyd__2020m08_2,RPCYD,2020M08.2,RPCYD,RPCYD,False,False,,,True
+608,rpcyd__2020m09_2,RPCYD,2020M09.2,RPCYD,RPCYD,False,False,,,True
+609,rpcyd__2020m10_2,RPCYD,2020M10.2,RPCYD,RPCYD,False,False,,,True
+610,rpcyd__2020m11_2,RPCYD,2020M11.2,RPCYD,RPCYD,False,False,,,True
+611,rpcyd__2020m12_2,RPCYD,2020M12.2,RPCYD,RPCYD,False,False,,,True
+612,rpcyd__2021m01_2,RPCYD,2021M01.2,RPCYD,RPCYD,False,False,,,True
+613,rpcyd__2021m02_2,RPCYD,2021M02.2,RPCYD,RPCYD,False,False,,,True
+614,rpcyd__2021m03_2,RPCYD,2021M03.2,RPCYD,RPCYD,False,False,,,True
+615,rpcyd__2021m04_2,RPCYD,2021M04.2,RPCYD,RPCYD,False,False,,,True
+616,rpcyd__2021m05_2,RPCYD,2021M05.2,RPCYD,RPCYD,False,False,,,True
+617,rpcyd__2021m06_2,RPCYD,2021M06.2,RPCYD,RPCYD,False,False,,,True
+618,rpcyd__2021m07_2,RPCYD,2021M07.2,RPCYD,RPCYD,False,False,,,True
+619,rpcyd__2021m08_2,RPCYD,2021M08.2,RPCYD,RPCYD,False,False,,,True
+620,rpcyd__2021m09_2,RPCYD,2021M09.2,RPCYD,RPCYD,False,False,,,True
+621,rpcyd__2021m10_2,RPCYD,2021M10.2,RPCYD,RPCYD,False,False,,,True
+622,rpcyd__2021m11_2,RPCYD,2021M11.2,RPCYD,RPCYD,False,False,,,True
+623,rpcyd__2021m12_2,RPCYD,2021M12.2,RPCYD,RPCYD,False,False,,,True
+624,rpcyd__2022m01_2,RPCYD,2022M01.2,RPCYD,RPCYD,False,False,,,True
+625,rpcyd__2022m02_2,RPCYD,2022M02.2,RPCYD,RPCYD,False,False,,,True
+626,rpcyd__2022m03_2,RPCYD,2022M03.2,RPCYD,RPCYD,False,False,,,True
+627,rpcyd__2022m04_2,RPCYD,2022M04.2,RPCYD,RPCYD,False,False,,,True
+628,rpcyd__2022m05_2,RPCYD,2022M05.2,RPCYD,RPCYD,False,False,,,True
+629,rpcyd__2022m06_2,RPCYD,2022M06.2,RPCYD,RPCYD,False,False,,,True
+630,rpcyd__2022m07_2,RPCYD,2022M07.2,RPCYD,RPCYD,False,False,,,True
+631,rpcyd__2022m08_2,RPCYD,2022M08.2,RPCYD,RPCYD,False,False,,,True
+632,rpcyd__2022m09_2,RPCYD,2022M09.2,RPCYD,RPCYD,False,False,,,True
+633,rpcyd__2022m10_2,RPCYD,2022M10.2,RPCYD,RPCYD,False,False,,,True
+634,rpcyd__2022m11_2,RPCYD,2022M11.2,RPCYD,RPCYD,False,False,,,True
+635,rpcyd__2022m12_2,RPCYD,2022M12.2,RPCYD,RPCYD,False,False,,,True
+636,rpcyd__2023m01_2,RPCYD,2023M01.2,RPCYD,RPCYD,False,False,,,True
+637,rpcyd__2023m02_2,RPCYD,2023M02.2,RPCYD,RPCYD,False,False,,,True
+638,rpcyd__2023m03_2,RPCYD,2023M03.2,RPCYD,RPCYD,False,False,,,True
+639,rpcyd__2023m04_2,RPCYD,2023M04.2,RPCYD,RPCYD,False,False,,,True
+640,rpcyd__2023m05_2,RPCYD,2023M05.2,RPCYD,RPCYD,False,False,,,True
+641,rpcyd__2023m06_2,RPCYD,2023M06.2,RPCYD,RPCYD,False,False,,,True
+642,rpcyd__2023m07_2,RPCYD,2023M07.2,RPCYD,RPCYD,False,False,,,True
+643,rpcyd__2023m08_2,RPCYD,2023M08.2,RPCYD,RPCYD,False,False,,,True
+644,rpcyd__2023m09_2,RPCYD,2023M09.2,RPCYD,RPCYD,False,False,,,True
+645,rpcyd__2023m10_2,RPCYD,2023M10.2,RPCYD,RPCYD,False,False,,,True
+646,rpcyd__2023m11_2,RPCYD,2023M11.2,RPCYD,RPCYD,False,False,,,True
+647,rpcyd__2023m12_2,RPCYD,2023M12.2,RPCYD,RPCYD,False,False,,,True
+648,rpcyd__2024m01_2,RPCYD,2024M01.2,RPCYD,RPCYD,False,False,,,True
+649,rpcyd__2024m02_2,RPCYD,2024M02.2,RPCYD,RPCYD,False,False,,,True
+650,rpcyd__2024m03_2,RPCYD,2024M03.2,RPCYD,RPCYD,False,False,,,True
+651,rpcyd__2024m04_2,RPCYD,2024M04.2,RPCYD,RPCYD,False,False,,,True
+652,rpcyd__2024m05_2,RPCYD,2024M05.2,RPCYD,RPCYD,False,False,,,True
+653,rpcyd__2024m06_2,RPCYD,2024M06.2,RPCYD,RPCYD,False,False,,,True
+654,rpcyd__2024m07_2,RPCYD,2024M07.2,RPCYD,RPCYD,False,False,,,True
+655,rpcyd__2024m08_2,RPCYD,2024M08.2,RPCYD,RPCYD,False,False,,,True
+656,rpcyd__2024m09_2,RPCYD,2024M09.2,RPCYD,RPCYD,False,False,,,True
+657,rpcyd__2024m10_2,RPCYD,2024M10.2,RPCYD,RPCYD,False,False,,,True
+658,rpcyd__2024m11_2,RPCYD,2024M11.2,RPCYD,RPCYD,False,False,,,True
+659,rpcyd__2024m12_2,RPCYD,2024M12.2,RPCYD,RPCYD,False,False,,,True
+660,rpcyd__unnamed_660_level_1,RPCYD,Unnamed: 660_level_1,RPCYD,RPCYD,False,False,,,True
+661,rpcyd__unnamed_661_level_1,RPCYD,Unnamed: 661_level_1,RPCYD,RPCYD,False,False,,,True
+662,rpcyd__unnamed_662_level_1,RPCYD,Unnamed: 662_level_1,RPCYD,RPCYD,False,False,,,True
+663,rpcyd__unnamed_663_level_1,RPCYD,Unnamed: 663_level_1,RPCYD,RPCYD,False,False,,,True
+664,rpcyd__mean_income_sek_thousands_1__dup2,RPCYD,"Mean income, SEK thousands.1",RPCYD,RPCYD,False,False,,,True
+665,rpcyd__unnamed_665_level_1,RPCYD,Unnamed: 665_level_1,RPCYD,RPCYD,False,False,,,True
+666,rpcyd__unnamed_666_level_1,RPCYD,Unnamed: 666_level_1,RPCYD,RPCYD,False,False,,,True
+667,rpcyd__median_income_sek_thousands_1,RPCYD,"Median income, SEK thousands.1",RPCYD,RPCYD,False,False,,,True
+668,rpcyd__unnamed_668_level_1,RPCYD,Unnamed: 668_level_1,RPCYD,RPCYD,False,False,,,True
+669,rpcyd__unnamed_669_level_1,RPCYD,Unnamed: 669_level_1,RPCYD,RPCYD,False,False,,,True
+670,rpcyd__total_sum_sek_millions_1,RPCYD,"Total sum, SEK millions.1",RPCYD,RPCYD,False,False,,,True
+671,rpcyd__unnamed_671_level_1,RPCYD,Unnamed: 671_level_1,RPCYD,RPCYD,False,False,,,True
+672,rpcyd__unnamed_672_level_1,RPCYD,Unnamed: 672_level_1,RPCYD,RPCYD,False,False,,,True
+673,rpcyd__number_of_persons_4__dup2,RPCYD,Number of persons.4,RPCYD,RPCYD,False,False,,,True
+674,rpcyd__unnamed_674_level_1,RPCYD,Unnamed: 674_level_1,RPCYD,RPCYD,False,False,,,True
+675,rpcyd__unnamed_675_level_1,RPCYD,Unnamed: 675_level_1,RPCYD,RPCYD,False,False,,,True
+676,rpcyd__unnamed_676_level_1,RPCYD,Unnamed: 676_level_1,RPCYD,RPCYD,False,False,,,True
+677,rpcyd__unnamed_677_level_1,RPCYD,Unnamed: 677_level_1,RPCYD,RPCYD,False,False,,,True
+678,rpcyd__unnamed_678_level_1,RPCYD,Unnamed: 678_level_1,RPCYD,RPCYD,False,False,,,True
+679,rpcyd__unnamed_679_level_1,RPCYD,Unnamed: 679_level_1,RPCYD,RPCYD,False,False,,,True
+680,rpcyd__mean_income_sek_thousands_2__dup2,RPCYD,"Mean income, SEK thousands.2",RPCYD,RPCYD,False,False,,,True
+681,rpcyd__unnamed_681_level_1,RPCYD,Unnamed: 681_level_1,RPCYD,RPCYD,False,False,,,True
+682,rpcyd__median_income_sek_thousands_2,RPCYD,"Median income, SEK thousands.2",RPCYD,RPCYD,False,False,,,True
+683,rpcyd__unnamed_683_level_1,RPCYD,Unnamed: 683_level_1,RPCYD,RPCYD,False,False,,,True
+684,rpcyd__total_sum_sek_millions_2,RPCYD,"Total sum, SEK millions.2",RPCYD,RPCYD,False,False,,,True
+685,rpcyd__unnamed_685_level_1,RPCYD,Unnamed: 685_level_1,RPCYD,RPCYD,False,False,,,True
+686,rpcyd__number_of_persons_5,RPCYD,Number of persons.5,RPCYD,RPCYD,False,False,,,True
+687,rpcyd__unnamed_687_level_1,RPCYD,Unnamed: 687_level_1,RPCYD,RPCYD,False,False,,,True
+688,rpcyd__unnamed_688_level_1,RPCYD,Unnamed: 688_level_1,RPCYD,RPCYD,False,False,,,True
+689,rpcyd__unnamed_689_level_1,RPCYD,Unnamed: 689_level_1,RPCYD,RPCYD,False,False,,,True
+690,rpcyd__unnamed_690_level_1,RPCYD,Unnamed: 690_level_1,RPCYD,RPCYD,False,False,,,True
+691,rpcyd__unnamed_691_level_1,RPCYD,Unnamed: 691_level_1,RPCYD,RPCYD,False,False,,,True
+692,rpcyd__unnamed_692_level_1,RPCYD,Unnamed: 692_level_1,RPCYD,RPCYD,False,False,,,True
+693,rpcyd__2021__dup2,RPCYD,2021,RPCYD,RPCYD,False,True,2021.0,2021,True
+694,rpcyd__2022__dup2,RPCYD,2022,RPCYD,RPCYD,False,True,2022.0,2022,True
+695,rpcyd__unnamed_695_level_1,RPCYD,Unnamed: 695_level_1,RPCYD,RPCYD,False,False,,,True
+696,rpcyd__unnamed_696_level_1,RPCYD,Unnamed: 696_level_1,RPCYD,RPCYD,False,False,,,True
+697,rpcyd__unnamed_697_level_1,RPCYD,Unnamed: 697_level_1,RPCYD,RPCYD,False,False,,,True
+698,rpcyd__unnamed_698_level_1,RPCYD,Unnamed: 698_level_1,RPCYD,RPCYD,False,False,,,True
+699,rpcyd__unnamed_699_level_1,RPCYD,Unnamed: 699_level_1,RPCYD,RPCYD,False,False,,,True
+700,rpcyd__2023__dup2,RPCYD,2023,RPCYD,RPCYD,False,True,2023.0,2023,True
+701,rpcyd__unnamed_701_level_1,RPCYD,Unnamed: 701_level_1,RPCYD,RPCYD,False,False,,,True
+702,rpcyd__unnamed_702_level_1,RPCYD,Unnamed: 702_level_1,RPCYD,RPCYD,False,False,,,True
+703,rpcyd__unnamed_703_level_1,RPCYD,Unnamed: 703_level_1,RPCYD,RPCYD,False,False,,,True
+704,rpcyd__unnamed_704_level_1,RPCYD,Unnamed: 704_level_1,RPCYD,RPCYD,False,False,,,True
+705,rpcyd__unnamed_705_level_1,RPCYD,Unnamed: 705_level_1,RPCYD,RPCYD,False,False,,,True
+706,rpcyd__2019__dup2,RPCYD,2019,RPCYD,RPCYD,False,True,2019.0,2019,True
+707,rpcyd__2020__dup2,RPCYD,2020,RPCYD,RPCYD,False,True,2020.0,2020,True
+708,rpcyd__unnamed_708_level_1,RPCYD,Unnamed: 708_level_1,RPCYD,RPCYD,False,False,,,True
+709,rpcyd__unnamed_709_level_1,RPCYD,Unnamed: 709_level_1,RPCYD,RPCYD,False,False,,,True
+710,rpcyd__unnamed_710_level_1,RPCYD,Unnamed: 710_level_1,RPCYD,RPCYD,False,False,,,True
+711,rpcyd__unnamed_711_level_1,RPCYD,Unnamed: 711_level_1,RPCYD,RPCYD,False,False,,,True
+712,rpcyd__unnamed_712_level_1,RPCYD,Unnamed: 712_level_1,RPCYD,RPCYD,False,False,,,True
+713,rpcyd__2019_1,RPCYD,2019.1,RPCYD,RPCYD,False,True,2019.0,2019,True
+714,rpcyd__2020_1,RPCYD,2020.1,RPCYD,RPCYD,False,True,2020.0,2020,True
+715,rpcyd__unnamed_715_level_1,RPCYD,Unnamed: 715_level_1,RPCYD,RPCYD,False,False,,,True
+716,rpcyd__unnamed_716_level_1,RPCYD,Unnamed: 716_level_1,RPCYD,RPCYD,False,False,,,True
+717,rpcyd__unnamed_717_level_1,RPCYD,Unnamed: 717_level_1,RPCYD,RPCYD,False,False,,,True
+718,rpcyd__unnamed_718_level_1,RPCYD,Unnamed: 718_level_1,RPCYD,RPCYD,False,False,,,True
+719,rpcyd__unnamed_719_level_1,RPCYD,Unnamed: 719_level_1,RPCYD,RPCYD,False,False,,,True
+720,rpcyd__2021_1,RPCYD,2021.1,RPCYD,RPCYD,False,True,2021.0,2021,True
+721,rpcyd__2022_1,RPCYD,2022.1,RPCYD,RPCYD,False,True,2022.0,2022,True
+722,rpcyd__unnamed_722_level_1,RPCYD,Unnamed: 722_level_1,RPCYD,RPCYD,False,False,,,True
+723,rpcyd__unnamed_723_level_1,RPCYD,Unnamed: 723_level_1,RPCYD,RPCYD,False,False,,,True
+724,rpcyd__unnamed_724_level_1,RPCYD,Unnamed: 724_level_1,RPCYD,RPCYD,False,False,,,True
+725,rpcyd__unnamed_725_level_1,RPCYD,Unnamed: 725_level_1,RPCYD,RPCYD,False,False,,,True
+726,rpcyd__unnamed_726_level_1,RPCYD,Unnamed: 726_level_1,RPCYD,RPCYD,False,False,,,True
+727,rpcyd__2023_1,RPCYD,2023.1,RPCYD,RPCYD,False,True,2023.0,2023,True
+728,rpcyd__unnamed_728_level_1,RPCYD,Unnamed: 728_level_1,RPCYD,RPCYD,False,False,,,True
+729,rpcyd__unnamed_729_level_1,RPCYD,Unnamed: 729_level_1,RPCYD,RPCYD,False,False,,,True
+730,rpcyd__unnamed_730_level_1,RPCYD,Unnamed: 730_level_1,RPCYD,RPCYD,False,False,,,True
+731,rpcyd__unnamed_731_level_1,RPCYD,Unnamed: 731_level_1,RPCYD,RPCYD,False,False,,,True
+732,rpcyd__2019_2,RPCYD,2019.2,RPCYD,RPCYD,False,True,2019.0,2019,True
+733,rpcyd__2020_2,RPCYD,2020.2,RPCYD,RPCYD,False,True,2020.0,2020,True
+734,rpcyd__2021_2,RPCYD,2021.2,RPCYD,RPCYD,False,True,2021.0,2021,True
+735,rpcyd__2022_2,RPCYD,2022.2,RPCYD,RPCYD,False,True,2022.0,2022,True
+736,rpcyd__2023_2,RPCYD,2023.2,RPCYD,RPCYD,False,True,2023.0,2023,True
+737,rpcyd__unnamed_737_level_1,RPCYD,Unnamed: 737_level_1,RPCYD,RPCYD,False,False,,,True
+738,rpcyd__unnamed_738_level_1,RPCYD,Unnamed: 738_level_1,RPCYD,RPCYD,False,False,,,True
+739,rpcyd__unnamed_739_level_1,RPCYD,Unnamed: 739_level_1,RPCYD,RPCYD,False,False,,,True
+740,rpcyd__unnamed_740_level_1,RPCYD,Unnamed: 740_level_1,RPCYD,RPCYD,False,False,,,True
+741,rpcyd__2019_3,RPCYD,2019.3,RPCYD,RPCYD,False,True,2019.0,2019,True
+742,rpcyd__2020_3,RPCYD,2020.3,RPCYD,RPCYD,False,True,2020.0,2020,True
+743,rpcyd__2021_3,RPCYD,2021.3,RPCYD,RPCYD,False,True,2021.0,2021,True
+744,rpcyd__2022_3,RPCYD,2022.3,RPCYD,RPCYD,False,True,2022.0,2022,True
+745,rpcyd__2023_3,RPCYD,2023.3,RPCYD,RPCYD,False,True,2023.0,2023,True
+746,rpcyd__unnamed_746_level_1,RPCYD,Unnamed: 746_level_1,RPCYD,RPCYD,False,False,,,True
+747,rpcyd__unnamed_747_level_1,RPCYD,Unnamed: 747_level_1,RPCYD,RPCYD,False,False,,,True
+748,rpcyd__unnamed_748_level_1,RPCYD,Unnamed: 748_level_1,RPCYD,RPCYD,False,False,,,True
+749,rpcyd__unnamed_749_level_1,RPCYD,Unnamed: 749_level_1,RPCYD,RPCYD,False,False,,,True
+750,rpcyd__2019_4,RPCYD,2019.4,RPCYD,RPCYD,False,True,2019.0,2019,True
+751,rpcyd__2020_4,RPCYD,2020.4,RPCYD,RPCYD,False,True,2020.0,2020,True
+752,rpcyd__2021_4,RPCYD,2021.4,RPCYD,RPCYD,False,True,2021.0,2021,True
+753,rpcyd__2022_4,RPCYD,2022.4,RPCYD,RPCYD,False,True,2022.0,2022,True
+754,rpcyd__2023_4,RPCYD,2023.4,RPCYD,RPCYD,False,True,2023.0,2023,True
+755,rpcyd__unnamed_755_level_1,RPCYD,Unnamed: 755_level_1,RPCYD,RPCYD,False,False,,,True
+756,rpcyd__unnamed_756_level_1,RPCYD,Unnamed: 756_level_1,RPCYD,RPCYD,False,False,,,True
+757,rpcyd__unnamed_757_level_1,RPCYD,Unnamed: 757_level_1,RPCYD,RPCYD,False,False,,,True
+758,rpcyd__unnamed_758_level_1,RPCYD,Unnamed: 758_level_1,RPCYD,RPCYD,False,False,,,True
+759,rpcyd__2019_5,RPCYD,2019.5,RPCYD,RPCYD,False,True,2019.0,2019,True
+760,rpcyd__2020_5,RPCYD,2020.5,RPCYD,RPCYD,False,True,2020.0,2020,True
+761,rpcyd__2021_5,RPCYD,2021.5,RPCYD,RPCYD,False,True,2021.0,2021,True
+762,rpcyd__2022_5,RPCYD,2022.5,RPCYD,RPCYD,False,True,2022.0,2022,True
+763,rpcyd__2023_5,RPCYD,2023.5,RPCYD,RPCYD,False,True,2023.0,2023,True
+764,rpcyd__unnamed_764_level_1,RPCYD,Unnamed: 764_level_1,RPCYD,RPCYD,False,False,,,True
+765,rpcyd__unnamed_765_level_1,RPCYD,Unnamed: 765_level_1,RPCYD,RPCYD,False,False,,,True
+766,rpcyd__unnamed_766_level_1,RPCYD,Unnamed: 766_level_1,RPCYD,RPCYD,False,False,,,True
+767,rpcyd__unnamed_767_level_1,RPCYD,Unnamed: 767_level_1,RPCYD,RPCYD,False,False,,,True
+768,rpcyd__unnamed_768_level_1,RPCYD,Unnamed: 768_level_1,RPCYD,RPCYD,False,False,,,True
+769,rpcyd__mean_income_sek_thousands_3__dup2,RPCYD,"Mean income, SEK thousands.3",RPCYD,RPCYD,False,False,,,True
+770,rpcyd__median_value_sek_thousands__dup2,RPCYD,"Median value, SEK thousands",RPCYD,RPCYD,False,False,,,True
+771,rpcyd__total_sum_sek_million__dup2,RPCYD,"Total sum, SEK million",RPCYD,RPCYD,False,False,,,True
+772,rpcyd__number_of_persons_6,RPCYD,Number of persons.6,RPCYD,RPCYD,False,False,,,True
+773,rpcyd__unnamed_773_level_1,RPCYD,Unnamed: 773_level_1,RPCYD,RPCYD,False,False,,,True
+774,rpcyd__unnamed_774_level_1,RPCYD,Unnamed: 774_level_1,RPCYD,RPCYD,False,False,,,True
+775,rpcyd__unnamed_775_level_1,RPCYD,Unnamed: 775_level_1,RPCYD,RPCYD,False,False,,,True
+776,rpcyd__unnamed_776_level_1,RPCYD,Unnamed: 776_level_1,RPCYD,RPCYD,False,False,,,True
+777,rpcyd__unnamed_777_level_1,RPCYD,Unnamed: 777_level_1,RPCYD,RPCYD,False,False,,,True
+778,rpcyd__unnamed_778_level_1,RPCYD,Unnamed: 778_level_1,RPCYD,RPCYD,False,False,,,True
+779,rpcyd__mean_income_sek_thousands_4__dup2,RPCYD,"Mean income, SEK thousands.4",RPCYD,RPCYD,False,False,,,True
+780,rpcyd__median_value_sek_thousands_1__dup2,RPCYD,"Median value, SEK thousands.1",RPCYD,RPCYD,False,False,,,True
+781,rpcyd__total_sum_sek_million_1__dup2,RPCYD,"Total sum, SEK million.1",RPCYD,RPCYD,False,False,,,True
+782,rpcyd__number_of_persons_7,RPCYD,Number of persons.7,RPCYD,RPCYD,False,False,,,True
+783,rpcyd__unnamed_783_level_1,RPCYD,Unnamed: 783_level_1,RPCYD,RPCYD,False,False,,,True
+784,rpcyd__unnamed_784_level_1,RPCYD,Unnamed: 784_level_1,RPCYD,RPCYD,False,False,,,True
+785,rpcyd__unnamed_785_level_1,RPCYD,Unnamed: 785_level_1,RPCYD,RPCYD,False,False,,,True
+786,rpcyd__unnamed_786_level_1,RPCYD,Unnamed: 786_level_1,RPCYD,RPCYD,False,False,,,True
+787,rpcyd__unnamed_787_level_1,RPCYD,Unnamed: 787_level_1,RPCYD,RPCYD,False,False,,,True
+788,rpcyd__mean_income_sek_thousands_5,RPCYD,"Mean income, SEK thousands.5",RPCYD,RPCYD,False,False,,,True
+789,rpcyd__median_value_sek_thousands_2__dup2,RPCYD,"Median value, SEK thousands.2",RPCYD,RPCYD,False,False,,,True
+790,rpcyd__total_sum_sek_million_2__dup2,RPCYD,"Total sum, SEK million.2",RPCYD,RPCYD,False,False,,,True
+791,rpcyd__number_of_persons_8,RPCYD,Number of persons.8,RPCYD,RPCYD,False,False,,,True
+792,rpcyd__unnamed_792_level_1,RPCYD,Unnamed: 792_level_1,RPCYD,RPCYD,False,False,,,True
+793,rpcyd__unnamed_793_level_1,RPCYD,Unnamed: 793_level_1,RPCYD,RPCYD,False,False,,,True
+794,rpcyd__unnamed_794_level_1,RPCYD,Unnamed: 794_level_1,RPCYD,RPCYD,False,False,,,True
+795,rpcyd__unnamed_795_level_1,RPCYD,Unnamed: 795_level_1,RPCYD,RPCYD,False,False,,,True
+796,rpcyd__unnamed_796_level_1,RPCYD,Unnamed: 796_level_1,RPCYD,RPCYD,False,False,,,True
+797,rpcyd__mean_income_sek_thousands_6,RPCYD,"Mean income, SEK thousands.6",RPCYD,RPCYD,False,False,,,True
+798,rpcyd__median_value_sek_thousands_3__dup2,RPCYD,"Median value, SEK thousands.3",RPCYD,RPCYD,False,False,,,True
+799,rpcyd__total_sum_sek_million_3__dup2,RPCYD,"Total sum, SEK million.3",RPCYD,RPCYD,False,False,,,True
+800,rpcyd__number_of_persons_9,RPCYD,Number of persons.9,RPCYD,RPCYD,False,False,,,True
+801,rpcyd__unnamed_801_level_1,RPCYD,Unnamed: 801_level_1,RPCYD,RPCYD,False,False,,,True
+802,rpcyd__unnamed_802_level_1,RPCYD,Unnamed: 802_level_1,RPCYD,RPCYD,False,False,,,True
+803,rpcyd__unnamed_803_level_1,RPCYD,Unnamed: 803_level_1,RPCYD,RPCYD,False,False,,,True
+804,rpcyd__unnamed_804_level_1,RPCYD,Unnamed: 804_level_1,RPCYD,RPCYD,False,False,,,True
+805,rpcyd__unnamed_805_level_1,RPCYD,Unnamed: 805_level_1,RPCYD,RPCYD,False,False,,,True
+806,rpcyd__mean_income_sek_thousands_7,RPCYD,"Mean income, SEK thousands.7",RPCYD,RPCYD,False,False,,,True
+807,rpcyd__median_value_sek_thousands_4__dup2,RPCYD,"Median value, SEK thousands.4",RPCYD,RPCYD,False,False,,,True
+808,rpcyd__total_sum_sek_million_4__dup2,RPCYD,"Total sum, SEK million.4",RPCYD,RPCYD,False,False,,,True
+809,rpcyd__number_of_persons_10,RPCYD,Number of persons.10,RPCYD,RPCYD,False,False,,,True
+810,rydgdp__unnamed_810_level_1,RYDGDP,Unnamed: 810_level_1,RYDGDP,RYDGDP,False,False,,,True
+811,rydgdp__unnamed_811_level_1,RYDGDP,Unnamed: 811_level_1,RYDGDP,RYDGDP,False,False,,,True
+812,rydgdp__2019,RYDGDP,2019,RYDGDP,RYDGDP,False,True,2019.0,2019,True
+813,rydgdp__2020,RYDGDP,2020,RYDGDP,RYDGDP,False,True,2020.0,2020,True
+814,rydgdp__2021,RYDGDP,2021,RYDGDP,RYDGDP,False,True,2021.0,2021,True
+815,rydgdp__2022,RYDGDP,2022,RYDGDP,RYDGDP,False,True,2022.0,2022,True
+816,rydgdp__2023,RYDGDP,2023,RYDGDP,RYDGDP,False,True,2023.0,2023,True
+817,rydgdp__2019_1,RYDGDP,2019.1,RYDGDP,RYDGDP,False,True,2019.0,2019,True
+818,rydgdp__2020_1,RYDGDP,2020.1,RYDGDP,RYDGDP,False,True,2020.0,2020,True
+819,rydgdp__2021_1,RYDGDP,2021.1,RYDGDP,RYDGDP,False,True,2021.0,2021,True
+820,rydgdp__2022_1,RYDGDP,2022.1,RYDGDP,RYDGDP,False,True,2022.0,2022,True
+821,rydgdp__2023_1,RYDGDP,2023.1,RYDGDP,RYDGDP,False,True,2023.0,2023,True
+822,rydgdp__unnamed_822_level_1,RYDGDP,Unnamed: 822_level_1,RYDGDP,RYDGDP,False,False,,,True
+823,rydgdp__unnamed_823_level_1,RYDGDP,Unnamed: 823_level_1,RYDGDP,RYDGDP,False,False,,,True
+824,rydgdp__2019_2,RYDGDP,2019.2,RYDGDP,RYDGDP,False,True,2019.0,2019,True
+825,rydgdp__2020_2,RYDGDP,2020.2,RYDGDP,RYDGDP,False,True,2020.0,2020,True
+826,rydgdp__2021_2,RYDGDP,2021.2,RYDGDP,RYDGDP,False,True,2021.0,2021,True
+827,rydgdp__2022_2,RYDGDP,2022.2,RYDGDP,RYDGDP,False,True,2022.0,2022,True
+828,rydgdp__unnamed_828_level_1,RYDGDP,Unnamed: 828_level_1,RYDGDP,RYDGDP,False,False,,,True
+829,rydgdp__unnamed_829_level_1,RYDGDP,Unnamed: 829_level_1,RYDGDP,RYDGDP,False,False,,,True
+830,rydgdp__current_prices_million_sek,RYDGDP,"Current prices, million SEK",RYDGDP,RYDGDP,False,False,,,True
+831,rydgdp__unnamed_831_level_1,RYDGDP,Unnamed: 831_level_1,RYDGDP,RYDGDP,False,False,,,True
+832,rydgdp__unnamed_832_level_1,RYDGDP,Unnamed: 832_level_1,RYDGDP,RYDGDP,False,False,,,True
+833,rydgdp__unnamed_833_level_1,RYDGDP,Unnamed: 833_level_1,RYDGDP,RYDGDP,False,False,,,True
+834,rydgdp__unnamed_834_level_1,RYDGDP,Unnamed: 834_level_1,RYDGDP,RYDGDP,False,False,,,True
+835,rydgdp__current_prices_thousand_sek_per_capita,RYDGDP,"Current prices, thousand SEK, per capita",RYDGDP,RYDGDP,False,False,,,True
+836,rydgdp__unnamed_836_level_1,RYDGDP,Unnamed: 836_level_1,RYDGDP,RYDGDP,False,False,,,True
+837,rydgdp__unnamed_837_level_1,RYDGDP,Unnamed: 837_level_1,RYDGDP,RYDGDP,False,False,,,True
+838,rydgdp__unnamed_838_level_1,RYDGDP,Unnamed: 838_level_1,RYDGDP,RYDGDP,False,False,,,True
+839,rydgdp__unnamed_839_level_1,RYDGDP,Unnamed: 839_level_1,RYDGDP,RYDGDP,False,False,,,True
+840,rydgdp__unnamed_840_level_1,RYDGDP,Unnamed: 840_level_1,RYDGDP,RYDGDP,False,False,,,True
+841,rydgdp__unnamed_841_level_1,RYDGDP,Unnamed: 841_level_1,RYDGDP,RYDGDP,False,False,,,True
+842,rydgdp__2019_3,RYDGDP,2019.3,RYDGDP,RYDGDP,False,True,2019.0,2019,True
+843,rydgdp__2020_3,RYDGDP,2020.3,RYDGDP,RYDGDP,False,True,2020.0,2020,True
+844,rydgdp__2021_3,RYDGDP,2021.3,RYDGDP,RYDGDP,False,True,2021.0,2021,True
+845,rydgdp__2022_3,RYDGDP,2022.3,RYDGDP,RYDGDP,False,True,2022.0,2022,True
+846,rydgdp__unnamed_846_level_1,RYDGDP,Unnamed: 846_level_1,RYDGDP,RYDGDP,False,False,,,True
+847,rydgdp__grdp_current_prices_million_sek,RYDGDP,"GRDP, current prices, million SEK",RYDGDP,RYDGDP,False,False,,,True
+848,rydgdp__unnamed_848_level_1,RYDGDP,Unnamed: 848_level_1,RYDGDP,RYDGDP,False,False,,,True
+849,rydgdp__unnamed_849_level_1,RYDGDP,Unnamed: 849_level_1,RYDGDP,RYDGDP,False,False,,,True
+850,rydgdp__unnamed_850_level_1,RYDGDP,Unnamed: 850_level_1,RYDGDP,RYDGDP,False,False,,,True
+851,rydgdp__grdp_per_capita_thousand_sek,RYDGDP,"GRDP, per capita, thousand SEK",RYDGDP,RYDGDP,False,False,,,True
+852,rydgdp__unnamed_852_level_1,RYDGDP,Unnamed: 852_level_1,RYDGDP,RYDGDP,False,False,,,True
+853,rydgdp__unnamed_853_level_1,RYDGDP,Unnamed: 853_level_1,RYDGDP,RYDGDP,False,False,,,True
+854,rydgdp__unnamed_854_level_1,RYDGDP,Unnamed: 854_level_1,RYDGDP,RYDGDP,False,False,,,True
+855,rydgdp__grdp_per_employed_current_prices_thousand_sek,RYDGDP,"GRDP, per employed, current prices, thousand SEK",RYDGDP,RYDGDP,False,False,,,True
+856,rydgdp__unnamed_856_level_1,RYDGDP,Unnamed: 856_level_1,RYDGDP,RYDGDP,False,False,,,True
+857,rydgdp__unnamed_857_level_1,RYDGDP,Unnamed: 857_level_1,RYDGDP,RYDGDP,False,False,,,True
+858,rydgdp__unnamed_858_level_1,RYDGDP,Unnamed: 858_level_1,RYDGDP,RYDGDP,False,False,,,True
+859,rydgdp__unnamed_859_level_1,RYDGDP,Unnamed: 859_level_1,RYDGDP,RYDGDP,False,False,,,True
+860,rydgdp__grdp_current_prices_million_sek_1,RYDGDP,"GRDP, current prices, million SEK.1",RYDGDP,RYDGDP,False,False,,,True
+861,rydgdp__unnamed_861_level_1,RYDGDP,Unnamed: 861_level_1,RYDGDP,RYDGDP,False,False,,,True
+862,rydgdp__unnamed_862_level_1,RYDGDP,Unnamed: 862_level_1,RYDGDP,RYDGDP,False,False,,,True
+863,rydgdp__unnamed_863_level_1,RYDGDP,Unnamed: 863_level_1,RYDGDP,RYDGDP,False,False,,,True
+864,rydgdp__unnamed_864_level_1,RYDGDP,Unnamed: 864_level_1,RYDGDP,RYDGDP,False,False,,,True
+865,rydgdp__grdp_annual_change_in_volume_percent,RYDGDP,"GRDP, annual change in volume, percent",RYDGDP,RYDGDP,False,False,,,True
+866,rydgdp__unnamed_866_level_1,RYDGDP,Unnamed: 866_level_1,RYDGDP,RYDGDP,False,False,,,True
+867,rydgdp__unnamed_867_level_1,RYDGDP,Unnamed: 867_level_1,RYDGDP,RYDGDP,False,False,,,True
+868,rydgdp__unnamed_868_level_1,RYDGDP,Unnamed: 868_level_1,RYDGDP,RYDGDP,False,False,,,True
+869,rydgdp__unnamed_869_level_1,RYDGDP,Unnamed: 869_level_1,RYDGDP,RYDGDP,False,False,,,True
+870,rydgdp__grdp_per_capita_thousand_sek_1,RYDGDP,"GRDP, per capita, thousand SEK.1",RYDGDP,RYDGDP,False,False,,,True
+871,rydgdp__unnamed_871_level_1,RYDGDP,Unnamed: 871_level_1,RYDGDP,RYDGDP,False,False,,,True
+872,rydgdp__unnamed_872_level_1,RYDGDP,Unnamed: 872_level_1,RYDGDP,RYDGDP,False,False,,,True
+873,rydgdp__unnamed_873_level_1,RYDGDP,Unnamed: 873_level_1,RYDGDP,RYDGDP,False,False,,,True
+874,rydgdp__unnamed_874_level_1,RYDGDP,Unnamed: 874_level_1,RYDGDP,RYDGDP,False,False,,,True
+875,rydgdp__grdp_per_employed_current_prices_thousand_sek_1,RYDGDP,"GRDP, per employed, current prices, thousand SEK.1",RYDGDP,RYDGDP,False,False,,,True
+876,rydgdp__unnamed_876_level_1,RYDGDP,Unnamed: 876_level_1,RYDGDP,RYDGDP,False,False,,,True
+877,rydgdp__unnamed_877_level_1,RYDGDP,Unnamed: 877_level_1,RYDGDP,RYDGDP,False,False,,,True
+878,rydgdp__unnamed_878_level_1,RYDGDP,Unnamed: 878_level_1,RYDGDP,RYDGDP,False,False,,,True
+879,rydgdp__unnamed_879_level_1,RYDGDP,Unnamed: 879_level_1,RYDGDP,RYDGDP,False,False,,,True
+880,rydgdp__average_number_of_employed_thousand_of_persons,RYDGDP,"Average number of employed, thousand of persons",RYDGDP,RYDGDP,False,False,,,True
+881,rydgdp__unnamed_881_level_1,RYDGDP,Unnamed: 881_level_1,RYDGDP,RYDGDP,False,False,,,True
+882,rydgdp__unnamed_882_level_1,RYDGDP,Unnamed: 882_level_1,RYDGDP,RYDGDP,False,False,,,True
+883,rydgdp__unnamed_883_level_1,RYDGDP,Unnamed: 883_level_1,RYDGDP,RYDGDP,False,False,,,True
+884,rydgdp__unnamed_884_level_1,RYDGDP,Unnamed: 884_level_1,RYDGDP,RYDGDP,False,False,,,True
+885,rydgdp__unnamed_885_level_1,RYDGDP,Unnamed: 885_level_1,RYDGDP,RYDGDP,False,False,,,True
+886,rydgdp__grdp_current_prices_million_sek_2,RYDGDP,"GRDP, current prices, million SEK.2",RYDGDP,RYDGDP,False,False,,,True
+887,rydgdp__unnamed_887_level_1,RYDGDP,Unnamed: 887_level_1,RYDGDP,RYDGDP,False,False,,,True
+888,rydgdp__unnamed_888_level_1,RYDGDP,Unnamed: 888_level_1,RYDGDP,RYDGDP,False,False,,,True
+889,rydgdp__unnamed_889_level_1,RYDGDP,Unnamed: 889_level_1,RYDGDP,RYDGDP,False,False,,,True
+890,rydgdp__unnamed_890_level_1,RYDGDP,Unnamed: 890_level_1,RYDGDP,RYDGDP,False,False,,,True
+891,rydgdp__grdp_annual_change_in_volume_percent_1,RYDGDP,"GRDP, annual change in volume, percent.1",RYDGDP,RYDGDP,False,False,,,True
+892,rydgdp__unnamed_892_level_1,RYDGDP,Unnamed: 892_level_1,RYDGDP,RYDGDP,False,False,,,True
+893,rydgdp__unnamed_893_level_1,RYDGDP,Unnamed: 893_level_1,RYDGDP,RYDGDP,False,False,,,True
+894,rydgdp__unnamed_894_level_1,RYDGDP,Unnamed: 894_level_1,RYDGDP,RYDGDP,False,False,,,True
+895,rydgdp__unnamed_895_level_1,RYDGDP,Unnamed: 895_level_1,RYDGDP,RYDGDP,False,False,,,True
+896,rydgdp__grdp_per_capita_thousand_sek_2,RYDGDP,"GRDP, per capita, thousand SEK.2",RYDGDP,RYDGDP,False,False,,,True
+897,rydgdp__unnamed_897_level_1,RYDGDP,Unnamed: 897_level_1,RYDGDP,RYDGDP,False,False,,,True
+898,rydgdp__unnamed_898_level_1,RYDGDP,Unnamed: 898_level_1,RYDGDP,RYDGDP,False,False,,,True
+899,rydgdp__unnamed_899_level_1,RYDGDP,Unnamed: 899_level_1,RYDGDP,RYDGDP,False,False,,,True
+900,rydgdp__unnamed_900_level_1,RYDGDP,Unnamed: 900_level_1,RYDGDP,RYDGDP,False,False,,,True
+901,rydgdp__grdp_per_employed_current_prices_thousand_sek_2,RYDGDP,"GRDP, per employed, current prices, thousand SEK.2",RYDGDP,RYDGDP,False,False,,,True
+902,rydgdp__unnamed_902_level_1,RYDGDP,Unnamed: 902_level_1,RYDGDP,RYDGDP,False,False,,,True
+903,rydgdp__unnamed_903_level_1,RYDGDP,Unnamed: 903_level_1,RYDGDP,RYDGDP,False,False,,,True
+904,rydgdp__unnamed_904_level_1,RYDGDP,Unnamed: 904_level_1,RYDGDP,RYDGDP,False,False,,,True
+905,rydgdp__unnamed_905_level_1,RYDGDP,Unnamed: 905_level_1,RYDGDP,RYDGDP,False,False,,,True
+906,rydgdp__average_number_of_employed_thousand_of_persons_1,RYDGDP,"Average number of employed, thousand of persons.1",RYDGDP,RYDGDP,False,False,,,True
+907,rydgdp__unnamed_907_level_1,RYDGDP,Unnamed: 907_level_1,RYDGDP,RYDGDP,False,False,,,True
+908,rydgdp__unnamed_908_level_1,RYDGDP,Unnamed: 908_level_1,RYDGDP,RYDGDP,False,False,,,True
+909,rydgdp__unnamed_909_level_1,RYDGDP,Unnamed: 909_level_1,RYDGDP,RYDGDP,False,False,,,True
+910,rydgdp__unnamed_910_level_1,RYDGDP,Unnamed: 910_level_1,RYDGDP,RYDGDP,False,False,,,True
+911,rydgdp__unnamed_911_level_1,RYDGDP,Unnamed: 911_level_1,RYDGDP,RYDGDP,False,False,,,True
+912,rydgdp__unnamed_912_level_1,RYDGDP,Unnamed: 912_level_1,RYDGDP,RYDGDP,False,False,,,True
+913,rydgdp__1995,RYDGDP,1995,RYDGDP,RYDGDP,False,True,1995.0,1995,True
+914,rydgdp__1996,RYDGDP,1996,RYDGDP,RYDGDP,False,True,1996.0,1996,True
+915,rydgdp__1997,RYDGDP,1997,RYDGDP,RYDGDP,False,True,1997.0,1997,True
+916,rydgdp__1998,RYDGDP,1998,RYDGDP,RYDGDP,False,True,1998.0,1998,True
+917,rydgdp__1999,RYDGDP,1999,RYDGDP,RYDGDP,False,True,1999.0,1999,True
+918,rydgdp__2000,RYDGDP,2000,RYDGDP,RYDGDP,False,True,2000.0,2000,True
+919,rydgdp__2001,RYDGDP,2001,RYDGDP,RYDGDP,False,True,2001.0,2001,True
+920,rydgdp__2002,RYDGDP,2002,RYDGDP,RYDGDP,False,True,2002.0,2002,True
+921,rydgdp__2003,RYDGDP,2003,RYDGDP,RYDGDP,False,True,2003.0,2003,True
+922,rydgdp__2004,RYDGDP,2004,RYDGDP,RYDGDP,False,True,2004.0,2004,True
+923,rydgdp__2005,RYDGDP,2005,RYDGDP,RYDGDP,False,True,2005.0,2005,True
+924,rydgdp__2006,RYDGDP,2006,RYDGDP,RYDGDP,False,True,2006.0,2006,True
+925,rydgdp__2007,RYDGDP,2007,RYDGDP,RYDGDP,False,True,2007.0,2007,True
+926,rydgdp__2008,RYDGDP,2008,RYDGDP,RYDGDP,False,True,2008.0,2008,True
+927,rydgdp__2009,RYDGDP,2009,RYDGDP,RYDGDP,False,True,2009.0,2009,True
+928,rydgdp__2010,RYDGDP,2010,RYDGDP,RYDGDP,False,True,2010.0,2010,True
+929,rydgdp__2011,RYDGDP,2011,RYDGDP,RYDGDP,False,True,2011.0,2011,True
+930,rydgdp__2012,RYDGDP,2012,RYDGDP,RYDGDP,False,True,2012.0,2012,True
+931,rydgdp__2013,RYDGDP,2013,RYDGDP,RYDGDP,False,True,2013.0,2013,True
+932,rydgdp__2014,RYDGDP,2014,RYDGDP,RYDGDP,False,True,2014.0,2014,True
+933,rydgdp__2015,RYDGDP,2015,RYDGDP,RYDGDP,False,True,2015.0,2015,True
+934,rydgdp__2016,RYDGDP,2016,RYDGDP,RYDGDP,False,True,2016.0,2016,True
+935,rydgdp__2017,RYDGDP,2017,RYDGDP,RYDGDP,False,True,2017.0,2017,True
+936,rydgdp__2018,RYDGDP,2018,RYDGDP,RYDGDP,False,True,2018.0,2018,True
+937,rydgdp__2019_4,RYDGDP,2019.4,RYDGDP,RYDGDP,False,True,2019.0,2019,True
+938,rydgdp__2020_4,RYDGDP,2020.4,RYDGDP,RYDGDP,False,True,2020.0,2020,True
+939,rydgdp__2021_4,RYDGDP,2021.4,RYDGDP,RYDGDP,False,True,2021.0,2021,True
+940,rydgdp__2022_4,RYDGDP,2022.4,RYDGDP,RYDGDP,False,True,2022.0,2022,True
+941,rydgdp__2023_2,RYDGDP,2023.2,RYDGDP,RYDGDP,False,True,2023.0,2023,True
+942,rydgdp__2024,RYDGDP,2024,RYDGDP,RYDGDP,False,True,2024.0,2024,True
+943,prime__unnamed_943_level_1,PRIME,Unnamed: 943_level_1,PRIME,PRIME,False,False,,,True
+944,prime__unnamed_944_level_1,PRIME,Unnamed: 944_level_1,PRIME,PRIME,False,False,,,True
+945,prime__1998,PRIME,1998,PRIME,PRIME,False,True,1998.0,1998,True
+946,prime__1999,PRIME,1999,PRIME,PRIME,False,True,1999.0,1999,True
+947,prime__2000,PRIME,2000,PRIME,PRIME,False,True,2000.0,2000,True
+948,prime__2001,PRIME,2001,PRIME,PRIME,False,True,2001.0,2001,True
+949,prime__2002,PRIME,2002,PRIME,PRIME,False,True,2002.0,2002,True
+950,prime__2003,PRIME,2003,PRIME,PRIME,False,True,2003.0,2003,True
+951,prime__2004,PRIME,2004,PRIME,PRIME,False,True,2004.0,2004,True
+952,prime__2005,PRIME,2005,PRIME,PRIME,False,True,2005.0,2005,True
+953,prime__2006,PRIME,2006,PRIME,PRIME,False,True,2006.0,2006,True
+954,prime__2007,PRIME,2007,PRIME,PRIME,False,True,2007.0,2007,True
+955,prime__2008,PRIME,2008,PRIME,PRIME,False,True,2008.0,2008,True
+956,prime__2009,PRIME,2009,PRIME,PRIME,False,True,2009.0,2009,True
+957,prime__2010,PRIME,2010,PRIME,PRIME,False,True,2010.0,2010,True
+958,prime__2011,PRIME,2011,PRIME,PRIME,False,True,2011.0,2011,True
+959,prime__2012,PRIME,2012,PRIME,PRIME,False,True,2012.0,2012,True
+960,prime__2013,PRIME,2013,PRIME,PRIME,False,True,2013.0,2013,True
+961,prime__2014,PRIME,2014,PRIME,PRIME,False,True,2014.0,2014,True
+962,prime__2015,PRIME,2015,PRIME,PRIME,False,True,2015.0,2015,True
+963,prime__2016,PRIME,2016,PRIME,PRIME,False,True,2016.0,2016,True
+964,prime__2017,PRIME,2017,PRIME,PRIME,False,True,2017.0,2017,True
+965,prime__2018,PRIME,2018,PRIME,PRIME,False,True,2018.0,2018,True
+966,prime__2019,PRIME,2019,PRIME,PRIME,False,True,2019.0,2019,True
+967,prime__2020,PRIME,2020,PRIME,PRIME,False,True,2020.0,2020,True
+968,prime__2021,PRIME,2021,PRIME,PRIME,False,True,2021.0,2021,True
+969,prime__2022,PRIME,2022,PRIME,PRIME,False,True,2022.0,2022,True
+970,prime__unnamed_970_level_1,PRIME,Unnamed: 970_level_1,PRIME,PRIME,False,False,,,True
+971,prime,PRIME,,PRIME,PRIME,False,False,,,True
+972,prime__nan_1,PRIME,nan.1,PRIME,PRIME,False,False,,,True
+973,prime__nan_2,PRIME,nan.2,PRIME,PRIME,False,False,,,True
+974,prime__nan_3,PRIME,nan.3,PRIME,PRIME,False,False,,,True
+975,prime__nan_4,PRIME,nan.4,PRIME,PRIME,False,False,,,True
+976,prime__nan_5,PRIME,nan.5,PRIME,PRIME,False,False,,,True
+977,prime__nan_6,PRIME,nan.6,PRIME,PRIME,False,False,,,True
+978,prime__nan_7,PRIME,nan.7,PRIME,PRIME,False,False,,,True
+979,prime__nan_8,PRIME,nan.8,PRIME,PRIME,False,False,,,True
+980,prime__nan_9,PRIME,nan.9,PRIME,PRIME,False,False,,,True
+981,prime__nan_10,PRIME,nan.10,PRIME,PRIME,False,False,,,True
+982,prime__nan_11,PRIME,nan.11,PRIME,PRIME,False,False,,,True
+983,prime__nan_12,PRIME,nan.12,PRIME,PRIME,False,False,,,True
+984,prime__nan_13,PRIME,nan.13,PRIME,PRIME,False,False,,,True
+985,prime__nan_14,PRIME,nan.14,PRIME,PRIME,False,False,,,True
+986,prime__nan_15,PRIME,nan.15,PRIME,PRIME,False,False,,,True
+987,prime__nan_16,PRIME,nan.16,PRIME,PRIME,False,False,,,True
+988,prime__nan_17,PRIME,nan.17,PRIME,PRIME,False,False,,,True
+989,prime__nan_18,PRIME,nan.18,PRIME,PRIME,False,False,,,True
+990,prime__nan_19,PRIME,nan.19,PRIME,PRIME,False,False,,,True
+991,prime__nan_20,PRIME,nan.20,PRIME,PRIME,False,False,,,True
+992,prime__nan_21,PRIME,nan.21,PRIME,PRIME,False,False,,,True
+993,prime__nan_22,PRIME,nan.22,PRIME,PRIME,False,False,,,True
+994,prime__nan_23,PRIME,nan.23,PRIME,PRIME,False,False,,,True
+995,prime__nan_24,PRIME,nan.24,PRIME,PRIME,False,False,,,True
+996,prime__nan_25,PRIME,nan.25,PRIME,PRIME,False,False,,,True
+997,prime__nan_26,PRIME,nan.26,PRIME,PRIME,False,False,,,True
+998,prime__nan_27,PRIME,nan.27,PRIME,PRIME,False,False,,,True
+999,prime__nan_28,PRIME,nan.28,PRIME,PRIME,False,False,,,True
+1000,prime__nan_29,PRIME,nan.29,PRIME,PRIME,False,False,,,True
+1001,prime__nan_30,PRIME,nan.30,PRIME,PRIME,False,False,,,True
+1002,prime__nan_31,PRIME,nan.31,PRIME,PRIME,False,False,,,True
+1003,prime__nan_32,PRIME,nan.32,PRIME,PRIME,False,False,,,True
+1004,prime__nan_33,PRIME,nan.33,PRIME,PRIME,False,False,,,True
+1005,prime__nan_34,PRIME,nan.34,PRIME,PRIME,False,False,,,True
+1006,prime__nan_35,PRIME,nan.35,PRIME,PRIME,False,False,,,True
+1007,prime__nan_36,PRIME,nan.36,PRIME,PRIME,False,False,,,True
+1008,prime__nan_37,PRIME,nan.37,PRIME,PRIME,False,False,,,True
+1009,prime__nan_38,PRIME,nan.38,PRIME,PRIME,False,False,,,True
+1010,prime__nan_39,PRIME,nan.39,PRIME,PRIME,False,False,,,True
+1011,prime__nan_40,PRIME,nan.40,PRIME,PRIME,False,False,,,True
+1012,prime__nan_41,PRIME,nan.41,PRIME,PRIME,False,False,,,True
+1013,prime__nan_42,PRIME,nan.42,PRIME,PRIME,False,False,,,True
+1014,prime__nan_43,PRIME,nan.43,PRIME,PRIME,False,False,,,True
+1015,prime__nan_44,PRIME,nan.44,PRIME,PRIME,False,False,,,True
+1016,prime__nan_45,PRIME,nan.45,PRIME,PRIME,False,False,,,True
+1017,prime__nan_46,PRIME,nan.46,PRIME,PRIME,False,False,,,True
+1018,prime__nan_47,PRIME,nan.47,PRIME,PRIME,False,False,,,True
+1019,prime__nan_48,PRIME,nan.48,PRIME,PRIME,False,False,,,True
+1020,prime__nan_49,PRIME,nan.49,PRIME,PRIME,False,False,,,True
+1021,prime__nan_50,PRIME,nan.50,PRIME,PRIME,False,False,,,True
+1022,prime__nan_51,PRIME,nan.51,PRIME,PRIME,False,False,,,True
+1023,prime__nan_52,PRIME,nan.52,PRIME,PRIME,False,False,,,True
+1024,prime__nan_53,PRIME,nan.53,PRIME,PRIME,False,False,,,True
+1025,prime__nan_54,PRIME,nan.54,PRIME,PRIME,False,False,,,True
+1026,prime__nan_55,PRIME,nan.55,PRIME,PRIME,False,False,,,True
+1027,prime__nan_56,PRIME,nan.56,PRIME,PRIME,False,False,,,True
+1028,prime__nan_57,PRIME,nan.57,PRIME,PRIME,False,False,,,True
+1029,prime__nan_58,PRIME,nan.58,PRIME,PRIME,False,False,,,True
+1030,prime__nan_59,PRIME,nan.59,PRIME,PRIME,False,False,,,True
+1031,prime__nan_60,PRIME,nan.60,PRIME,PRIME,False,False,,,True
+1032,prime__unnamed_1032_level_1,PRIME,Unnamed: 1032_level_1,PRIME,PRIME,False,False,,,True
+1033,prime__unnamed_1033_level_1,PRIME,Unnamed: 1033_level_1,PRIME,PRIME,False,False,,,True
+1034,prime__nan_61,PRIME,nan.61,PRIME,PRIME,False,False,,,True
+1035,prime__nan_62,PRIME,nan.62,PRIME,PRIME,False,False,,,True
+1036,prime__nan_63,PRIME,nan.63,PRIME,PRIME,False,False,,,True
+1037,prime__nan_64,PRIME,nan.64,PRIME,PRIME,False,False,,,True
+1038,prime__nan_65,PRIME,nan.65,PRIME,PRIME,False,False,,,True
+1039,prime__nan_66,PRIME,nan.66,PRIME,PRIME,False,False,,,True
+1040,prime__nan_67,PRIME,nan.67,PRIME,PRIME,False,False,,,True
+1041,prime__nan_68,PRIME,nan.68,PRIME,PRIME,False,False,,,True
+1042,prime__nan_69,PRIME,nan.69,PRIME,PRIME,False,False,,,True
+1043,prime__nan_70,PRIME,nan.70,PRIME,PRIME,False,False,,,True
+1044,prime__nan_71,PRIME,nan.71,PRIME,PRIME,False,False,,,True
+1045,prime__nan_72,PRIME,nan.72,PRIME,PRIME,False,False,,,True
+1046,prime__nan_73,PRIME,nan.73,PRIME,PRIME,False,False,,,True
+1047,prime__nan_74,PRIME,nan.74,PRIME,PRIME,False,False,,,True
+1048,prime__nan_75,PRIME,nan.75,PRIME,PRIME,False,False,,,True
+1049,prime__nan_76,PRIME,nan.76,PRIME,PRIME,False,False,,,True
+1050,prime__nan_77,PRIME,nan.77,PRIME,PRIME,False,False,,,True
+1051,prime__nan_78,PRIME,nan.78,PRIME,PRIME,False,False,,,True
+1052,prime__nan_79,PRIME,nan.79,PRIME,PRIME,False,False,,,True
+1053,prime__nan_80,PRIME,nan.80,PRIME,PRIME,False,False,,,True
+1054,prime__nan_81,PRIME,nan.81,PRIME,PRIME,False,False,,,True
+1055,prime__nan_82,PRIME,nan.82,PRIME,PRIME,False,False,,,True
+1056,prime__nan_83,PRIME,nan.83,PRIME,PRIME,False,False,,,True
+1057,prime__nan_84,PRIME,nan.84,PRIME,PRIME,False,False,,,True
+1058,prime__nan_85,PRIME,nan.85,PRIME,PRIME,False,False,,,True
+1059,prime__nan_86,PRIME,nan.86,PRIME,PRIME,False,False,,,True
+1060,prime__nan_87,PRIME,nan.87,PRIME,PRIME,False,False,,,True
+1061,prime__nan_88,PRIME,nan.88,PRIME,PRIME,False,False,,,True
+1062,prime__nan_89,PRIME,nan.89,PRIME,PRIME,False,False,,,True
+1063,prime__nan_90,PRIME,nan.90,PRIME,PRIME,False,False,,,True
+1064,prime__nan_91,PRIME,nan.91,PRIME,PRIME,False,False,,,True
+1065,prime__nan_92,PRIME,nan.92,PRIME,PRIME,False,False,,,True
+1066,prime__nan_93,PRIME,nan.93,PRIME,PRIME,False,False,,,True
+1067,prime__nan_94,PRIME,nan.94,PRIME,PRIME,False,False,,,True
+1068,prime__nan_95,PRIME,nan.95,PRIME,PRIME,False,False,,,True
+1069,prime__nan_96,PRIME,nan.96,PRIME,PRIME,False,False,,,True
+1070,prime__nan_97,PRIME,nan.97,PRIME,PRIME,False,False,,,True
+1071,prime__nan_98,PRIME,nan.98,PRIME,PRIME,False,False,,,True
+1072,prime__nan_99,PRIME,nan.99,PRIME,PRIME,False,False,,,True
+1073,prime__nan_100,PRIME,nan.100,PRIME,PRIME,False,False,,,True
+1074,prime__nan_101,PRIME,nan.101,PRIME,PRIME,False,False,,,True
+1075,prime__nan_102,PRIME,nan.102,PRIME,PRIME,False,False,,,True
+1076,prime__nan_103,PRIME,nan.103,PRIME,PRIME,False,False,,,True
+1077,prime__nan_104,PRIME,nan.104,PRIME,PRIME,False,False,,,True
+1078,prime__nan_105,PRIME,nan.105,PRIME,PRIME,False,False,,,True
+1079,prime__nan_106,PRIME,nan.106,PRIME,PRIME,False,False,,,True
+1080,prime__nan_107,PRIME,nan.107,PRIME,PRIME,False,False,,,True
+1081,prime__nan_108,PRIME,nan.108,PRIME,PRIME,False,False,,,True
+1082,prime__nan_109,PRIME,nan.109,PRIME,PRIME,False,False,,,True
+1083,prime__nan_110,PRIME,nan.110,PRIME,PRIME,False,False,,,True
+1084,prime__nan_111,PRIME,nan.111,PRIME,PRIME,False,False,,,True
+1085,prime__nan_112,PRIME,nan.112,PRIME,PRIME,False,False,,,True
+1086,prime__nan_113,PRIME,nan.113,PRIME,PRIME,False,False,,,True
+1087,prime__nan_114,PRIME,nan.114,PRIME,PRIME,False,False,,,True
+1088,prime__nan_115,PRIME,nan.115,PRIME,PRIME,False,False,,,True
+1089,prime__nan_116,PRIME,nan.116,PRIME,PRIME,False,False,,,True
+1090,prime__nan_117,PRIME,nan.117,PRIME,PRIME,False,False,,,True
+1091,prime__nan_118,PRIME,nan.118,PRIME,PRIME,False,False,,,True
+1092,prime__nan_119,PRIME,nan.119,PRIME,PRIME,False,False,,,True
+1093,prime__nan_120,PRIME,nan.120,PRIME,PRIME,False,False,,,True
+1094,prime__nan_121,PRIME,nan.121,PRIME,PRIME,False,False,,,True
+1095,prime__unnamed_1095_level_1,PRIME,Unnamed: 1095_level_1,PRIME,PRIME,False,False,,,True
+1096,prime__nan_122,PRIME,nan.122,PRIME,PRIME,False,False,,,True
+1097,prime__nan_123,PRIME,nan.123,PRIME,PRIME,False,False,,,True
+1098,prime__nan_124,PRIME,nan.124,PRIME,PRIME,False,False,,,True
+1099,prime__nan_125,PRIME,nan.125,PRIME,PRIME,False,False,,,True
+1100,prime__nan_126,PRIME,nan.126,PRIME,PRIME,False,False,,,True
+1101,prime__nan_127,PRIME,nan.127,PRIME,PRIME,False,False,,,True
+1102,prime__nan_128,PRIME,nan.128,PRIME,PRIME,False,False,,,True
+1103,prime__nan_129,PRIME,nan.129,PRIME,PRIME,False,False,,,True
+1104,prime__nan_130,PRIME,nan.130,PRIME,PRIME,False,False,,,True
+1105,prime__nan_131,PRIME,nan.131,PRIME,PRIME,False,False,,,True
+1106,prime__nan_132,PRIME,nan.132,PRIME,PRIME,False,False,,,True
+1107,prime__nan_133,PRIME,nan.133,PRIME,PRIME,False,False,,,True
+1108,prime__nan_134,PRIME,nan.134,PRIME,PRIME,False,False,,,True
+1109,prime__nan_135,PRIME,nan.135,PRIME,PRIME,False,False,,,True
+1110,prime__nan_136,PRIME,nan.136,PRIME,PRIME,False,False,,,True
+1111,prime__nan_137,PRIME,nan.137,PRIME,PRIME,False,False,,,True
+1112,prime__nan_138,PRIME,nan.138,PRIME,PRIME,False,False,,,True
+1113,prime__nan_139,PRIME,nan.139,PRIME,PRIME,False,False,,,True
+1114,prime__nan_140,PRIME,nan.140,PRIME,PRIME,False,False,,,True
+1115,prime__nan_141,PRIME,nan.141,PRIME,PRIME,False,False,,,True
+1116,prime__nan_142,PRIME,nan.142,PRIME,PRIME,False,False,,,True
+1117,prime__nan_143,PRIME,nan.143,PRIME,PRIME,False,False,,,True
+1118,prime__nan_144,PRIME,nan.144,PRIME,PRIME,False,False,,,True
+1119,prime__nan_145,PRIME,nan.145,PRIME,PRIME,False,False,,,True
+1120,prime__nan_146,PRIME,nan.146,PRIME,PRIME,False,False,,,True
+1121,prime__nan_147,PRIME,nan.147,PRIME,PRIME,False,False,,,True
+1122,prime__nan_148,PRIME,nan.148,PRIME,PRIME,False,False,,,True
+1123,prime__nan_149,PRIME,nan.149,PRIME,PRIME,False,False,,,True
+1124,prime__nan_150,PRIME,nan.150,PRIME,PRIME,False,False,,,True
+1125,prime__nan_151,PRIME,nan.151,PRIME,PRIME,False,False,,,True
+1126,prime__nan_152,PRIME,nan.152,PRIME,PRIME,False,False,,,True
+1127,prime__nan_153,PRIME,nan.153,PRIME,PRIME,False,False,,,True
+1128,prime__nan_154,PRIME,nan.154,PRIME,PRIME,False,False,,,True
+1129,prime__nan_155,PRIME,nan.155,PRIME,PRIME,False,False,,,True
+1130,prime__nan_156,PRIME,nan.156,PRIME,PRIME,False,False,,,True
+1131,prime__nan_157,PRIME,nan.157,PRIME,PRIME,False,False,,,True
+1132,prime__nan_158,PRIME,nan.158,PRIME,PRIME,False,False,,,True
+1133,prime__nan_159,PRIME,nan.159,PRIME,PRIME,False,False,,,True
+1134,prime__nan_160,PRIME,nan.160,PRIME,PRIME,False,False,,,True
+1135,prime__nan_161,PRIME,nan.161,PRIME,PRIME,False,False,,,True
+1136,prime__nan_162,PRIME,nan.162,PRIME,PRIME,False,False,,,True
+1137,prime__nan_163,PRIME,nan.163,PRIME,PRIME,False,False,,,True
+1138,prime__nan_164,PRIME,nan.164,PRIME,PRIME,False,False,,,True
+1139,prime__nan_165,PRIME,nan.165,PRIME,PRIME,False,False,,,True
+1140,prime__nan_166,PRIME,nan.166,PRIME,PRIME,False,False,,,True
+1141,prime__nan_167,PRIME,nan.167,PRIME,PRIME,False,False,,,True
+1142,prime__nan_168,PRIME,nan.168,PRIME,PRIME,False,False,,,True
+1143,prime__nan_169,PRIME,nan.169,PRIME,PRIME,False,False,,,True
+1144,prime__nan_170,PRIME,nan.170,PRIME,PRIME,False,False,,,True
+1145,prime__nan_171,PRIME,nan.171,PRIME,PRIME,False,False,,,True
+1146,prime__nan_172,PRIME,nan.172,PRIME,PRIME,False,False,,,True
+1147,prime__nan_173,PRIME,nan.173,PRIME,PRIME,False,False,,,True
+1148,prime__nan_174,PRIME,nan.174,PRIME,PRIME,False,False,,,True
+1149,prime__nan_175,PRIME,nan.175,PRIME,PRIME,False,False,,,True
+1150,prime__nan_176,PRIME,nan.176,PRIME,PRIME,False,False,,,True
+1151,prime__nan_177,PRIME,nan.177,PRIME,PRIME,False,False,,,True
+1152,prime__nan_178,PRIME,nan.178,PRIME,PRIME,False,False,,,True
+1153,prime__nan_179,PRIME,nan.179,PRIME,PRIME,False,False,,,True
+1154,prime__nan_180,PRIME,nan.180,PRIME,PRIME,False,False,,,True
+1155,prime__nan_181,PRIME,nan.181,PRIME,PRIME,False,False,,,True
+1156,prime__nan_182,PRIME,nan.182,PRIME,PRIME,False,False,,,True
+1157,prime__unnamed_1157_level_1,PRIME,Unnamed: 1157_level_1,PRIME,PRIME,False,False,,,True
+1158,prime__unnamed_1158_level_1,PRIME,Unnamed: 1158_level_1,PRIME,PRIME,False,False,,,True
+1159,prime__nan_183,PRIME,nan.183,PRIME,PRIME,False,False,,,True
+1160,prime__nan_184,PRIME,nan.184,PRIME,PRIME,False,False,,,True
+1161,prime__nan_185,PRIME,nan.185,PRIME,PRIME,False,False,,,True
+1162,prime__nan_186,PRIME,nan.186,PRIME,PRIME,False,False,,,True
+1163,prime__nan_187,PRIME,nan.187,PRIME,PRIME,False,False,,,True
+1164,prime__nan_188,PRIME,nan.188,PRIME,PRIME,False,False,,,True
+1165,prime__nan_189,PRIME,nan.189,PRIME,PRIME,False,False,,,True
+1166,prime__nan_190,PRIME,nan.190,PRIME,PRIME,False,False,,,True
+1167,prime__nan_191,PRIME,nan.191,PRIME,PRIME,False,False,,,True
+1168,prime__nan_192,PRIME,nan.192,PRIME,PRIME,False,False,,,True
+1169,prime__nan_193,PRIME,nan.193,PRIME,PRIME,False,False,,,True
+1170,prime__nan_194,PRIME,nan.194,PRIME,PRIME,False,False,,,True
+1171,prime__nan_195,PRIME,nan.195,PRIME,PRIME,False,False,,,True
+1172,prime__nan_196,PRIME,nan.196,PRIME,PRIME,False,False,,,True
+1173,prime__nan_197,PRIME,nan.197,PRIME,PRIME,False,False,,,True
+1174,prime__nan_198,PRIME,nan.198,PRIME,PRIME,False,False,,,True
+1175,prime__nan_199,PRIME,nan.199,PRIME,PRIME,False,False,,,True
+1176,prime__nan_200,PRIME,nan.200,PRIME,PRIME,False,False,,,True
+1177,prime__nan_201,PRIME,nan.201,PRIME,PRIME,False,False,,,True
+1178,prime__nan_202,PRIME,nan.202,PRIME,PRIME,False,False,,,True
+1179,prime__nan_203,PRIME,nan.203,PRIME,PRIME,False,False,,,True
+1180,prime__nan_204,PRIME,nan.204,PRIME,PRIME,False,False,,,True
+1181,prime__nan_205,PRIME,nan.205,PRIME,PRIME,False,False,,,True
+1182,prime__nan_206,PRIME,nan.206,PRIME,PRIME,False,False,,,True
+1183,prime__nan_207,PRIME,nan.207,PRIME,PRIME,False,False,,,True
+1184,prime__nan_208,PRIME,nan.208,PRIME,PRIME,False,False,,,True
+1185,prime__nan_209,PRIME,nan.209,PRIME,PRIME,False,False,,,True
+1186,prime__nan_210,PRIME,nan.210,PRIME,PRIME,False,False,,,True
+1187,prime__nan_211,PRIME,nan.211,PRIME,PRIME,False,False,,,True
+1188,prime__nan_212,PRIME,nan.212,PRIME,PRIME,False,False,,,True
+1189,prime__nan_213,PRIME,nan.213,PRIME,PRIME,False,False,,,True
+1190,prime__nan_214,PRIME,nan.214,PRIME,PRIME,False,False,,,True
+1191,prime__nan_215,PRIME,nan.215,PRIME,PRIME,False,False,,,True
+1192,prime__nan_216,PRIME,nan.216,PRIME,PRIME,False,False,,,True
+1193,prime__nan_217,PRIME,nan.217,PRIME,PRIME,False,False,,,True
+1194,prime__nan_218,PRIME,nan.218,PRIME,PRIME,False,False,,,True
+1195,prime__nan_219,PRIME,nan.219,PRIME,PRIME,False,False,,,True
+1196,prime__nan_220,PRIME,nan.220,PRIME,PRIME,False,False,,,True
+1197,prime__nan_221,PRIME,nan.221,PRIME,PRIME,False,False,,,True
+1198,prime__nan_222,PRIME,nan.222,PRIME,PRIME,False,False,,,True
+1199,prime__nan_223,PRIME,nan.223,PRIME,PRIME,False,False,,,True
+1200,prime__nan_224,PRIME,nan.224,PRIME,PRIME,False,False,,,True
+1201,prime__nan_225,PRIME,nan.225,PRIME,PRIME,False,False,,,True
+1202,prime__nan_226,PRIME,nan.226,PRIME,PRIME,False,False,,,True
+1203,prime__nan_227,PRIME,nan.227,PRIME,PRIME,False,False,,,True
+1204,prime__nan_228,PRIME,nan.228,PRIME,PRIME,False,False,,,True
+1205,prime__nan_229,PRIME,nan.229,PRIME,PRIME,False,False,,,True
+1206,prime__nan_230,PRIME,nan.230,PRIME,PRIME,False,False,,,True
+1207,prime__nan_231,PRIME,nan.231,PRIME,PRIME,False,False,,,True
+1208,prime__nan_232,PRIME,nan.232,PRIME,PRIME,False,False,,,True
+1209,prime__nan_233,PRIME,nan.233,PRIME,PRIME,False,False,,,True
+1210,prime__nan_234,PRIME,nan.234,PRIME,PRIME,False,False,,,True
+1211,prime__nan_235,PRIME,nan.235,PRIME,PRIME,False,False,,,True
+1212,prime__nan_236,PRIME,nan.236,PRIME,PRIME,False,False,,,True
+1213,prime__nan_237,PRIME,nan.237,PRIME,PRIME,False,False,,,True
+1214,prime__nan_238,PRIME,nan.238,PRIME,PRIME,False,False,,,True
+1215,prime__nan_239,PRIME,nan.239,PRIME,PRIME,False,False,,,True
+1216,prime__nan_240,PRIME,nan.240,PRIME,PRIME,False,False,,,True
+1217,prime__nan_241,PRIME,nan.241,PRIME,PRIME,False,False,,,True
+1218,prime__nan_242,PRIME,nan.242,PRIME,PRIME,False,False,,,True
+1219,prime__nan_243,PRIME,nan.243,PRIME,PRIME,False,False,,,True
+1220,prime__unnamed_1220_level_1,PRIME,Unnamed: 1220_level_1,PRIME,PRIME,False,False,,,True
+1221,prime__2020m04,PRIME,2020M04,PRIME,PRIME,False,True,2020.0,2020-04,True
+1222,prime__2020m05,PRIME,2020M05,PRIME,PRIME,False,True,2020.0,2020-05,True
+1223,prime__2020m06,PRIME,2020M06,PRIME,PRIME,False,True,2020.0,2020-06,True
+1224,prime__2020m07,PRIME,2020M07,PRIME,PRIME,False,True,2020.0,2020-07,True
+1225,prime__2020m08,PRIME,2020M08,PRIME,PRIME,False,True,2020.0,2020-08,True
+1226,prime__2020m09,PRIME,2020M09,PRIME,PRIME,False,True,2020.0,2020-09,True
+1227,prime__2020m10,PRIME,2020M10,PRIME,PRIME,False,True,2020.0,2020-10,True
+1228,prime__2020m11,PRIME,2020M11,PRIME,PRIME,False,True,2020.0,2020-11,True
+1229,prime__2020m12,PRIME,2020M12,PRIME,PRIME,False,True,2020.0,2020-12,True
+1230,prime__2021m01,PRIME,2021M01,PRIME,PRIME,False,True,2021.0,2021-01,True
+1231,prime__2021m02,PRIME,2021M02,PRIME,PRIME,False,True,2021.0,2021-02,True
+1232,prime__2021m03,PRIME,2021M03,PRIME,PRIME,False,True,2021.0,2021-03,True
+1233,prime__2021m04,PRIME,2021M04,PRIME,PRIME,False,True,2021.0,2021-04,True
+1234,prime__2021m05,PRIME,2021M05,PRIME,PRIME,False,True,2021.0,2021-05,True
+1235,prime__2021m06,PRIME,2021M06,PRIME,PRIME,False,True,2021.0,2021-06,True
+1236,prime__2021m07,PRIME,2021M07,PRIME,PRIME,False,True,2021.0,2021-07,True
+1237,prime__2021m08,PRIME,2021M08,PRIME,PRIME,False,True,2021.0,2021-08,True
+1238,prime__2021m09,PRIME,2021M09,PRIME,PRIME,False,True,2021.0,2021-09,True
+1239,prime__2021m10,PRIME,2021M10,PRIME,PRIME,False,True,2021.0,2021-10,True
+1240,prime__2021m11,PRIME,2021M11,PRIME,PRIME,False,True,2021.0,2021-11,True
+1241,prime__2021m12,PRIME,2021M12,PRIME,PRIME,False,True,2021.0,2021-12,True
+1242,prime__2022m01,PRIME,2022M01,PRIME,PRIME,False,True,2022.0,2022-01,True
+1243,prime__2022m02,PRIME,2022M02,PRIME,PRIME,False,True,2022.0,2022-02,True
+1244,prime__2022m03,PRIME,2022M03,PRIME,PRIME,False,True,2022.0,2022-03,True
+1245,prime__2022m04,PRIME,2022M04,PRIME,PRIME,False,True,2022.0,2022-04,True
+1246,prime__2022m05,PRIME,2022M05,PRIME,PRIME,False,True,2022.0,2022-05,True
+1247,prime__2022m06,PRIME,2022M06,PRIME,PRIME,False,True,2022.0,2022-06,True
+1248,prime__2022m07,PRIME,2022M07,PRIME,PRIME,False,True,2022.0,2022-07,True
+1249,prime__2022m08,PRIME,2022M08,PRIME,PRIME,False,True,2022.0,2022-08,True
+1250,prime__2022m09,PRIME,2022M09,PRIME,PRIME,False,True,2022.0,2022-09,True
+1251,prime__2022m10,PRIME,2022M10,PRIME,PRIME,False,True,2022.0,2022-10,True
+1252,prime__2022m11,PRIME,2022M11,PRIME,PRIME,False,True,2022.0,2022-11,True
+1253,prime__2022m12,PRIME,2022M12,PRIME,PRIME,False,True,2022.0,2022-12,True
+1254,prime__2023m01,PRIME,2023M01,PRIME,PRIME,False,True,2023.0,2023-01,True
+1255,prime__2023m02,PRIME,2023M02,PRIME,PRIME,False,True,2023.0,2023-02,True
+1256,prime__2023m03,PRIME,2023M03,PRIME,PRIME,False,True,2023.0,2023-03,True
+1257,prime__2023m04,PRIME,2023M04,PRIME,PRIME,False,True,2023.0,2023-04,True
+1258,prime__2023m05,PRIME,2023M05,PRIME,PRIME,False,True,2023.0,2023-05,True
+1259,prime__2023m06,PRIME,2023M06,PRIME,PRIME,False,True,2023.0,2023-06,True
+1260,prime__2023m07,PRIME,2023M07,PRIME,PRIME,False,True,2023.0,2023-07,True
+1261,prime__2023m08,PRIME,2023M08,PRIME,PRIME,False,True,2023.0,2023-08,True
+1262,prime__2023m09,PRIME,2023M09,PRIME,PRIME,False,True,2023.0,2023-09,True
+1263,prime__2023m10,PRIME,2023M10,PRIME,PRIME,False,True,2023.0,2023-10,True
+1264,prime__2023m11,PRIME,2023M11,PRIME,PRIME,False,True,2023.0,2023-11,True
+1265,prime__2023m12,PRIME,2023M12,PRIME,PRIME,False,True,2023.0,2023-12,True
+1266,prime__2024m01,PRIME,2024M01,PRIME,PRIME,False,True,2024.0,2024-01,True
+1267,prime__2024m02,PRIME,2024M02,PRIME,PRIME,False,True,2024.0,2024-02,True
+1268,prime__2024m03,PRIME,2024M03,PRIME,PRIME,False,True,2024.0,2024-03,True
+1269,prime__2024m04,PRIME,2024M04,PRIME,PRIME,False,True,2024.0,2024-04,True
+1270,prime__2024m05,PRIME,2024M05,PRIME,PRIME,False,True,2024.0,2024-05,True
+1271,prime__2024m06,PRIME,2024M06,PRIME,PRIME,False,True,2024.0,2024-06,True
+1272,prime__2024m07,PRIME,2024M07,PRIME,PRIME,False,True,2024.0,2024-07,True
+1273,prime__2024m08,PRIME,2024M08,PRIME,PRIME,False,True,2024.0,2024-08,True
+1274,prime__2024m09,PRIME,2024M09,PRIME,PRIME,False,True,2024.0,2024-09,True
+1275,prime__2024m10,PRIME,2024M10,PRIME,PRIME,False,True,2024.0,2024-10,True
+1276,prime__2024m11,PRIME,2024M11,PRIME,PRIME,False,True,2024.0,2024-11,True
+1277,prime__2024m12,PRIME,2024M12,PRIME,PRIME,False,True,2024.0,2024-12,True
+1278,prime__2025m01,PRIME,2025M01,PRIME,PRIME,False,True,2025.0,2025-01,True
+1279,prime__2025m02,PRIME,2025M02,PRIME,PRIME,False,True,2025.0,2025-02,True
+1280,prime__2025m03,PRIME,2025M03,PRIME,PRIME,False,True,2025.0,2025-03,True
+1281,prime__2025m04,PRIME,2025M04,PRIME,PRIME,False,True,2025.0,2025-04,True
+1282,prime__unnamed_1282_level_1,PRIME,Unnamed: 1282_level_1,PRIME,PRIME,False,False,,,True
+1283,prime__unnamed_1283_level_1,PRIME,Unnamed: 1283_level_1,PRIME,PRIME,False,False,,,True
+1284,prime__2020m04_1,PRIME,2020M04.1,PRIME,PRIME,False,False,,,True
+1285,prime__2020m05_1,PRIME,2020M05.1,PRIME,PRIME,False,False,,,True
+1286,prime__2020m06_1,PRIME,2020M06.1,PRIME,PRIME,False,False,,,True
+1287,prime__2020m07_1,PRIME,2020M07.1,PRIME,PRIME,False,False,,,True
+1288,prime__2020m08_1,PRIME,2020M08.1,PRIME,PRIME,False,False,,,True
+1289,prime__2020m09_1,PRIME,2020M09.1,PRIME,PRIME,False,False,,,True
+1290,prime__2020m10_1,PRIME,2020M10.1,PRIME,PRIME,False,False,,,True
+1291,prime__2020m11_1,PRIME,2020M11.1,PRIME,PRIME,False,False,,,True
+1292,prime__2020m12_1,PRIME,2020M12.1,PRIME,PRIME,False,False,,,True
+1293,prime__2021m01_1,PRIME,2021M01.1,PRIME,PRIME,False,False,,,True
+1294,prime__2021m02_1,PRIME,2021M02.1,PRIME,PRIME,False,False,,,True
+1295,prime__2021m03_1,PRIME,2021M03.1,PRIME,PRIME,False,False,,,True
+1296,prime__2021m04_1,PRIME,2021M04.1,PRIME,PRIME,False,False,,,True
+1297,prime__2021m05_1,PRIME,2021M05.1,PRIME,PRIME,False,False,,,True
+1298,prime__2021m06_1,PRIME,2021M06.1,PRIME,PRIME,False,False,,,True
+1299,prime__2021m07_1,PRIME,2021M07.1,PRIME,PRIME,False,False,,,True
+1300,prime__2021m08_1,PRIME,2021M08.1,PRIME,PRIME,False,False,,,True
+1301,prime__2021m09_1,PRIME,2021M09.1,PRIME,PRIME,False,False,,,True
+1302,prime__2021m10_1,PRIME,2021M10.1,PRIME,PRIME,False,False,,,True
+1303,prime__2021m11_1,PRIME,2021M11.1,PRIME,PRIME,False,False,,,True
+1304,prime__2021m12_1,PRIME,2021M12.1,PRIME,PRIME,False,False,,,True
+1305,prime__2022m01_1,PRIME,2022M01.1,PRIME,PRIME,False,False,,,True
+1306,prime__2022m02_1,PRIME,2022M02.1,PRIME,PRIME,False,False,,,True
+1307,prime__2022m03_1,PRIME,2022M03.1,PRIME,PRIME,False,False,,,True
+1308,prime__2022m04_1,PRIME,2022M04.1,PRIME,PRIME,False,False,,,True
+1309,prime__2022m05_1,PRIME,2022M05.1,PRIME,PRIME,False,False,,,True
+1310,prime__2022m06_1,PRIME,2022M06.1,PRIME,PRIME,False,False,,,True
+1311,prime__2022m07_1,PRIME,2022M07.1,PRIME,PRIME,False,False,,,True
+1312,prime__2022m08_1,PRIME,2022M08.1,PRIME,PRIME,False,False,,,True
+1313,prime__2022m09_1,PRIME,2022M09.1,PRIME,PRIME,False,False,,,True
+1314,prime__2022m10_1,PRIME,2022M10.1,PRIME,PRIME,False,False,,,True
+1315,prime__2022m11_1,PRIME,2022M11.1,PRIME,PRIME,False,False,,,True
+1316,prime__2022m12_1,PRIME,2022M12.1,PRIME,PRIME,False,False,,,True
+1317,prime__2023m01_1,PRIME,2023M01.1,PRIME,PRIME,False,False,,,True
+1318,prime__2023m02_1,PRIME,2023M02.1,PRIME,PRIME,False,False,,,True
+1319,prime__2023m03_1,PRIME,2023M03.1,PRIME,PRIME,False,False,,,True
+1320,prime__2023m04_1,PRIME,2023M04.1,PRIME,PRIME,False,False,,,True
+1321,prime__2023m05_1,PRIME,2023M05.1,PRIME,PRIME,False,False,,,True
+1322,prime__2023m06_1,PRIME,2023M06.1,PRIME,PRIME,False,False,,,True
+1323,prime__2023m07_1,PRIME,2023M07.1,PRIME,PRIME,False,False,,,True
+1324,prime__2023m08_1,PRIME,2023M08.1,PRIME,PRIME,False,False,,,True
+1325,prime__2023m09_1,PRIME,2023M09.1,PRIME,PRIME,False,False,,,True
+1326,prime__2023m10_1,PRIME,2023M10.1,PRIME,PRIME,False,False,,,True
+1327,prime__2023m11_1,PRIME,2023M11.1,PRIME,PRIME,False,False,,,True
+1328,prime__2023m12_1,PRIME,2023M12.1,PRIME,PRIME,False,False,,,True
+1329,prime__2024m01_1,PRIME,2024M01.1,PRIME,PRIME,False,False,,,True
+1330,prime__2024m02_1,PRIME,2024M02.1,PRIME,PRIME,False,False,,,True
+1331,prime__2024m03_1,PRIME,2024M03.1,PRIME,PRIME,False,False,,,True
+1332,prime__2024m04_1,PRIME,2024M04.1,PRIME,PRIME,False,False,,,True
+1333,prime__2024m05_1,PRIME,2024M05.1,PRIME,PRIME,False,False,,,True
+1334,prime__2024m06_1,PRIME,2024M06.1,PRIME,PRIME,False,False,,,True
+1335,prime__2024m07_1,PRIME,2024M07.1,PRIME,PRIME,False,False,,,True
+1336,prime__2024m08_1,PRIME,2024M08.1,PRIME,PRIME,False,False,,,True
+1337,prime__2024m09_1,PRIME,2024M09.1,PRIME,PRIME,False,False,,,True
+1338,prime__2024m10_1,PRIME,2024M10.1,PRIME,PRIME,False,False,,,True
+1339,prime__2024m11_1,PRIME,2024M11.1,PRIME,PRIME,False,False,,,True
+1340,prime__2024m12_1,PRIME,2024M12.1,PRIME,PRIME,False,False,,,True
+1341,prime__2025m01_1,PRIME,2025M01.1,PRIME,PRIME,False,False,,,True
+1342,prime__2025m02_1,PRIME,2025M02.1,PRIME,PRIME,False,False,,,True
+1343,prime__2025m03_1,PRIME,2025M03.1,PRIME,PRIME,False,False,,,True
+1344,prime__2025m04_1,PRIME,2025M04.1,PRIME,PRIME,False,False,,,True
+1345,prime__unnamed_1345_level_1,PRIME,Unnamed: 1345_level_1,PRIME,PRIME,False,False,,,True
+1346,prime__gdp_indicator_index_series,PRIME,"GDP-indicator, index series",PRIME,PRIME,False,False,,,True
+1347,prime__gdp_indicator_growth_rates,PRIME,"GDP-indicator, growth rates",PRIME,PRIME,False,False,,,True
+1348,prime__unnamed_1348_level_1,PRIME,Unnamed: 1348_level_1,PRIME,PRIME,False,False,,,True
+1349,prime__assets_sek_m,PRIME,Assets (SEK m),PRIME,PRIME,False,False,,,True
+1350,prime__per_cent,PRIME,Per cent,PRIME,PRIME,False,False,,,True
+1351,prime__number_of_transactions_million,PRIME,"Number of transactions, million",PRIME,PRIME,False,False,,,True
+1352,prime__unnamed_1352_level_1,PRIME,Unnamed: 1352_level_1,PRIME,PRIME,False,False,,,True
+1353,prime__unnamed_1353_level_1,PRIME,Unnamed: 1353_level_1,PRIME,PRIME,False,False,,,True
+1354,prime__unnamed_1354_level_1,PRIME,Unnamed: 1354_level_1,PRIME,PRIME,False,False,,,True
+1355,prime__unnamed_1355_level_1,PRIME,Unnamed: 1355_level_1,PRIME,PRIME,False,False,,,True
+1356,prime__unnamed_1356_level_1,PRIME,Unnamed: 1356_level_1,PRIME,PRIME,False,False,,,True
+1357,prime__unnamed_1357_level_1,PRIME,Unnamed: 1357_level_1,PRIME,PRIME,False,False,,,True
+1358,prime__unnamed_1358_level_1,PRIME,Unnamed: 1358_level_1,PRIME,PRIME,False,False,,,True
+1359,prime__sek_billion,PRIME,SEK billion,PRIME,PRIME,False,False,,,True
+1360,prime__unnamed_1360_level_1,PRIME,Unnamed: 1360_level_1,PRIME,PRIME,False,False,,,True
+1361,prime__unnamed_1361_level_1,PRIME,Unnamed: 1361_level_1,PRIME,PRIME,False,False,,,True
+1362,prime__unnamed_1362_level_1,PRIME,Unnamed: 1362_level_1,PRIME,PRIME,False,False,,,True
+1363,prime__unnamed_1363_level_1,PRIME,Unnamed: 1363_level_1,PRIME,PRIME,False,False,,,True
+1364,prime__unnamed_1364_level_1,PRIME,Unnamed: 1364_level_1,PRIME,PRIME,False,False,,,True
+1365,prime__unnamed_1365_level_1,PRIME,Unnamed: 1365_level_1,PRIME,PRIME,False,False,,,True
+1366,prime__unnamed_1366_level_1,PRIME,Unnamed: 1366_level_1,PRIME,PRIME,False,False,,,True
+1367,prime__unnamed_1367_level_1,PRIME,Unnamed: 1367_level_1,PRIME,PRIME,False,False,,,True
+1368,prime__unnamed_1368_level_1,PRIME,Unnamed: 1368_level_1,PRIME,PRIME,False,False,,,True
+1369,prime__unnamed_1369_level_1,PRIME,Unnamed: 1369_level_1,PRIME,PRIME,False,False,,,True
+1370,prime__unnamed_1370_level_1,PRIME,Unnamed: 1370_level_1,PRIME,PRIME,False,False,,,True
+1371,prime__unnamed_1371_level_1,PRIME,Unnamed: 1371_level_1,PRIME,PRIME,False,False,,,True
+1372,prime__unnamed_1372_level_1,PRIME,Unnamed: 1372_level_1,PRIME,PRIME,False,False,,,True
+1373,prime__unnamed_1373_level_1,PRIME,Unnamed: 1373_level_1,PRIME,PRIME,False,False,,,True
+1374,prime__unnamed_1374_level_1,PRIME,Unnamed: 1374_level_1,PRIME,PRIME,False,False,,,True
+1375,prime__number_of_banks,PRIME,Number of banks,PRIME,PRIME,False,False,,,True
+1376,prime__unnamed_1376_level_1,PRIME,Unnamed: 1376_level_1,PRIME,PRIME,False,False,,,True
+1377,prime__unnamed_1377_level_1,PRIME,Unnamed: 1377_level_1,PRIME,PRIME,False,False,,,True
+1378,prime__unnamed_1378_level_1,PRIME,Unnamed: 1378_level_1,PRIME,PRIME,False,False,,,True
+1379,prime__unnamed_1379_level_1,PRIME,Unnamed: 1379_level_1,PRIME,PRIME,False,False,,,True
+1380,prime__unnamed_1380_level_1,PRIME,Unnamed: 1380_level_1,PRIME,PRIME,False,False,,,True
+1381,prime__unnamed_1381_level_1,PRIME,Unnamed: 1381_level_1,PRIME,PRIME,False,False,,,True
+1382,prime__number_of_branch_offices,PRIME,Number of branch offices,PRIME,PRIME,False,False,,,True
+1383,prime__unnamed_1383_level_1,PRIME,Unnamed: 1383_level_1,PRIME,PRIME,False,False,,,True
+1384,prime__unnamed_1384_level_1,PRIME,Unnamed: 1384_level_1,PRIME,PRIME,False,False,,,True
+1385,prime__unnamed_1385_level_1,PRIME,Unnamed: 1385_level_1,PRIME,PRIME,False,False,,,True
+1386,prime__unnamed_1386_level_1,PRIME,Unnamed: 1386_level_1,PRIME,PRIME,False,False,,,True
+1387,prime__unnamed_1387_level_1,PRIME,Unnamed: 1387_level_1,PRIME,PRIME,False,False,,,True
+1388,prime__unnamed_1388_level_1,PRIME,Unnamed: 1388_level_1,PRIME,PRIME,False,False,,,True
+1389,prime__unnamed_1389_level_1,PRIME,Unnamed: 1389_level_1,PRIME,PRIME,False,False,,,True
+1390,prime__unnamed_1390_level_1,PRIME,Unnamed: 1390_level_1,PRIME,PRIME,False,False,,,True
+1391,prime__unnamed_1391_level_1,PRIME,Unnamed: 1391_level_1,PRIME,PRIME,False,False,,,True
+1392,prime__unnamed_1392_level_1,PRIME,Unnamed: 1392_level_1,PRIME,PRIME,False,False,,,True
+1393,prime__swedish_banks_parent,PRIME,Swedish banks’ parent,PRIME,PRIME,False,False,,,True
+1394,prime__no_of,PRIME,No. of,PRIME,PRIME,False,False,,,True
+1395,prime__no_of_em,PRIME,No. of em-,PRIME,PRIME,False,False,,,True
+1396,prime__lending_to,PRIME,Lending to,PRIME,PRIME,False,False,,,True
+1397,prime__deposits_fr,PRIME,Deposits fr.,PRIME,PRIME,False,False,,,True
+1398,prime__total_share,PRIME,Total share-,PRIME,PRIME,False,False,,,True
+1399,prime__balance,PRIME,Balance,PRIME,PRIME,False,False,,,True
+1400,prime__deposit_and_funding_from_swedish_households_and_non_financial_companies_million_sek,PRIME,Deposit and funding from Swedish households and non-financial companies (Million SEK),PRIME,PRIME,False,False,,,True
+1401,prime__unnamed_1401_level_1,PRIME,Unnamed: 1401_level_1,PRIME,PRIME,False,False,,,True
+1402,prime__unnamed_1402_level_1,PRIME,Unnamed: 1402_level_1,PRIME,PRIME,False,False,,,True
+1403,prime__unnamed_1403_level_1,PRIME,Unnamed: 1403_level_1,PRIME,PRIME,False,False,,,True
+1404,prime__unnamed_1404_level_1,PRIME,Unnamed: 1404_level_1,PRIME,PRIME,False,False,,,True
+1405,prime__unnamed_1405_level_1,PRIME,Unnamed: 1405_level_1,PRIME,PRIME,False,False,,,True
+1406,prime__unnamed_1406_level_1,PRIME,Unnamed: 1406_level_1,PRIME,PRIME,False,False,,,True
+1407,prime__unnamed_1407_level_1,PRIME,Unnamed: 1407_level_1,PRIME,PRIME,False,False,,,True
+1408,prime__unnamed_1408_level_1,PRIME,Unnamed: 1408_level_1,PRIME,PRIME,False,False,,,True
+1409,prime__unnamed_1409_level_1,PRIME,Unnamed: 1409_level_1,PRIME,PRIME,False,False,,,True
+1410,prime__unnamed_1410_level_1,PRIME,Unnamed: 1410_level_1,PRIME,PRIME,False,False,,,True
+1411,prime__unnamed_1411_level_1,PRIME,Unnamed: 1411_level_1,PRIME,PRIME,False,False,,,True
+1412,prime__unnamed_1412_level_1,PRIME,Unnamed: 1412_level_1,PRIME,PRIME,False,False,,,True
+1413,prime__unnamed_1413_level_1,PRIME,Unnamed: 1413_level_1,PRIME,PRIME,False,False,,,True
+1414,prime__unnamed_1414_level_1,PRIME,Unnamed: 1414_level_1,PRIME,PRIME,False,False,,,True
+1415,prime__unnamed_1415_level_1,PRIME,Unnamed: 1415_level_1,PRIME,PRIME,False,False,,,True
+1416,prime__unnamed_1416_level_1,PRIME,Unnamed: 1416_level_1,PRIME,PRIME,False,False,,,True
+1417,prime__unnamed_1417_level_1,PRIME,Unnamed: 1417_level_1,PRIME,PRIME,False,False,,,True
+1418,prime__unnamed_1418_level_1,PRIME,Unnamed: 1418_level_1,PRIME,PRIME,False,False,,,True
+1419,prime__the_ten_largest,PRIME,The ten largest,PRIME,PRIME,False,False,,,True
+1420,prime__no_of_1,PRIME,No. of.1,PRIME,PRIME,False,False,,,True
+1421,prime__no_of_em__dup2,PRIME,No. of em-,PRIME,PRIME,False,False,,,True
+1422,prime__lending_to_1,PRIME,Lending to.1,PRIME,PRIME,False,False,,,True
+1423,prime__deposits_from,PRIME,Deposits from,PRIME,PRIME,False,False,,,True
+1424,prime__capital_and,PRIME,Capital and,PRIME,PRIME,False,False,,,True
+1425,prime__balance__dup2,PRIME,Balance,PRIME,PRIME,False,False,,,True
+1426,prime__unnamed_1426_level_1,PRIME,Unnamed: 1426_level_1,PRIME,PRIME,False,False,,,True
+1427,prime__operating_profits2,PRIME,Operating profits2,PRIME,PRIME,False,False,,,True
+1428,prime__of_which_dividends_from_group_companies,PRIME,of which dividends from group companies,PRIME,PRIME,False,False,,,True
+1429,prime__loan_losses3,PRIME,Loan losses3,PRIME,PRIME,False,False,,,True
+1430,prime__balance_sheet_total,PRIME,Balance sheet total,PRIME,PRIME,False,False,,,True
+1431,prime__assets_billion_sek,PRIME,"Assets, Billion SEK",PRIME,PRIME,False,False,,,True
+1432,prime__unnamed_1432_level_1,PRIME,Unnamed: 1432_level_1,PRIME,PRIME,False,False,,,True
+1433,prime__unnamed_1433_level_1,PRIME,Unnamed: 1433_level_1,PRIME,PRIME,False,False,,,True
+1434,prime__unnamed_1434_level_1,PRIME,Unnamed: 1434_level_1,PRIME,PRIME,False,False,,,True
+1435,prime__unnamed_1435_level_1,PRIME,Unnamed: 1435_level_1,PRIME,PRIME,False,False,,,True
+1436,prime__unnamed_1436_level_1,PRIME,Unnamed: 1436_level_1,PRIME,PRIME,False,False,,,True
+1437,prime__unnamed_1437_level_1,PRIME,Unnamed: 1437_level_1,PRIME,PRIME,False,False,,,True
+1438,prime__unnamed_1438_level_1,PRIME,Unnamed: 1438_level_1,PRIME,PRIME,False,False,,,True
+1439,prime__unnamed_1439_level_1,PRIME,Unnamed: 1439_level_1,PRIME,PRIME,False,False,,,True
+1440,prime__unnamed_1440_level_1,PRIME,Unnamed: 1440_level_1,PRIME,PRIME,False,False,,,True
+1441,prime__house_holds3,PRIME,House- holds3,PRIME,PRIME,False,False,,,True
+1442,prime__business_sector3,PRIME,Business sector3,PRIME,PRIME,False,False,,,True
+1443,prime__public_sector,PRIME,Public sector,PRIME,PRIME,False,False,,,True
+1444,prime__foreign4,PRIME,Foreign4,PRIME,PRIME,False,False,,,True
+1445,prime__others,PRIME,Others,PRIME,PRIME,False,False,,,True
+1446,prime__total,PRIME,Total,PRIME,PRIME,False,False,,,True
+1447,prime__figure,PRIME,Figure,PRIME,PRIME,False,False,,,True
+1448,prime__sweden_has_a_low_level_of_cash,PRIME,Sweden has a low level of cash,PRIME,PRIME,False,False,,,True
+1449,prime__unnamed_1449_level_1,PRIME,Unnamed: 1449_level_1,PRIME,PRIME,False,False,,,True
+1450,prime__unnamed_1450_level_1,PRIME,Unnamed: 1450_level_1,PRIME,PRIME,False,False,,,True
+1451,prime__unnamed_1451_level_1,PRIME,Unnamed: 1451_level_1,PRIME,PRIME,False,False,,,True
+1452,prime__unnamed_1452_level_1,PRIME,Unnamed: 1452_level_1,PRIME,PRIME,False,False,,,True
+1453,prime__figure_1,PRIME,Figure.1,PRIME,PRIME,False,False,,,True
+1454,prime__most_common_to_pay_by_card_and_swish,PRIME,Most common to pay by card and Swish,PRIME,PRIME,False,False,,,True
+1455,prime__unnamed_1455_level_1,PRIME,Unnamed: 1455_level_1,PRIME,PRIME,False,False,,,True
+1456,prime__unnamed_1456_level_1,PRIME,Unnamed: 1456_level_1,PRIME,PRIME,False,False,,,True
+1457,prime__unnamed_1457_level_1,PRIME,Unnamed: 1457_level_1,PRIME,PRIME,False,False,,,True
+1458,prime__figure_2,PRIME,Figure.2,PRIME,PRIME,False,False,,,True
+1459,prime__card_payments_are_the_most_commonly_accepted_payment_method,PRIME,Card payments are the most commonly accepted payment method,PRIME,PRIME,False,False,,,True
+1460,prime__unnamed_1460_level_1,PRIME,Unnamed: 1460_level_1,PRIME,PRIME,False,False,,,True
+1461,prime__unnamed_1461_level_1,PRIME,Unnamed: 1461_level_1,PRIME,PRIME,False,False,,,True
+1462,prime__unnamed_1462_level_1,PRIME,Unnamed: 1462_level_1,PRIME,PRIME,False,False,,,True
+1463,prid__swedish_monetary_financial_institutions_updated_10_january_2025,PRID,"Swedish Monetary Financial Institutions, updated 10 January 2025",PRID,PRIID,False,False,,,False
+1464,prid__unnamed_1464_level_1,PRID,Unnamed: 1464_level_1,PRID,PRIID,False,False,,,False
+1465,prid__unnamed_1465_level_1,PRID,Unnamed: 1465_level_1,PRID,PRIID,False,False,,,False
+1466,prid__unnamed_1466_level_1,PRID,Unnamed: 1466_level_1,PRID,PRIID,False,False,,,False
+1467,prid__unnamed_1467_level_1,PRID,Unnamed: 1467_level_1,PRID,PRIID,False,False,,,False
+1468,prid__unnamed_1468_level_1,PRID,Unnamed: 1468_level_1,PRID,PRIID,False,False,,,False
+1469,prid__unnamed_1469_level_1,PRID,Unnamed: 1469_level_1,PRID,PRIID,False,False,,,False
+1470,prid__unnamed_1470_level_1,PRID,Unnamed: 1470_level_1,PRID,PRIID,False,False,,,False
+1471,prid__unnamed_1471_level_1,PRID,Unnamed: 1471_level_1,PRID,PRIID,False,False,,,False
+1472,td__unnamed_1472_level_1,TD,Unnamed: 1472_level_1,TD,TD,False,False,,,True
+1473,td__tax_ratio_and_gdp_sekm,TD,"Tax ratio and GDP, SEKm",TD,TD,False,False,,,True
+1474,td__unnamed_1474_level_1,TD,Unnamed: 1474_level_1,TD,TD,False,False,,,True
+1475,td__unnamed_1475_level_1,TD,Unnamed: 1475_level_1,TD,TD,False,False,,,True
+1476,td__unnamed_1476_level_1,TD,Unnamed: 1476_level_1,TD,TD,False,False,,,True
+1477,td__unnamed_1477_level_1,TD,Unnamed: 1477_level_1,TD,TD,False,False,,,True
+1478,td__unnamed_1478_level_1,TD,Unnamed: 1478_level_1,TD,TD,False,False,,,True
+1479,td__share_of_gdp,TD,Share of GDP,TD,TD,False,False,,,True
+1480,td__unnamed_1480_level_1,TD,Unnamed: 1480_level_1,TD,TD,False,False,,,True
+1481,td__unnamed_1481_level_1,TD,Unnamed: 1481_level_1,TD,TD,False,False,,,True
+1482,td__unnamed_1482_level_1,TD,Unnamed: 1482_level_1,TD,TD,False,False,,,True
+1483,td__unnamed_1483_level_1,TD,Unnamed: 1483_level_1,TD,TD,False,False,,,True
+1484,td__unnamed_1484_level_1,TD,Unnamed: 1484_level_1,TD,TD,False,False,,,True
+1485,td__unnamed_1485_level_1,TD,Unnamed: 1485_level_1,TD,TD,False,False,,,True
+1486,td__2019,TD,2019,TD,TD,False,True,2019.0,2019,True
+1487,td__2020,TD,2020,TD,TD,False,True,2020.0,2020,True
+1488,td__2021,TD,2021,TD,TD,False,True,2021.0,2021,True
+1489,td__2022,TD,2022,TD,TD,False,True,2022.0,2022,True
+1490,td__2023,TD,2023,TD,TD,False,True,2023.0,2023,True
+1491,td__unnamed_1491_level_1,TD,Unnamed: 1491_level_1,TD,TD,False,False,,,True
+1492,td__unnamed_1492_level_1,TD,Unnamed: 1492_level_1,TD,TD,False,False,,,True
+1493,td__sek_per_capita_current_prices,TD,"SEK per capita, current prices",TD,TD,False,False,,,True
+1494,td__unnamed_1494_level_1,TD,Unnamed: 1494_level_1,TD,TD,False,False,,,True
+1495,td__unnamed_1495_level_1,TD,Unnamed: 1495_level_1,TD,TD,False,False,,,True
+1496,td__unnamed_1496_level_1,TD,Unnamed: 1496_level_1,TD,TD,False,False,,,True
+1497,td__unnamed_1497_level_1,TD,Unnamed: 1497_level_1,TD,TD,False,False,,,True
+1498,td__unnamed_1498_level_1,TD,Unnamed: 1498_level_1,TD,TD,False,False,,,True
+1499,td__sek_thousands_current_prices,TD,"SEK thousands, current prices",TD,TD,False,False,,,True
+1500,td__unnamed_1500_level_1,TD,Unnamed: 1500_level_1,TD,TD,False,False,,,True
+1501,td__unnamed_1501_level_1,TD,Unnamed: 1501_level_1,TD,TD,False,False,,,True
+1502,td__unnamed_1502_level_1,TD,Unnamed: 1502_level_1,TD,TD,False,False,,,True
+1503,td__unnamed_1503_level_1,TD,Unnamed: 1503_level_1,TD,TD,False,False,,,True
+1504,td__unnamed_1504_level_1,TD,Unnamed: 1504_level_1,TD,TD,False,False,,,True
+1505,td__unnamed_1505_level_1,TD,Unnamed: 1505_level_1,TD,TD,False,False,,,True
+1506,td__unnamed_1506_level_1,TD,Unnamed: 1506_level_1,TD,TD,False,False,,,True
+1507,td__sek_per_capita_current_prices_1,TD,"SEK per capita, current prices.1",TD,TD,False,False,,,True
+1508,td__unnamed_1508_level_1,TD,Unnamed: 1508_level_1,TD,TD,False,False,,,True
+1509,td__unnamed_1509_level_1,TD,Unnamed: 1509_level_1,TD,TD,False,False,,,True
+1510,td__unnamed_1510_level_1,TD,Unnamed: 1510_level_1,TD,TD,False,False,,,True
+1511,td__unnamed_1511_level_1,TD,Unnamed: 1511_level_1,TD,TD,False,False,,,True
+1512,td__unnamed_1512_level_1,TD,Unnamed: 1512_level_1,TD,TD,False,False,,,True
+1513,td__sek_thousands_current_prices_1,TD,"SEK thousands, current prices.1",TD,TD,False,False,,,True
+1514,td__unnamed_1514_level_1,TD,Unnamed: 1514_level_1,TD,TD,False,False,,,True
+1515,td__unnamed_1515_level_1,TD,Unnamed: 1515_level_1,TD,TD,False,False,,,True
+1516,td__unnamed_1516_level_1,TD,Unnamed: 1516_level_1,TD,TD,False,False,,,True
+1517,td__unnamed_1517_level_1,TD,Unnamed: 1517_level_1,TD,TD,False,False,,,True
+1518,td__unnamed_1518_level_1,TD,Unnamed: 1518_level_1,TD,TD,False,False,,,True
+1519,td__unnamed_1519_level_1,TD,Unnamed: 1519_level_1,TD,TD,False,False,,,True
+1520,td__unnamed_1520_level_1,TD,Unnamed: 1520_level_1,TD,TD,False,False,,,True
+1521,td__sek_per_capita_current_prices_2,TD,"SEK per capita, current prices.2",TD,TD,False,False,,,True
+1522,td__unnamed_1522_level_1,TD,Unnamed: 1522_level_1,TD,TD,False,False,,,True
+1523,td__unnamed_1523_level_1,TD,Unnamed: 1523_level_1,TD,TD,False,False,,,True
+1524,td__unnamed_1524_level_1,TD,Unnamed: 1524_level_1,TD,TD,False,False,,,True
+1525,td__unnamed_1525_level_1,TD,Unnamed: 1525_level_1,TD,TD,False,False,,,True
+1526,td__unnamed_1526_level_1,TD,Unnamed: 1526_level_1,TD,TD,False,False,,,True
+1527,td__sek_thousands_current_prices_2,TD,"SEK thousands, current prices.2",TD,TD,False,False,,,True
+1528,td__unnamed_1528_level_1,TD,Unnamed: 1528_level_1,TD,TD,False,False,,,True
+1529,td__unnamed_1529_level_1,TD,Unnamed: 1529_level_1,TD,TD,False,False,,,True
+1530,td__unnamed_1530_level_1,TD,Unnamed: 1530_level_1,TD,TD,False,False,,,True
+1531,td__unnamed_1531_level_1,TD,Unnamed: 1531_level_1,TD,TD,False,False,,,True
+1532,td__unnamed_1532_level_1,TD,Unnamed: 1532_level_1,TD,TD,False,False,,,True
+1533,td__unnamed_1533_level_1,TD,Unnamed: 1533_level_1,TD,TD,False,False,,,True
+1534,td__unnamed_1534_level_1,TD,Unnamed: 1534_level_1,TD,TD,False,False,,,True
+1535,td__sek_per_capita_current_prices_3,TD,"SEK per capita, current prices.3",TD,TD,False,False,,,True
+1536,td__unnamed_1536_level_1,TD,Unnamed: 1536_level_1,TD,TD,False,False,,,True
+1537,td__unnamed_1537_level_1,TD,Unnamed: 1537_level_1,TD,TD,False,False,,,True
+1538,td__unnamed_1538_level_1,TD,Unnamed: 1538_level_1,TD,TD,False,False,,,True
+1539,td__unnamed_1539_level_1,TD,Unnamed: 1539_level_1,TD,TD,False,False,,,True
+1540,td__unnamed_1540_level_1,TD,Unnamed: 1540_level_1,TD,TD,False,False,,,True
+1541,td__sek_thousands_current_prices_3,TD,"SEK thousands, current prices.3",TD,TD,False,False,,,True
+1542,td__unnamed_1542_level_1,TD,Unnamed: 1542_level_1,TD,TD,False,False,,,True
+1543,td__unnamed_1543_level_1,TD,Unnamed: 1543_level_1,TD,TD,False,False,,,True
+1544,td__unnamed_1544_level_1,TD,Unnamed: 1544_level_1,TD,TD,False,False,,,True
+1545,td__unnamed_1545_level_1,TD,Unnamed: 1545_level_1,TD,TD,False,False,,,True
+1546,td__unnamed_1546_level_1,TD,Unnamed: 1546_level_1,TD,TD,False,False,,,True
+1547,td__unnamed_1547_level_1,TD,Unnamed: 1547_level_1,TD,TD,False,False,,,True
+1548,td__unnamed_1548_level_1,TD,Unnamed: 1548_level_1,TD,TD,False,False,,,True
+1549,td__sek_per_capita_current_prices_4,TD,"SEK per capita, current prices.4",TD,TD,False,False,,,True
+1550,td__unnamed_1550_level_1,TD,Unnamed: 1550_level_1,TD,TD,False,False,,,True
+1551,td__unnamed_1551_level_1,TD,Unnamed: 1551_level_1,TD,TD,False,False,,,True
+1552,td__unnamed_1552_level_1,TD,Unnamed: 1552_level_1,TD,TD,False,False,,,True
+1553,td__unnamed_1553_level_1,TD,Unnamed: 1553_level_1,TD,TD,False,False,,,True
+1554,td__unnamed_1554_level_1,TD,Unnamed: 1554_level_1,TD,TD,False,False,,,True
+1555,td__sek_thousands_current_prices_4,TD,"SEK thousands, current prices.4",TD,TD,False,False,,,True
+1556,td__unnamed_1556_level_1,TD,Unnamed: 1556_level_1,TD,TD,False,False,,,True
+1557,td__unnamed_1557_level_1,TD,Unnamed: 1557_level_1,TD,TD,False,False,,,True
+1558,td__unnamed_1558_level_1,TD,Unnamed: 1558_level_1,TD,TD,False,False,,,True
+1559,td__unnamed_1559_level_1,TD,Unnamed: 1559_level_1,TD,TD,False,False,,,True
+1560,td__unnamed_1560_level_1,TD,Unnamed: 1560_level_1,TD,TD,False,False,,,True
+1561,ti__unnamed_1561_level_1,TI,Unnamed: 1561_level_1,TI,TII,False,False,,,False
+1562,ti__unnamed_1562_level_1,TI,Unnamed: 1562_level_1,TI,TII,False,False,,,False
+1563,ti__unnamed_1563_level_1,TI,Unnamed: 1563_level_1,TI,TII,False,False,,,False
+1564,ti__unnamed_1564_level_1,TI,Unnamed: 1564_level_1,TI,TII,False,False,,,False
+1565,ti__unnamed_1565_level_1,TI,Unnamed: 1565_level_1,TI,TII,False,False,,,False
+1566,ti__unnamed_1566_level_1,TI,Unnamed: 1566_level_1,TI,TII,False,False,,,False
+1567,iset_isemt_iseft__unnamed_1567_level_1,ISET_ISEMT_ISEFT,Unnamed: 1567_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1568,iset_isemt_iseft__unnamed_1568_level_1,ISET_ISEMT_ISEFT,Unnamed: 1568_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1569,iset_isemt_iseft__unnamed_1569_level_1,ISET_ISEMT_ISEFT,Unnamed: 1569_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1570,iset_isemt_iseft__unnamed_1570_level_1,ISET_ISEMT_ISEFT,Unnamed: 1570_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1571,iset_isemt_iseft__unnamed_1571_level_1,ISET_ISEMT_ISEFT,Unnamed: 1571_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1572,iset_isemt_iseft__employed_after_workplace_location,ISET_ISEMT_ISEFT,Employed after workplace location.,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1573,iset_isemt_iseft__unnamed_1573_level_1,ISET_ISEMT_ISEFT,Unnamed: 1573_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1574,iset_isemt_iseft__unnamed_1574_level_1,ISET_ISEMT_ISEFT,Unnamed: 1574_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1575,iset_isemt_iseft__unnamed_1575_level_1,ISET_ISEMT_ISEFT,Unnamed: 1575_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1576,iset_isemt_iseft__unnamed_1576_level_1,ISET_ISEMT_ISEFT,Unnamed: 1576_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1577,iset_isemt_iseft__unnamed_1577_level_1,ISET_ISEMT_ISEFT,Unnamed: 1577_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1578,iset_isemt_iseft__unnamed_1578_level_1,ISET_ISEMT_ISEFT,Unnamed: 1578_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1579,iset_isemt_iseft__unnamed_1579_level_1,ISET_ISEMT_ISEFT,Unnamed: 1579_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1580,iset_isemt_iseft__unnamed_1580_level_1,ISET_ISEMT_ISEFT,Unnamed: 1580_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1581,iset_isemt_iseft__unnamed_1581_level_1,ISET_ISEMT_ISEFT,Unnamed: 1581_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1582,iset_isemt_iseft__unnamed_1582_level_1,ISET_ISEMT_ISEFT,Unnamed: 1582_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1583,iset_isemt_iseft__unnamed_1583_level_1,ISET_ISEMT_ISEFT,Unnamed: 1583_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1584,iset_isemt_iseft__unnamed_1584_level_1,ISET_ISEMT_ISEFT,Unnamed: 1584_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1585,iset_isemt_iseft__unnamed_1585_level_1,ISET_ISEMT_ISEFT,Unnamed: 1585_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1586,iset_isemt_iseft__unnamed_1586_level_1,ISET_ISEMT_ISEFT,Unnamed: 1586_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1587,iset_isemt_iseft__unnamed_1587_level_1,ISET_ISEMT_ISEFT,Unnamed: 1587_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1588,iset_isemt_iseft__unnamed_1588_level_1,ISET_ISEMT_ISEFT,Unnamed: 1588_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1589,iset_isemt_iseft__unnamed_1589_level_1,ISET_ISEMT_ISEFT,Unnamed: 1589_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1590,iset_isemt_iseft__unnamed_1590_level_1,ISET_ISEMT_ISEFT,Unnamed: 1590_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1591,iset_isemt_iseft__unnamed_1591_level_1,ISET_ISEMT_ISEFT,Unnamed: 1591_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1592,iset_isemt_iseft__unnamed_1592_level_1,ISET_ISEMT_ISEFT,Unnamed: 1592_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1593,iset_isemt_iseft__unnamed_1593_level_1,ISET_ISEMT_ISEFT,Unnamed: 1593_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1594,iset_isemt_iseft__unnamed_1594_level_1,ISET_ISEMT_ISEFT,Unnamed: 1594_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1595,iset_isemt_iseft__unnamed_1595_level_1,ISET_ISEMT_ISEFT,Unnamed: 1595_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1596,iset_isemt_iseft__unnamed_1596_level_1,ISET_ISEMT_ISEFT,Unnamed: 1596_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1597,iset_isemt_iseft__unnamed_1597_level_1,ISET_ISEMT_ISEFT,Unnamed: 1597_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1598,iset_isemt_iseft__unnamed_1598_level_1,ISET_ISEMT_ISEFT,Unnamed: 1598_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1599,iset_isemt_iseft__unnamed_1599_level_1,ISET_ISEMT_ISEFT,Unnamed: 1599_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1600,iset_isemt_iseft__unnamed_1600_level_1,ISET_ISEMT_ISEFT,Unnamed: 1600_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1601,iset_isemt_iseft__unnamed_1601_level_1,ISET_ISEMT_ISEFT,Unnamed: 1601_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1602,iset_isemt_iseft__unnamed_1602_level_1,ISET_ISEMT_ISEFT,Unnamed: 1602_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1603,iset_isemt_iseft__unnamed_1603_level_1,ISET_ISEMT_ISEFT,Unnamed: 1603_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1604,iset_isemt_iseft__unnamed_1604_level_1,ISET_ISEMT_ISEFT,Unnamed: 1604_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1605,iset_isemt_iseft__unnamed_1605_level_1,ISET_ISEMT_ISEFT,Unnamed: 1605_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1606,iset_isemt_iseft__unnamed_1606_level_1,ISET_ISEMT_ISEFT,Unnamed: 1606_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1607,iset_isemt_iseft__unnamed_1607_level_1,ISET_ISEMT_ISEFT,Unnamed: 1607_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1608,iset_isemt_iseft__unnamed_1608_level_1,ISET_ISEMT_ISEFT,Unnamed: 1608_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1609,iset_isemt_iseft__unnamed_1609_level_1,ISET_ISEMT_ISEFT,Unnamed: 1609_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1610,iset_isemt_iseft__unnamed_1610_level_1,ISET_ISEMT_ISEFT,Unnamed: 1610_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1611,iset_isemt_iseft__unnamed_1611_level_1,ISET_ISEMT_ISEFT,Unnamed: 1611_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1612,iset_isemt_iseft__unnamed_1612_level_1,ISET_ISEMT_ISEFT,Unnamed: 1612_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1613,iset_isemt_iseft__unnamed_1613_level_1,ISET_ISEMT_ISEFT,Unnamed: 1613_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1614,iset_isemt_iseft__unnamed_1614_level_1,ISET_ISEMT_ISEFT,Unnamed: 1614_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1615,iset_isemt_iseft__unnamed_1615_level_1,ISET_ISEMT_ISEFT,Unnamed: 1615_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1616,iset_isemt_iseft__unnamed_1616_level_1,ISET_ISEMT_ISEFT,Unnamed: 1616_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1617,iset_isemt_iseft__unnamed_1617_level_1,ISET_ISEMT_ISEFT,Unnamed: 1617_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1618,iset_isemt_iseft__unnamed_1618_level_1,ISET_ISEMT_ISEFT,Unnamed: 1618_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1619,iset_isemt_iseft__unnamed_1619_level_1,ISET_ISEMT_ISEFT,Unnamed: 1619_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1620,iset_isemt_iseft__unnamed_1620_level_1,ISET_ISEMT_ISEFT,Unnamed: 1620_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1621,iset_isemt_iseft__unnamed_1621_level_1,ISET_ISEMT_ISEFT,Unnamed: 1621_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1622,iset_isemt_iseft__unnamed_1622_level_1,ISET_ISEMT_ISEFT,Unnamed: 1622_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1623,iset_isemt_iseft__unnamed_1623_level_1,ISET_ISEMT_ISEFT,Unnamed: 1623_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1624,iset_isemt_iseft__unnamed_1624_level_1,ISET_ISEMT_ISEFT,Unnamed: 1624_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1625,iset_isemt_iseft__unnamed_1625_level_1,ISET_ISEMT_ISEFT,Unnamed: 1625_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1626,iset_isemt_iseft__unnamed_1626_level_1,ISET_ISEMT_ISEFT,Unnamed: 1626_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1627,iset_isemt_iseft__unnamed_1627_level_1,ISET_ISEMT_ISEFT,Unnamed: 1627_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1628,iset_isemt_iseft__unnamed_1628_level_1,ISET_ISEMT_ISEFT,Unnamed: 1628_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1629,iset_isemt_iseft__unnamed_1629_level_1,ISET_ISEMT_ISEFT,Unnamed: 1629_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1630,iset_isemt_iseft__unnamed_1630_level_1,ISET_ISEMT_ISEFT,Unnamed: 1630_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1631,iset_isemt_iseft__unnamed_1631_level_1,ISET_ISEMT_ISEFT,Unnamed: 1631_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1632,iset_isemt_iseft__unnamed_1632_level_1,ISET_ISEMT_ISEFT,Unnamed: 1632_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1633,iset_isemt_iseft__unnamed_1633_level_1,ISET_ISEMT_ISEFT,Unnamed: 1633_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1634,iset_isemt_iseft__unnamed_1634_level_1,ISET_ISEMT_ISEFT,Unnamed: 1634_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1635,iset_isemt_iseft__unnamed_1635_level_1,ISET_ISEMT_ISEFT,Unnamed: 1635_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1636,iset_isemt_iseft__employed_after_workplace_location_1,ISET_ISEMT_ISEFT,Employed after workplace location..1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1637,iset_isemt_iseft__unnamed_1637_level_1,ISET_ISEMT_ISEFT,Unnamed: 1637_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1638,iset_isemt_iseft__unnamed_1638_level_1,ISET_ISEMT_ISEFT,Unnamed: 1638_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1639,iset_isemt_iseft__unnamed_1639_level_1,ISET_ISEMT_ISEFT,Unnamed: 1639_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1640,iset_isemt_iseft__unnamed_1640_level_1,ISET_ISEMT_ISEFT,Unnamed: 1640_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1641,iset_isemt_iseft__unnamed_1641_level_1,ISET_ISEMT_ISEFT,Unnamed: 1641_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1642,iset_isemt_iseft__unnamed_1642_level_1,ISET_ISEMT_ISEFT,Unnamed: 1642_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1643,iset_isemt_iseft__unnamed_1643_level_1,ISET_ISEMT_ISEFT,Unnamed: 1643_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1644,iset_isemt_iseft__unnamed_1644_level_1,ISET_ISEMT_ISEFT,Unnamed: 1644_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1645,iset_isemt_iseft__unnamed_1645_level_1,ISET_ISEMT_ISEFT,Unnamed: 1645_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1646,iset_isemt_iseft__unnamed_1646_level_1,ISET_ISEMT_ISEFT,Unnamed: 1646_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1647,iset_isemt_iseft__unnamed_1647_level_1,ISET_ISEMT_ISEFT,Unnamed: 1647_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1648,iset_isemt_iseft__unnamed_1648_level_1,ISET_ISEMT_ISEFT,Unnamed: 1648_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1649,iset_isemt_iseft__unnamed_1649_level_1,ISET_ISEMT_ISEFT,Unnamed: 1649_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1650,iset_isemt_iseft__unnamed_1650_level_1,ISET_ISEMT_ISEFT,Unnamed: 1650_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1651,iset_isemt_iseft__unnamed_1651_level_1,ISET_ISEMT_ISEFT,Unnamed: 1651_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1652,iset_isemt_iseft__unnamed_1652_level_1,ISET_ISEMT_ISEFT,Unnamed: 1652_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1653,iset_isemt_iseft__unnamed_1653_level_1,ISET_ISEMT_ISEFT,Unnamed: 1653_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1654,iset_isemt_iseft__unnamed_1654_level_1,ISET_ISEMT_ISEFT,Unnamed: 1654_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1655,iset_isemt_iseft__unnamed_1655_level_1,ISET_ISEMT_ISEFT,Unnamed: 1655_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1656,iset_isemt_iseft__unnamed_1656_level_1,ISET_ISEMT_ISEFT,Unnamed: 1656_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1657,iset_isemt_iseft__unnamed_1657_level_1,ISET_ISEMT_ISEFT,Unnamed: 1657_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1658,iset_isemt_iseft__unnamed_1658_level_1,ISET_ISEMT_ISEFT,Unnamed: 1658_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1659,iset_isemt_iseft__unnamed_1659_level_1,ISET_ISEMT_ISEFT,Unnamed: 1659_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1660,iset_isemt_iseft__unnamed_1660_level_1,ISET_ISEMT_ISEFT,Unnamed: 1660_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1661,iset_isemt_iseft__unnamed_1661_level_1,ISET_ISEMT_ISEFT,Unnamed: 1661_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1662,iset_isemt_iseft__unnamed_1662_level_1,ISET_ISEMT_ISEFT,Unnamed: 1662_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1663,iset_isemt_iseft__unnamed_1663_level_1,ISET_ISEMT_ISEFT,Unnamed: 1663_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1664,iset_isemt_iseft__unnamed_1664_level_1,ISET_ISEMT_ISEFT,Unnamed: 1664_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1665,iset_isemt_iseft__unnamed_1665_level_1,ISET_ISEMT_ISEFT,Unnamed: 1665_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1666,iset_isemt_iseft__unnamed_1666_level_1,ISET_ISEMT_ISEFT,Unnamed: 1666_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1667,iset_isemt_iseft__unnamed_1667_level_1,ISET_ISEMT_ISEFT,Unnamed: 1667_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1668,iset_isemt_iseft__unnamed_1668_level_1,ISET_ISEMT_ISEFT,Unnamed: 1668_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1669,iset_isemt_iseft__unnamed_1669_level_1,ISET_ISEMT_ISEFT,Unnamed: 1669_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1670,iset_isemt_iseft__unnamed_1670_level_1,ISET_ISEMT_ISEFT,Unnamed: 1670_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1671,iset_isemt_iseft__unnamed_1671_level_1,ISET_ISEMT_ISEFT,Unnamed: 1671_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1672,iset_isemt_iseft__unnamed_1672_level_1,ISET_ISEMT_ISEFT,Unnamed: 1672_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1673,iset_isemt_iseft__unnamed_1673_level_1,ISET_ISEMT_ISEFT,Unnamed: 1673_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1674,iset_isemt_iseft__unnamed_1674_level_1,ISET_ISEMT_ISEFT,Unnamed: 1674_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1675,iset_isemt_iseft__unnamed_1675_level_1,ISET_ISEMT_ISEFT,Unnamed: 1675_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1676,iset_isemt_iseft__unnamed_1676_level_1,ISET_ISEMT_ISEFT,Unnamed: 1676_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1677,iset_isemt_iseft__unnamed_1677_level_1,ISET_ISEMT_ISEFT,Unnamed: 1677_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1678,iset_isemt_iseft__unnamed_1678_level_1,ISET_ISEMT_ISEFT,Unnamed: 1678_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1679,iset_isemt_iseft__unnamed_1679_level_1,ISET_ISEMT_ISEFT,Unnamed: 1679_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1680,iset_isemt_iseft__unnamed_1680_level_1,ISET_ISEMT_ISEFT,Unnamed: 1680_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1681,iset_isemt_iseft__unnamed_1681_level_1,ISET_ISEMT_ISEFT,Unnamed: 1681_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1682,iset_isemt_iseft__unnamed_1682_level_1,ISET_ISEMT_ISEFT,Unnamed: 1682_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1683,iset_isemt_iseft__unnamed_1683_level_1,ISET_ISEMT_ISEFT,Unnamed: 1683_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1684,iset_isemt_iseft__unnamed_1684_level_1,ISET_ISEMT_ISEFT,Unnamed: 1684_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1685,iset_isemt_iseft__unnamed_1685_level_1,ISET_ISEMT_ISEFT,Unnamed: 1685_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1686,iset_isemt_iseft__unnamed_1686_level_1,ISET_ISEMT_ISEFT,Unnamed: 1686_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1687,iset_isemt_iseft__unnamed_1687_level_1,ISET_ISEMT_ISEFT,Unnamed: 1687_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1688,iset_isemt_iseft__unnamed_1688_level_1,ISET_ISEMT_ISEFT,Unnamed: 1688_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1689,iset_isemt_iseft__unnamed_1689_level_1,ISET_ISEMT_ISEFT,Unnamed: 1689_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1690,iset_isemt_iseft__unnamed_1690_level_1,ISET_ISEMT_ISEFT,Unnamed: 1690_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1691,iset_isemt_iseft__unnamed_1691_level_1,ISET_ISEMT_ISEFT,Unnamed: 1691_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1692,iset_isemt_iseft__unnamed_1692_level_1,ISET_ISEMT_ISEFT,Unnamed: 1692_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1693,iset_isemt_iseft__unnamed_1693_level_1,ISET_ISEMT_ISEFT,Unnamed: 1693_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1694,iset_isemt_iseft__unnamed_1694_level_1,ISET_ISEMT_ISEFT,Unnamed: 1694_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1695,iset_isemt_iseft__unnamed_1695_level_1,ISET_ISEMT_ISEFT,Unnamed: 1695_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1696,iset_isemt_iseft__unnamed_1696_level_1,ISET_ISEMT_ISEFT,Unnamed: 1696_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1697,iset_isemt_iseft__unnamed_1697_level_1,ISET_ISEMT_ISEFT,Unnamed: 1697_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1698,iset_isemt_iseft__unnamed_1698_level_1,ISET_ISEMT_ISEFT,Unnamed: 1698_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1699,iset_isemt_iseft__unnamed_1699_level_1,ISET_ISEMT_ISEFT,Unnamed: 1699_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1700,iset_isemt_iseft__unnamed_1700_level_1,ISET_ISEMT_ISEFT,Unnamed: 1700_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1701,iset_isemt_iseft__unnamed_1701_level_1,ISET_ISEMT_ISEFT,Unnamed: 1701_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1702,iset_isemt_iseft__unnamed_1702_level_1,ISET_ISEMT_ISEFT,Unnamed: 1702_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1703,iset_isemt_iseft__unnamed_1703_level_1,ISET_ISEMT_ISEFT,Unnamed: 1703_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1704,iset_isemt_iseft__employed_after_workplace_location_2,ISET_ISEMT_ISEFT,Employed after workplace location..2,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1705,iset_isemt_iseft__unnamed_1705_level_1,ISET_ISEMT_ISEFT,Unnamed: 1705_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1706,iset_isemt_iseft__unnamed_1706_level_1,ISET_ISEMT_ISEFT,Unnamed: 1706_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1707,iset_isemt_iseft__unnamed_1707_level_1,ISET_ISEMT_ISEFT,Unnamed: 1707_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1708,iset_isemt_iseft__unnamed_1708_level_1,ISET_ISEMT_ISEFT,Unnamed: 1708_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1709,iset_isemt_iseft__unnamed_1709_level_1,ISET_ISEMT_ISEFT,Unnamed: 1709_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1710,iset_isemt_iseft__unnamed_1710_level_1,ISET_ISEMT_ISEFT,Unnamed: 1710_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1711,iset_isemt_iseft__unnamed_1711_level_1,ISET_ISEMT_ISEFT,Unnamed: 1711_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1712,iset_isemt_iseft__unnamed_1712_level_1,ISET_ISEMT_ISEFT,Unnamed: 1712_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1713,iset_isemt_iseft__unnamed_1713_level_1,ISET_ISEMT_ISEFT,Unnamed: 1713_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1714,iset_isemt_iseft__unnamed_1714_level_1,ISET_ISEMT_ISEFT,Unnamed: 1714_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1715,iset_isemt_iseft__unnamed_1715_level_1,ISET_ISEMT_ISEFT,Unnamed: 1715_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1716,iset_isemt_iseft__unnamed_1716_level_1,ISET_ISEMT_ISEFT,Unnamed: 1716_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1717,iset_isemt_iseft__unnamed_1717_level_1,ISET_ISEMT_ISEFT,Unnamed: 1717_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1718,iset_isemt_iseft__unnamed_1718_level_1,ISET_ISEMT_ISEFT,Unnamed: 1718_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1719,iset_isemt_iseft__unnamed_1719_level_1,ISET_ISEMT_ISEFT,Unnamed: 1719_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1720,iset_isemt_iseft__unnamed_1720_level_1,ISET_ISEMT_ISEFT,Unnamed: 1720_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1721,iset_isemt_iseft__unnamed_1721_level_1,ISET_ISEMT_ISEFT,Unnamed: 1721_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1722,iset_isemt_iseft__unnamed_1722_level_1,ISET_ISEMT_ISEFT,Unnamed: 1722_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1723,iset_isemt_iseft__unnamed_1723_level_1,ISET_ISEMT_ISEFT,Unnamed: 1723_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1724,iset_isemt_iseft__unnamed_1724_level_1,ISET_ISEMT_ISEFT,Unnamed: 1724_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1725,iset_isemt_iseft__unnamed_1725_level_1,ISET_ISEMT_ISEFT,Unnamed: 1725_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1726,iset_isemt_iseft__unnamed_1726_level_1,ISET_ISEMT_ISEFT,Unnamed: 1726_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1727,iset_isemt_iseft__unnamed_1727_level_1,ISET_ISEMT_ISEFT,Unnamed: 1727_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1728,iset_isemt_iseft__unnamed_1728_level_1,ISET_ISEMT_ISEFT,Unnamed: 1728_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1729,iset_isemt_iseft__unnamed_1729_level_1,ISET_ISEMT_ISEFT,Unnamed: 1729_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1730,iset_isemt_iseft__unnamed_1730_level_1,ISET_ISEMT_ISEFT,Unnamed: 1730_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1731,iset_isemt_iseft__unnamed_1731_level_1,ISET_ISEMT_ISEFT,Unnamed: 1731_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1732,iset_isemt_iseft__unnamed_1732_level_1,ISET_ISEMT_ISEFT,Unnamed: 1732_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1733,iset_isemt_iseft__unnamed_1733_level_1,ISET_ISEMT_ISEFT,Unnamed: 1733_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1734,iset_isemt_iseft__unnamed_1734_level_1,ISET_ISEMT_ISEFT,Unnamed: 1734_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1735,iset_isemt_iseft__unnamed_1735_level_1,ISET_ISEMT_ISEFT,Unnamed: 1735_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1736,iset_isemt_iseft__unnamed_1736_level_1,ISET_ISEMT_ISEFT,Unnamed: 1736_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1737,iset_isemt_iseft__unnamed_1737_level_1,ISET_ISEMT_ISEFT,Unnamed: 1737_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1738,iset_isemt_iseft__unnamed_1738_level_1,ISET_ISEMT_ISEFT,Unnamed: 1738_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1739,iset_isemt_iseft__unnamed_1739_level_1,ISET_ISEMT_ISEFT,Unnamed: 1739_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1740,iset_isemt_iseft__unnamed_1740_level_1,ISET_ISEMT_ISEFT,Unnamed: 1740_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1741,iset_isemt_iseft__unnamed_1741_level_1,ISET_ISEMT_ISEFT,Unnamed: 1741_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1742,iset_isemt_iseft__unnamed_1742_level_1,ISET_ISEMT_ISEFT,Unnamed: 1742_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1743,iset_isemt_iseft__unnamed_1743_level_1,ISET_ISEMT_ISEFT,Unnamed: 1743_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1744,iset_isemt_iseft__unnamed_1744_level_1,ISET_ISEMT_ISEFT,Unnamed: 1744_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1745,iset_isemt_iseft__unnamed_1745_level_1,ISET_ISEMT_ISEFT,Unnamed: 1745_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1746,iset_isemt_iseft__unnamed_1746_level_1,ISET_ISEMT_ISEFT,Unnamed: 1746_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1747,iset_isemt_iseft__unnamed_1747_level_1,ISET_ISEMT_ISEFT,Unnamed: 1747_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1748,iset_isemt_iseft__unnamed_1748_level_1,ISET_ISEMT_ISEFT,Unnamed: 1748_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1749,iset_isemt_iseft__unnamed_1749_level_1,ISET_ISEMT_ISEFT,Unnamed: 1749_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1750,iset_isemt_iseft__unnamed_1750_level_1,ISET_ISEMT_ISEFT,Unnamed: 1750_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1751,iset_isemt_iseft__unnamed_1751_level_1,ISET_ISEMT_ISEFT,Unnamed: 1751_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1752,iset_isemt_iseft__unnamed_1752_level_1,ISET_ISEMT_ISEFT,Unnamed: 1752_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1753,iset_isemt_iseft__unnamed_1753_level_1,ISET_ISEMT_ISEFT,Unnamed: 1753_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1754,iset_isemt_iseft__unnamed_1754_level_1,ISET_ISEMT_ISEFT,Unnamed: 1754_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1755,iset_isemt_iseft__unnamed_1755_level_1,ISET_ISEMT_ISEFT,Unnamed: 1755_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1756,iset_isemt_iseft__unnamed_1756_level_1,ISET_ISEMT_ISEFT,Unnamed: 1756_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1757,iset_isemt_iseft__unnamed_1757_level_1,ISET_ISEMT_ISEFT,Unnamed: 1757_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1758,iset_isemt_iseft__unnamed_1758_level_1,ISET_ISEMT_ISEFT,Unnamed: 1758_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1759,iset_isemt_iseft__unnamed_1759_level_1,ISET_ISEMT_ISEFT,Unnamed: 1759_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1760,iset_isemt_iseft__unnamed_1760_level_1,ISET_ISEMT_ISEFT,Unnamed: 1760_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1761,iset_isemt_iseft__unnamed_1761_level_1,ISET_ISEMT_ISEFT,Unnamed: 1761_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1762,iset_isemt_iseft__unnamed_1762_level_1,ISET_ISEMT_ISEFT,Unnamed: 1762_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1763,iset_isemt_iseft__unnamed_1763_level_1,ISET_ISEMT_ISEFT,Unnamed: 1763_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1764,iset_isemt_iseft__unnamed_1764_level_1,ISET_ISEMT_ISEFT,Unnamed: 1764_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1765,iset_isemt_iseft__unnamed_1765_level_1,ISET_ISEMT_ISEFT,Unnamed: 1765_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1766,iset_isemt_iseft__unnamed_1766_level_1,ISET_ISEMT_ISEFT,Unnamed: 1766_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1767,iset_isemt_iseft__unnamed_1767_level_1,ISET_ISEMT_ISEFT,Unnamed: 1767_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1768,iset_isemt_iseft__employed_after_workplace_location_3,ISET_ISEMT_ISEFT,Employed after workplace location..3,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1769,iset_isemt_iseft__unnamed_1769_level_1,ISET_ISEMT_ISEFT,Unnamed: 1769_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1770,iset_isemt_iseft__unnamed_1770_level_1,ISET_ISEMT_ISEFT,Unnamed: 1770_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1771,iset_isemt_iseft__unnamed_1771_level_1,ISET_ISEMT_ISEFT,Unnamed: 1771_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1772,iset_isemt_iseft__unnamed_1772_level_1,ISET_ISEMT_ISEFT,Unnamed: 1772_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1773,iset_isemt_iseft__unnamed_1773_level_1,ISET_ISEMT_ISEFT,Unnamed: 1773_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1774,iset_isemt_iseft__unnamed_1774_level_1,ISET_ISEMT_ISEFT,Unnamed: 1774_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1775,iset_isemt_iseft__unnamed_1775_level_1,ISET_ISEMT_ISEFT,Unnamed: 1775_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1776,iset_isemt_iseft__unnamed_1776_level_1,ISET_ISEMT_ISEFT,Unnamed: 1776_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1777,iset_isemt_iseft__unnamed_1777_level_1,ISET_ISEMT_ISEFT,Unnamed: 1777_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1778,iset_isemt_iseft__unnamed_1778_level_1,ISET_ISEMT_ISEFT,Unnamed: 1778_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1779,iset_isemt_iseft__unnamed_1779_level_1,ISET_ISEMT_ISEFT,Unnamed: 1779_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1780,iset_isemt_iseft__unnamed_1780_level_1,ISET_ISEMT_ISEFT,Unnamed: 1780_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1781,iset_isemt_iseft__unnamed_1781_level_1,ISET_ISEMT_ISEFT,Unnamed: 1781_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1782,iset_isemt_iseft__unnamed_1782_level_1,ISET_ISEMT_ISEFT,Unnamed: 1782_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1783,iset_isemt_iseft__unnamed_1783_level_1,ISET_ISEMT_ISEFT,Unnamed: 1783_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1784,iset_isemt_iseft__unnamed_1784_level_1,ISET_ISEMT_ISEFT,Unnamed: 1784_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1785,iset_isemt_iseft__unnamed_1785_level_1,ISET_ISEMT_ISEFT,Unnamed: 1785_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1786,iset_isemt_iseft__unnamed_1786_level_1,ISET_ISEMT_ISEFT,Unnamed: 1786_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1787,iset_isemt_iseft__unnamed_1787_level_1,ISET_ISEMT_ISEFT,Unnamed: 1787_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1788,iset_isemt_iseft__unnamed_1788_level_1,ISET_ISEMT_ISEFT,Unnamed: 1788_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1789,iset_isemt_iseft__unnamed_1789_level_1,ISET_ISEMT_ISEFT,Unnamed: 1789_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1790,iset_isemt_iseft__unnamed_1790_level_1,ISET_ISEMT_ISEFT,Unnamed: 1790_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1791,iset_isemt_iseft__unnamed_1791_level_1,ISET_ISEMT_ISEFT,Unnamed: 1791_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1792,iset_isemt_iseft__unnamed_1792_level_1,ISET_ISEMT_ISEFT,Unnamed: 1792_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1793,iset_isemt_iseft__unnamed_1793_level_1,ISET_ISEMT_ISEFT,Unnamed: 1793_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1794,iset_isemt_iseft__unnamed_1794_level_1,ISET_ISEMT_ISEFT,Unnamed: 1794_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1795,iset_isemt_iseft__unnamed_1795_level_1,ISET_ISEMT_ISEFT,Unnamed: 1795_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1796,iset_isemt_iseft__unnamed_1796_level_1,ISET_ISEMT_ISEFT,Unnamed: 1796_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1797,iset_isemt_iseft__unnamed_1797_level_1,ISET_ISEMT_ISEFT,Unnamed: 1797_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1798,iset_isemt_iseft__unnamed_1798_level_1,ISET_ISEMT_ISEFT,Unnamed: 1798_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1799,iset_isemt_iseft__unnamed_1799_level_1,ISET_ISEMT_ISEFT,Unnamed: 1799_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1800,iset_isemt_iseft__unnamed_1800_level_1,ISET_ISEMT_ISEFT,Unnamed: 1800_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1801,iset_isemt_iseft__unnamed_1801_level_1,ISET_ISEMT_ISEFT,Unnamed: 1801_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1802,iset_isemt_iseft__unnamed_1802_level_1,ISET_ISEMT_ISEFT,Unnamed: 1802_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1803,iset_isemt_iseft__unnamed_1803_level_1,ISET_ISEMT_ISEFT,Unnamed: 1803_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1804,iset_isemt_iseft__unnamed_1804_level_1,ISET_ISEMT_ISEFT,Unnamed: 1804_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1805,iset_isemt_iseft__unnamed_1805_level_1,ISET_ISEMT_ISEFT,Unnamed: 1805_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1806,iset_isemt_iseft__unnamed_1806_level_1,ISET_ISEMT_ISEFT,Unnamed: 1806_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1807,iset_isemt_iseft__unnamed_1807_level_1,ISET_ISEMT_ISEFT,Unnamed: 1807_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1808,iset_isemt_iseft__unnamed_1808_level_1,ISET_ISEMT_ISEFT,Unnamed: 1808_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1809,iset_isemt_iseft__unnamed_1809_level_1,ISET_ISEMT_ISEFT,Unnamed: 1809_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1810,iset_isemt_iseft__unnamed_1810_level_1,ISET_ISEMT_ISEFT,Unnamed: 1810_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1811,iset_isemt_iseft__unnamed_1811_level_1,ISET_ISEMT_ISEFT,Unnamed: 1811_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1812,iset_isemt_iseft__unnamed_1812_level_1,ISET_ISEMT_ISEFT,Unnamed: 1812_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1813,iset_isemt_iseft__unnamed_1813_level_1,ISET_ISEMT_ISEFT,Unnamed: 1813_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1814,iset_isemt_iseft__unnamed_1814_level_1,ISET_ISEMT_ISEFT,Unnamed: 1814_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1815,iset_isemt_iseft__unnamed_1815_level_1,ISET_ISEMT_ISEFT,Unnamed: 1815_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1816,iset_isemt_iseft__unnamed_1816_level_1,ISET_ISEMT_ISEFT,Unnamed: 1816_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1817,iset_isemt_iseft__unnamed_1817_level_1,ISET_ISEMT_ISEFT,Unnamed: 1817_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1818,iset_isemt_iseft__unnamed_1818_level_1,ISET_ISEMT_ISEFT,Unnamed: 1818_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1819,iset_isemt_iseft__unnamed_1819_level_1,ISET_ISEMT_ISEFT,Unnamed: 1819_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1820,iset_isemt_iseft__unnamed_1820_level_1,ISET_ISEMT_ISEFT,Unnamed: 1820_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1821,iset_isemt_iseft__unnamed_1821_level_1,ISET_ISEMT_ISEFT,Unnamed: 1821_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1822,iset_isemt_iseft__unnamed_1822_level_1,ISET_ISEMT_ISEFT,Unnamed: 1822_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1823,iset_isemt_iseft__unnamed_1823_level_1,ISET_ISEMT_ISEFT,Unnamed: 1823_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1824,iset_isemt_iseft__unnamed_1824_level_1,ISET_ISEMT_ISEFT,Unnamed: 1824_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1825,iset_isemt_iseft__unnamed_1825_level_1,ISET_ISEMT_ISEFT,Unnamed: 1825_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1826,iset_isemt_iseft__unnamed_1826_level_1,ISET_ISEMT_ISEFT,Unnamed: 1826_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1827,iset_isemt_iseft__unnamed_1827_level_1,ISET_ISEMT_ISEFT,Unnamed: 1827_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1828,iset_isemt_iseft__unnamed_1828_level_1,ISET_ISEMT_ISEFT,Unnamed: 1828_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1829,iset_isemt_iseft__unnamed_1829_level_1,ISET_ISEMT_ISEFT,Unnamed: 1829_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1830,iset_isemt_iseft__unnamed_1830_level_1,ISET_ISEMT_ISEFT,Unnamed: 1830_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1831,iset_isemt_iseft__unnamed_1831_level_1,ISET_ISEMT_ISEFT,Unnamed: 1831_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1832,iset_isemt_iseft__unnamed_1832_level_1,ISET_ISEMT_ISEFT,Unnamed: 1832_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1833,iset_isemt_iseft__unnamed_1833_level_1,ISET_ISEMT_ISEFT,Unnamed: 1833_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1834,iset_isemt_iseft__unnamed_1834_level_1,ISET_ISEMT_ISEFT,Unnamed: 1834_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1835,iset_isemt_iseft__unnamed_1835_level_1,ISET_ISEMT_ISEFT,Unnamed: 1835_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1836,iset_isemt_iseft__unnamed_1836_level_1,ISET_ISEMT_ISEFT,Unnamed: 1836_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1837,iset_isemt_iseft__employed_after_workplace_location_4,ISET_ISEMT_ISEFT,Employed after workplace location..4,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1838,iset_isemt_iseft__unnamed_1838_level_1,ISET_ISEMT_ISEFT,Unnamed: 1838_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1839,iset_isemt_iseft__unnamed_1839_level_1,ISET_ISEMT_ISEFT,Unnamed: 1839_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1840,iset_isemt_iseft__unnamed_1840_level_1,ISET_ISEMT_ISEFT,Unnamed: 1840_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1841,iset_isemt_iseft__employed_after_workplace_location_5,ISET_ISEMT_ISEFT,Employed after workplace location..5,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1842,iset_isemt_iseft__unnamed_1842_level_1,ISET_ISEMT_ISEFT,Unnamed: 1842_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1843,iset_isemt_iseft__unnamed_1843_level_1,ISET_ISEMT_ISEFT,Unnamed: 1843_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1844,iset_isemt_iseft__unnamed_1844_level_1,ISET_ISEMT_ISEFT,Unnamed: 1844_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1845,iset_isemt_iseft__unnamed_1845_level_1,ISET_ISEMT_ISEFT,Unnamed: 1845_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1846,iset_isemt_iseft__unnamed_1846_level_1,ISET_ISEMT_ISEFT,Unnamed: 1846_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1847,iset_isemt_iseft__unnamed_1847_level_1,ISET_ISEMT_ISEFT,Unnamed: 1847_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1848,iset_isemt_iseft__unnamed_1848_level_1,ISET_ISEMT_ISEFT,Unnamed: 1848_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1849,iset_isemt_iseft__unnamed_1849_level_1,ISET_ISEMT_ISEFT,Unnamed: 1849_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1850,iset_isemt_iseft__employed_after_workplace_location_6,ISET_ISEMT_ISEFT,Employed after workplace location..6,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1851,iset_isemt_iseft__unnamed_1851_level_1,ISET_ISEMT_ISEFT,Unnamed: 1851_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1852,iset_isemt_iseft__unnamed_1852_level_1,ISET_ISEMT_ISEFT,Unnamed: 1852_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1853,iset_isemt_iseft__unnamed_1853_level_1,ISET_ISEMT_ISEFT,Unnamed: 1853_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1854,iset_isemt_iseft__employed_after_workplace_location_7,ISET_ISEMT_ISEFT,Employed after workplace location..7,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1855,iset_isemt_iseft__unnamed_1855_level_1,ISET_ISEMT_ISEFT,Unnamed: 1855_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1856,iset_isemt_iseft__unnamed_1856_level_1,ISET_ISEMT_ISEFT,Unnamed: 1856_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1857,iset_isemt_iseft__unnamed_1857_level_1,ISET_ISEMT_ISEFT,Unnamed: 1857_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1858,iset_isemt_iseft__unnamed_1858_level_1,ISET_ISEMT_ISEFT,Unnamed: 1858_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1859,iset_isemt_iseft__unnamed_1859_level_1,ISET_ISEMT_ISEFT,Unnamed: 1859_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1860,iset_isemt_iseft__unnamed_1860_level_1,ISET_ISEMT_ISEFT,Unnamed: 1860_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1861,iset_isemt_iseft__unnamed_1861_level_1,ISET_ISEMT_ISEFT,Unnamed: 1861_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1862,iset_isemt_iseft__unnamed_1862_level_1,ISET_ISEMT_ISEFT,Unnamed: 1862_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1863,iset_isemt_iseft__employed_after_workplace_location_8,ISET_ISEMT_ISEFT,Employed after workplace location..8,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1864,iset_isemt_iseft__unnamed_1864_level_1,ISET_ISEMT_ISEFT,Unnamed: 1864_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1865,iset_isemt_iseft__unnamed_1865_level_1,ISET_ISEMT_ISEFT,Unnamed: 1865_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1866,iset_isemt_iseft__unnamed_1866_level_1,ISET_ISEMT_ISEFT,Unnamed: 1866_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1867,iset_isemt_iseft__employed_after_workplace_location_9,ISET_ISEMT_ISEFT,Employed after workplace location..9,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1868,iset_isemt_iseft__unnamed_1868_level_1,ISET_ISEMT_ISEFT,Unnamed: 1868_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1869,iset_isemt_iseft__unnamed_1869_level_1,ISET_ISEMT_ISEFT,Unnamed: 1869_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1870,iset_isemt_iseft__unnamed_1870_level_1,ISET_ISEMT_ISEFT,Unnamed: 1870_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1871,iset_isemt_iseft__unnamed_1871_level_1,ISET_ISEMT_ISEFT,Unnamed: 1871_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1872,iset_isemt_iseft__unnamed_1872_level_1,ISET_ISEMT_ISEFT,Unnamed: 1872_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1873,iset_isemt_iseft__unnamed_1873_level_1,ISET_ISEMT_ISEFT,Unnamed: 1873_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1874,iset_isemt_iseft__unnamed_1874_level_1,ISET_ISEMT_ISEFT,Unnamed: 1874_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1875,iset_isemt_iseft__employed_after_workplace_location_10,ISET_ISEMT_ISEFT,Employed after workplace location..10,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1876,iset_isemt_iseft__unnamed_1876_level_1,ISET_ISEMT_ISEFT,Unnamed: 1876_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1877,iset_isemt_iseft__unnamed_1877_level_1,ISET_ISEMT_ISEFT,Unnamed: 1877_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1878,iset_isemt_iseft__unnamed_1878_level_1,ISET_ISEMT_ISEFT,Unnamed: 1878_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1879,iset_isemt_iseft__unnamed_1879_level_1,ISET_ISEMT_ISEFT,Unnamed: 1879_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1880,iset_isemt_iseft__employed_after_workplace_location_11,ISET_ISEMT_ISEFT,Employed after workplace location..11,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1881,iset_isemt_iseft__unnamed_1881_level_1,ISET_ISEMT_ISEFT,Unnamed: 1881_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1882,iset_isemt_iseft__unnamed_1882_level_1,ISET_ISEMT_ISEFT,Unnamed: 1882_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1883,iset_isemt_iseft__unnamed_1883_level_1,ISET_ISEMT_ISEFT,Unnamed: 1883_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1884,iset_isemt_iseft__unnamed_1884_level_1,ISET_ISEMT_ISEFT,Unnamed: 1884_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1885,iset_isemt_iseft__unnamed_1885_level_1,ISET_ISEMT_ISEFT,Unnamed: 1885_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1886,iset_isemt_iseft__unnamed_1886_level_1,ISET_ISEMT_ISEFT,Unnamed: 1886_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1887,iset_isemt_iseft__unnamed_1887_level_1,ISET_ISEMT_ISEFT,Unnamed: 1887_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1888,iset_isemt_iseft__2019,ISET_ISEMT_ISEFT,2019,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,True,2019.0,2019,False
+1889,iset_isemt_iseft__2020,ISET_ISEMT_ISEFT,2020,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,True,2020.0,2020,False
+1890,iset_isemt_iseft__2021,ISET_ISEMT_ISEFT,2021,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,True,2021.0,2021,False
+1891,iset_isemt_iseft__2022,ISET_ISEMT_ISEFT,2022,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,True,2022.0,2022,False
+1892,iset_isemt_iseft__2023,ISET_ISEMT_ISEFT,2023,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,True,2023.0,2023,False
+1893,iset_isemt_iseft__unnamed_1893_level_1,ISET_ISEMT_ISEFT,Unnamed: 1893_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1894,iset_isemt_iseft__unnamed_1894_level_1,ISET_ISEMT_ISEFT,Unnamed: 1894_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1895,iset_isemt_iseft__unnamed_1895_level_1,ISET_ISEMT_ISEFT,Unnamed: 1895_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1896,iset_isemt_iseft__2019_1,ISET_ISEMT_ISEFT,2019.1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,True,2019.0,2019,False
+1897,iset_isemt_iseft__2020_1,ISET_ISEMT_ISEFT,2020.1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,True,2020.0,2020,False
+1898,iset_isemt_iseft__2021_1,ISET_ISEMT_ISEFT,2021.1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,True,2021.0,2021,False
+1899,iset_isemt_iseft__unnamed_1899_level_1,ISET_ISEMT_ISEFT,Unnamed: 1899_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1900,iset_isemt_iseft__unnamed_1900_level_1,ISET_ISEMT_ISEFT,Unnamed: 1900_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1901,iset_isemt_iseft__unnamed_1901_level_1,ISET_ISEMT_ISEFT,Unnamed: 1901_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1902,iset_isemt_iseft__2022_1,ISET_ISEMT_ISEFT,2022.1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,True,2022.0,2022,False
+1903,iset_isemt_iseft__2023_1,ISET_ISEMT_ISEFT,2023.1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,True,2023.0,2023,False
+1904,iset_isemt_iseft__unnamed_1904_level_1,ISET_ISEMT_ISEFT,Unnamed: 1904_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1905,iset_isemt_iseft__unnamed_1905_level_1,ISET_ISEMT_ISEFT,Unnamed: 1905_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1906,iset_isemt_iseft__unnamed_1906_level_1,ISET_ISEMT_ISEFT,Unnamed: 1906_level_1,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1907,iset_isemt_iseft__2017,ISET_ISEMT_ISEFT,2017,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,True,2017.0,2017,False
+1908,iset_isemt_iseft__2019_2,ISET_ISEMT_ISEFT,2019.2,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,True,2019.0,2019,False
+1909,iset_isemt_iseft__2020_2,ISET_ISEMT_ISEFT,2020.2,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,True,2020.0,2020,False
+1910,iset_isemt_iseft__2021_2,ISET_ISEMT_ISEFT,2021.2,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,True,2021.0,2021,False
+1911,iset_isemt_iseft__2,ISET_ISEMT_ISEFT,2,ISET_ISEMT_ISEFT,ISET_ISEMT_ISEFT,False,False,,,False
+1912,rifm__unnamed_1912_level_1,RIFM,Unnamed: 1912_level_1,RIFM,RIFM,False,False,,,True
+1913,rifm__anm_lda_brott,RIFM,Anmälda brott,RIFM,RIFM,False,False,,,True
+1914,rifm__unnamed_1914_level_1,RIFM,Unnamed: 1914_level_1,RIFM,RIFM,False,False,,,True
+1915,rifm__anm_lda_brott_1,RIFM,Anmälda brott.1,RIFM,RIFM,False,False,,,True
+1916,rifm__unnamed_1916_level_1,RIFM,Unnamed: 1916_level_1,RIFM,RIFM,False,False,,,True
+1917,rifm__anm_lda_brott_2,RIFM,Anmälda brott.2,RIFM,RIFM,False,False,,,True
+1918,rifm__unnamed_1918_level_1,RIFM,Unnamed: 1918_level_1,RIFM,RIFM,False,False,,,True
+1919,rifm__anm_lda_brott_3,RIFM,Anmälda brott.3,RIFM,RIFM,False,False,,,True
+1920,rifm__unnamed_1920_level_1,RIFM,Unnamed: 1920_level_1,RIFM,RIFM,False,False,,,True
+1921,rifm__anm_lda_brott_4,RIFM,Anmälda brott.4,RIFM,RIFM,False,False,,,True
+1922,rifm__unnamed_1922_level_1,RIFM,Unnamed: 1922_level_1,RIFM,RIFM,False,False,,,True
+1923,rifm__brottsf_rebyggande_r_det,RIFM,Brottsförebyggande rådet,RIFM,RIFM,False,False,,,True
+1924,rifm__unnamed_1924_level_1,RIFM,Unnamed: 1924_level_1,RIFM,RIFM,False,False,,,True
+1925,rifm__unnamed_1925_level_1,RIFM,Unnamed: 1925_level_1,RIFM,RIFM,False,False,,,True
+1926,rifm__unnamed_1926_level_1,RIFM,Unnamed: 1926_level_1,RIFM,RIFM,False,False,,,True
+1927,rifm__anm_lda_brott_5,RIFM,Anmälda brott.5,RIFM,RIFM,False,False,,,True
+1928,rifm__unnamed_1928_level_1,RIFM,Unnamed: 1928_level_1,RIFM,RIFM,False,False,,,True
+1929,rifm__brottsf_rebyggande_r_det_1,RIFM,Brottsförebyggande rådet.1,RIFM,RIFM,False,False,,,True
+1930,rifm__unnamed_1930_level_1,RIFM,Unnamed: 1930_level_1,RIFM,RIFM,False,False,,,True
+1931,rifm__unnamed_1931_level_1,RIFM,Unnamed: 1931_level_1,RIFM,RIFM,False,False,,,True
+1932,rifm__unnamed_1932_level_1,RIFM,Unnamed: 1932_level_1,RIFM,RIFM,False,False,,,True
+1933,rifm__anm_lda_brott_6,RIFM,Anmälda brott.6,RIFM,RIFM,False,False,,,True
+1934,rifm__unnamed_1934_level_1,RIFM,Unnamed: 1934_level_1,RIFM,RIFM,False,False,,,True
+1935,rifm__brottsf_rebyggande_r_det_2,RIFM,Brottsförebyggande rådet.2,RIFM,RIFM,False,False,,,True
+1936,rifm__unnamed_1936_level_1,RIFM,Unnamed: 1936_level_1,RIFM,RIFM,False,False,,,True
+1937,rifm__unnamed_1937_level_1,RIFM,Unnamed: 1937_level_1,RIFM,RIFM,False,False,,,True
+1938,rifm__unnamed_1938_level_1,RIFM,Unnamed: 1938_level_1,RIFM,RIFM,False,False,,,True
+1939,rifm__anm_lda_brott_7,RIFM,Anmälda brott.7,RIFM,RIFM,False,False,,,True
+1940,rifm__unnamed_1940_level_1,RIFM,Unnamed: 1940_level_1,RIFM,RIFM,False,False,,,True
+1941,rifm__brottsf_rebyggande_r_det_3,RIFM,Brottsförebyggande rådet.3,RIFM,RIFM,False,False,,,True
+1942,rifm__anm_lda_brott_8,RIFM,Anmälda brott.8,RIFM,RIFM,False,False,,,True
+1943,rifm__unnamed_1943_level_1,RIFM,Unnamed: 1943_level_1,RIFM,RIFM,False,False,,,True
+1944,rifm__brottsf_rebyggande_r_det_4,RIFM,Brottsförebyggande rådet.4,RIFM,RIFM,False,False,,,True
+1945,rifm__unnamed_1945_level_1,RIFM,Unnamed: 1945_level_1,RIFM,RIFM,False,False,,,True
+1946,rifm__anm_lda_brott_9,RIFM,Anmälda brott.9,RIFM,RIFM,False,False,,,True
+1947,rifm__unnamed_1947_level_1,RIFM,Unnamed: 1947_level_1,RIFM,RIFM,False,False,,,True
+1948,rifm__anm_lda_brott_10,RIFM,Anmälda brott.10,RIFM,RIFM,False,False,,,True
+1949,rifm__unnamed_1949_level_1,RIFM,Unnamed: 1949_level_1,RIFM,RIFM,False,False,,,True
+1950,rifm__brottsf_rebyggande_r_det_5,RIFM,Brottsförebyggande rådet.5,RIFM,RIFM,False,False,,,True
+1951,rifm__unnamed_1951_level_1,RIFM,Unnamed: 1951_level_1,RIFM,RIFM,False,False,,,True
+1952,rifm__unnamed_1952_level_1,RIFM,Unnamed: 1952_level_1,RIFM,RIFM,False,False,,,True
+1953,rifm__anm_lda_brott_11,RIFM,Anmälda brott.11,RIFM,RIFM,False,False,,,True
+1954,rifm__unnamed_1954_level_1,RIFM,Unnamed: 1954_level_1,RIFM,RIFM,False,False,,,True
+1955,rifm__anm_lda_brott_12,RIFM,Anmälda brott.12,RIFM,RIFM,False,False,,,True
+1956,rifm__unnamed_1956_level_1,RIFM,Unnamed: 1956_level_1,RIFM,RIFM,False,False,,,True
+1957,rifm__brottsf_rebyggande_r_det_6,RIFM,Brottsförebyggande rådet.6,RIFM,RIFM,False,False,,,True
+1958,rifm__unnamed_1958_level_1,RIFM,Unnamed: 1958_level_1,RIFM,RIFM,False,False,,,True
+1959,rifm__anm_lda_brott_13,RIFM,Anmälda brott.13,RIFM,RIFM,False,False,,,True
+1960,rifm__unnamed_1960_level_1,RIFM,Unnamed: 1960_level_1,RIFM,RIFM,False,False,,,True
+1961,rifm__anm_lda_brott_14,RIFM,Anmälda brott.14,RIFM,RIFM,False,False,,,True
+1962,rifm__unnamed_1962_level_1,RIFM,Unnamed: 1962_level_1,RIFM,RIFM,False,False,,,True
+1963,rifm__brottsf_rebyggande_r_det_7,RIFM,Brottsförebyggande rådet.7,RIFM,RIFM,False,False,,,True
+1964,rifm__unnamed_1964_level_1,RIFM,Unnamed: 1964_level_1,RIFM,RIFM,False,False,,,True
+1965,rifm__unnamed_1965_level_1,RIFM,Unnamed: 1965_level_1,RIFM,RIFM,False,False,,,True
+1966,rifm__unnamed_1966_level_1,RIFM,Unnamed: 1966_level_1,RIFM,RIFM,False,False,,,True
+1967,rifm__anm_lda_brott_15,RIFM,Anmälda brott.15,RIFM,RIFM,False,False,,,True
+1968,rifm__unnamed_1968_level_1,RIFM,Unnamed: 1968_level_1,RIFM,RIFM,False,False,,,True
+1969,rifm__anm_lda_brott_16,RIFM,Anmälda brott.16,RIFM,RIFM,False,False,,,True
+1970,rifm__unnamed_1970_level_1,RIFM,Unnamed: 1970_level_1,RIFM,RIFM,False,False,,,True
+1971,rifm__anm_lda_brott_17,RIFM,Anmälda brott.17,RIFM,RIFM,False,False,,,True
+1972,rifm__unnamed_1972_level_1,RIFM,Unnamed: 1972_level_1,RIFM,RIFM,False,False,,,True
+1973,rifm__anm_lda_brott_18,RIFM,Anmälda brott.18,RIFM,RIFM,False,False,,,True
+1974,rifm__unnamed_1974_level_1,RIFM,Unnamed: 1974_level_1,RIFM,RIFM,False,False,,,True
+1975,rifm__anm_lda_brott_19,RIFM,Anmälda brott.19,RIFM,RIFM,False,False,,,True
+1976,rifm__unnamed_1976_level_1,RIFM,Unnamed: 1976_level_1,RIFM,RIFM,False,False,,,True

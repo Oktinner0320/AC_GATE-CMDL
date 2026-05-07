@@ -1,0 +1,22 @@
+variable_code,definition,source
+RCW,Ratio of the value of cash withdrawn from bank accounts to total non-cash payments,Central Bank (CB)
+RPCYD,"Gross rate of consumption out of private disposable income from all sources, current prices",Central Bank (CB)
+RYDGDP,"Ratio of private disposable income to GDP, current prices",Central Bank (CB)
+PRIME,Quoted basic interest rate (prime),Central Bank (CB)
+PRID,Ratio of quoted basic interest rate to interest rate on total deposits of the public,Central Bank (CB)
+TD,"Net direct tax burden, percentage of GDP",Central Bank (CB)
+TI,"Net indirect tax burden, percentage of GDP",Central Bank (CB)
+ISET,Self-employment rate among employed individuals,OECD & CB
+ISEMT,Self-employment rate among employed men,OECD & CB
+ISEFT,Self-employment rate among employed women,OECD & CB
+RIFM,"Ratio of morality offences investigation files opened by the police to total criminal investigation files, by region",CBS
+IMP,Proportion of immigrants in the population by region,CBS
+TDR,Rate of net direct tax revenue by geographic region out of total state direct tax revenue,Central Bank (CB)
+TIR,Rate of net indirect tax revenue by geographic region out of total state indirect tax revenue,Central Bank (CB)
+VOP,value of non-cash payments,Central Bank (CB)
+U,unemployment rate by region out of total,CBS
+SCR,social contributions by region out of total,CBS
+CPC,credit cards per capita by region out of total,Central Bank (CB)
+BRC,Business cash revenue by region out of total,CBS
+BRCR,Business revenue on credit by region out of total,CBS
+BA,Registered bank accounts per capita by region relative to the national average,Central Bank (CB)
