@@ -30,6 +30,26 @@ from visualization.paper_figures import (
 )
 
 
+STRATIFIER_DISPLAY_LABELS = {
+    "hc_mean_train": "Human capital (training-window mean)",
+    "log_gdp_per_worker_train": "GDP per worker (training-window mean, log)",
+    "log_capital_per_worker_train": "Capital per worker (training-window mean, log)",
+    "rule_of_law_train": "Rule of law (training-window mean)",
+    "government_effectiveness_train": "Government effectiveness (training-window mean)",
+    "log_gdp_per_capita_train": "GDP per capita (training-window mean, log)",
+}
+
+DOMAIN_DISPLAY_LABELS = {
+    "economics": "Economics",
+    "energy": "Energy",
+}
+
+CASE_STUDY_POINT_COLORS = {
+    "economics": "#66ccff",
+    "energy": "#cc55ee",
+}
+
+
 @dataclass(frozen=True)
 class PaperPaths:
     workspace_root: Path
@@ -517,6 +537,20 @@ def _select_representative_seed(stratified_per_seed: pd.DataFrame, stratifier_na
     return int(chosen["seed"])
 
 
+def _case_study_seed_values(stratified_per_seed: pd.DataFrame, stratifier_name: str) -> list[int]:
+    source = stratified_per_seed.loc[
+        (stratified_per_seed["method"] == "CMDL")
+        & (stratified_per_seed["stratifier"] == stratifier_name)
+        & (~pd.to_numeric(stratified_per_seed["degenerate"], errors="coerce").fillna(False).astype(bool))
+    ].copy()
+    if source.empty:
+        raise ValueError(f"No non-degenerate per-seed rows were found for {stratifier_name}")
+    seeds = pd.to_numeric(source["seed"], errors="coerce").dropna().astype(int).sort_values().unique().tolist()
+    if not seeds:
+        raise ValueError(f"No seed values were available for {stratifier_name}")
+    return [int(seed) for seed in seeds]
+
+
 def _prediction_path(cmdl_root: Path, seed: int) -> Path:
     matches = sorted(cmdl_root.glob(f"*seed{seed}"))
     if not matches:
@@ -525,6 +559,25 @@ def _prediction_path(cmdl_root: Path, seed: int) -> Path:
     if not target.exists():
         raise FileNotFoundError(f"Missing predictions.csv for seed {seed}: {target}")
     return target
+
+
+def _display_stratifier_label(stratifier_name: str) -> str:
+    return STRATIFIER_DISPLAY_LABELS.get(stratifier_name, stratifier_name.replace("_", " ").title())
+
+
+def _load_seed_entity_kstar(cmdl_root: Path, seed: int) -> pd.DataFrame:
+    predictions = pd.read_csv(_prediction_path(cmdl_root, seed))
+    required_columns = {"entity_code", "entity_name", "k_star"}
+    if not required_columns.issubset(predictions.columns):
+        raise ValueError(f"Missing prediction columns for seed {seed}: {sorted(required_columns)}")
+    entity_frame = (
+        predictions.groupby(["entity_code", "entity_name"], dropna=False)["k_star"]
+        .first()
+        .rename("k_star")
+        .reset_index()
+    )
+    entity_frame["seed"] = int(seed)
+    return entity_frame
 
 
 def _build_case_study_frame(
@@ -539,7 +592,7 @@ def _build_case_study_frame(
 
     source_path = Path(str(comparison_frame["source_path"].dropna().iloc[0]))
     top_stratifier = _select_top_stratifier(stratified_summary)
-    representative_seed = _select_representative_seed(stratified_per_seed, top_stratifier)
+    seed_values = _case_study_seed_values(stratified_per_seed, top_stratifier)
 
     if domain == "economics":
         stratifier_specs = {spec.name: spec.series for spec in build_economics_stratifiers(source_path)}
@@ -553,24 +606,37 @@ def _build_case_study_frame(
     if top_stratifier not in stratifier_specs:
         raise KeyError(f"Stratifier {top_stratifier} was not built for {domain}")
 
-    predictions = pd.read_csv(_prediction_path(cmdl_root, representative_seed))
+    all_seed_entities = pd.concat(
+        [_load_seed_entity_kstar(cmdl_root=cmdl_root, seed=seed) for seed in seed_values],
+        ignore_index=True,
+        sort=False,
+    )
     entity_frame = (
-        predictions.groupby(["entity_code", "entity_name"], dropna=False)["k_star"]
-        .first()
-        .rename("k_star")
+        all_seed_entities.groupby(["entity_code", "entity_name"], dropna=False)
+        .agg(
+            k_star_mean=("k_star", "mean"),
+            k_star_std=("k_star", "std"),
+            n_seeds=("seed", "nunique"),
+        )
         .reset_index()
     )
+    entity_frame["k_star"] = entity_frame["k_star_mean"]
     stratifier_series = stratifier_specs[top_stratifier].rename("stratifier_value").rename_axis("entity_code").reset_index()
     case_frame = entity_frame.merge(stratifier_series, on="entity_code", how="inner")
     case_frame.insert(0, "domain", domain)
-    case_frame.insert(1, "seed", representative_seed)
+    case_frame.insert(1, "aggregation", f"{len(seed_values)}_seed_mean")
     case_frame.insert(2, "stratifier", top_stratifier)
+    x_label = _display_stratifier_label(top_stratifier)
+    domain_label = DOMAIN_DISPLAY_LABELS.get(domain, domain.title())
     metadata = {
         "domain": domain,
-        "seed": representative_seed,
+        "aggregation": f"{len(seed_values)}-seed mean",
+        "n_seeds": int(len(seed_values)),
         "stratifier": top_stratifier,
         "x_label": x_label,
-        "y_label": "Learned per-entity effective lag k*",
+        "y_label": f"Mean learned effective lag across {len(seed_values)} seeds",
+        "title": f"{domain_label}: {x_label}",
+        "point_color": CASE_STUDY_POINT_COLORS.get(domain, "#2E6F95"),
     }
     return case_frame.sort_values("stratifier_value", na_position="last").reset_index(drop=True), metadata
 
@@ -689,11 +755,13 @@ def _generate_figures(
         economics_case_study,
         x_col="stratifier_value",
         y_col="k_star",
-        label_col="entity_name",
-        title=f"Economics Case Study: seed {economics_case_meta['seed']} vs {economics_case_meta['stratifier']}",
+        label_col=None,
+        title=economics_case_meta["title"],
         xlabel=economics_case_meta["x_label"],
         ylabel=economics_case_meta["y_label"],
         save_path=figure_paths["economics_case_study.png"],
+        annotate_top_n=0,
+        point_color=economics_case_meta["point_color"],
     ))
 
     figure_paths["energy_case_study.png"] = output_dir / "energy_case_study.png"
@@ -701,12 +769,44 @@ def _generate_figures(
         energy_case_study,
         x_col="stratifier_value",
         y_col="k_star",
-        label_col="entity_name",
-        title=f"Energy Case Study: seed {energy_case_meta['seed']} vs {energy_case_meta['stratifier']}",
+        label_col=None,
+        title=energy_case_meta["title"],
         xlabel=energy_case_meta["x_label"],
         ylabel=energy_case_meta["y_label"],
         save_path=figure_paths["energy_case_study.png"],
+        annotate_top_n=0,
+        point_color=energy_case_meta["point_color"],
     ))
+
+    figure_paths["realdata_case_study_panel.png"] = output_dir / "realdata_case_study_panel.png"
+    combined_fig, axes = plt.subplots(1, 2, figsize=(11.8, 4.9), sharey=False)
+    plot_case_study_scatter(
+        economics_case_study,
+        x_col="stratifier_value",
+        y_col="k_star",
+        label_col=None,
+        title=economics_case_meta["title"],
+        xlabel=economics_case_meta["x_label"],
+        ylabel=economics_case_meta["y_label"],
+        annotate_top_n=0,
+        point_color=economics_case_meta["point_color"],
+        axis=axes[0],
+    )
+    plot_case_study_scatter(
+        energy_case_study,
+        x_col="stratifier_value",
+        y_col="k_star",
+        label_col=None,
+        title=energy_case_meta["title"],
+        xlabel=energy_case_meta["x_label"],
+        ylabel=energy_case_meta["y_label"],
+        annotate_top_n=0,
+        point_color=energy_case_meta["point_color"],
+        axis=axes[1],
+    )
+    combined_fig.tight_layout()
+    combined_fig.savefig(figure_paths["realdata_case_study_panel.png"], dpi=200, bbox_inches="tight")
+    plt.close(combined_fig)
 
     return figure_paths
 

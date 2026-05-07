@@ -46,12 +46,12 @@ SYNTHETIC_METHOD_ORDER = [
 ]
 
 METHOD_LABEL = {
-    "CMDL": "CMDL",
+    "CMDL": "AC-GATE",
     "No Recon Regularization": "No-Recon",
     "Plain LSTM": "Plain LSTM",
     "Grouped ARDL": "ARDL",
     "No AC Encoder": "No-AC",
-    "Uniform Lag": "Uniform",
+    "Uniform Lag": "Uniform-Lag",
 }
 
 METHOD_ALIASES = {
@@ -519,9 +519,9 @@ def _draw_synthetic_panel(
 
 
 def _draw_decoupling_legend_box(axis: plt.Axes) -> None:
-    box_x = 0.520
+    box_x = 0.500
     box_y = 0.565
-    box_width = 0.455
+    box_width = 0.475
     box_height = 0.405
     axis.add_patch(
         Rectangle(
@@ -660,7 +660,7 @@ def _draw_decoupling_panel(axis: plt.Axes, summary: pd.DataFrame, title: str = "
 def _draw_stratifier_panel(
     axis: plt.Axes,
     summary: pd.DataFrame,
-    title: str = "C. CMDL stratifier alignment",
+    title: str = "C. Stratifier alignment of learned lags",
     xlabel: str = "Seed-mean |Spearman rho| with 95% bootstrap CI",
 ) -> None:
     plot_frame = summary.copy().reset_index(drop=True)
@@ -833,7 +833,7 @@ def build_figures(root: Path, plan: str, output_dir: Path, formats: Iterable[str
     top_grid = fig.add_gridspec(
         1,
         2,
-        left=0.070,
+        left=0.085,
         right=0.985,
         top=0.960,
         bottom=0.620,
@@ -863,7 +863,7 @@ def build_figures(root: Path, plan: str, output_dir: Path, formats: Iterable[str
     plt.close(fig)
 
     fig, axis = plt.subplots(figsize=(3.9, 3.10))
-    _draw_stratifier_panel(axis, stratifiers, title="CMDL stratifier alignment", xlabel="Mean |rho| (95% bootstrap CI)")
+    _draw_stratifier_panel(axis, stratifiers, title="Stratifier alignment of learned lags", xlabel="Mean |rho| (95% bootstrap CI)")
     fig.subplots_adjust(left=0.48, right=0.94, top=0.86, bottom=0.18)
     created.extend(_save_figure(fig, output_dir, "panel_stratifier_alignment", formats))
     plt.close(fig)

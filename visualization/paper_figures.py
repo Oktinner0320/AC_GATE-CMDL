@@ -1,4 +1,4 @@
-"""Paper-facing figure builders for CMDL reporting artifacts."""
+"""Paper-facing figure builders for AC-GATE reporting artifacts."""
 
 from __future__ import annotations
 
@@ -31,7 +31,7 @@ def plot_workflow_overview(save_path: str | Path | None = None) -> plt.Figure:
 
     boxes = [
         (0.80, "Data and Splits", "balanced panel\ntrain/val/test windows\nproxy metadata", "#EAF2FB"),
-        (0.50, "CMDL and Baselines", "CMDL\nPlain LSTM\nGrouped ARDL\nablations", "#EAF6EE"),
+        (0.50, "AC-GATE and Baselines", "AC-GATE\nPlain LSTM\nGrouped ARDL\nablations", "#EAF6EE"),
         (0.20, "Diagnostics", "significance\nstratified k*\nablation guard\nseed stability", "#FFF3D8"),
     ]
     box_left = 0.15
@@ -257,18 +257,24 @@ def plot_case_study_scatter(
     frame: pd.DataFrame,
     x_col: str,
     y_col: str,
-    label_col: str,
+    label_col: str | None,
     title: str,
     xlabel: str,
     ylabel: str,
     save_path: str | Path | None = None,
     annotate_top_n: int = 12,
+    point_color: str = "#2E6F95",
+    trend_color: str = "#D1495B",
+    axis: plt.Axes | None = None,
+    figsize: tuple[float, float] = (8.2, 6.0),
 ) -> plt.Figure:
-    """Plot per-entity k* against one stratifier and annotate extreme entities."""
+    """Plot per-entity learned lag against one stratifier."""
 
     if frame.empty:
         raise ValueError("plot_case_study_scatter requires a non-empty frame")
-    required_columns = {x_col, y_col, label_col}
+    required_columns = {x_col, y_col}
+    if label_col is not None and annotate_top_n > 0:
+        required_columns.add(label_col)
     if not required_columns.issubset(frame.columns):
         raise ValueError(f"Missing required columns: {sorted(required_columns)}")
 
@@ -279,24 +285,28 @@ def plot_case_study_scatter(
     if plot_frame.empty:
         raise ValueError("No valid rows available for case-study scatter")
 
-    fig, axis = plt.subplots(figsize=(8.2, 6.0))
-    axis.scatter(plot_frame[x_col], plot_frame[y_col], s=42, alpha=0.82, color="#2E6F95", edgecolor="white", linewidth=0.4)
+    if axis is None:
+        fig, axis = plt.subplots(figsize=figsize)
+    else:
+        fig = axis.figure
+    axis.scatter(plot_frame[x_col], plot_frame[y_col], s=42, alpha=0.86, color=point_color, edgecolor="white", linewidth=0.4)
 
     if plot_frame[x_col].nunique() > 1:
         coefficients = np.polyfit(plot_frame[x_col], plot_frame[y_col], deg=1)
         x_values = np.linspace(plot_frame[x_col].min(), plot_frame[x_col].max(), 100)
         y_values = np.polyval(coefficients, x_values)
-        axis.plot(x_values, y_values, linestyle="--", linewidth=1.3, color="#D1495B")
+        axis.plot(x_values, y_values, linestyle="--", linewidth=1.3, color=trend_color)
 
-    for _, row in _annotation_subset(plot_frame, x_col=x_col, count=annotate_top_n).iterrows():
-        axis.annotate(
-            str(row[label_col]),
-            xy=(row[x_col], row[y_col]),
-            xytext=(4, 4),
-            textcoords="offset points",
-            fontsize=8.2,
-            color="#12263A",
-        )
+    if label_col is not None and annotate_top_n > 0:
+        for _, row in _annotation_subset(plot_frame, x_col=x_col, count=annotate_top_n).iterrows():
+            axis.annotate(
+                str(row[label_col]),
+                xy=(row[x_col], row[y_col]),
+                xytext=(4, 4),
+                textcoords="offset points",
+                fontsize=8.2,
+                color="#12263A",
+            )
 
     axis.set_title(title, fontsize=13, fontweight="bold")
     axis.set_xlabel(xlabel)
