@@ -1,0 +1,18 @@
+{
+  "comparison_csv": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\figures_region_proxy\\comparison_for_figures.csv",
+  "seed_summary_csv": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\figures_region_proxy\\seed_summary.csv",
+  "test_error_by_model": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\figures_region_proxy\\test_error_by_model.png",
+  "mechanism_metrics_by_model": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\figures_region_proxy\\mechanism_metrics_by_model.png",
+  "seed_stability_mse": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\figures_region_proxy\\seed_stability_mse.png",
+  "seed_mean_cmdl_omega_heatmap": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\figures_region_proxy\\seed_mean_cmdl_omega_heatmap.png",
+  "seed_std_cmdl_omega_heatmap": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\figures_region_proxy\\seed_std_cmdl_omega_heatmap.png",
+  "year_lag_cmdl_omega_heatmap": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\figures_region_proxy\\year_lag_cmdl_omega_heatmap.png",
+  "cmdl_kstar_distribution": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\figures_region_proxy\\cmdl_kstar_distribution.png",
+  "seed_mean_cmdl_proxy_kstar": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\figures_region_proxy\\seed_mean_cmdl_proxy_kstar.png",
+  "best_cmdl_omega_heatmap": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\figures_region_proxy\\best_cmdl_omega_heatmap.png",
+  "best_cmdl_proxy_kstar": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\figures_region_proxy\\best_cmdl_proxy_kstar.png",
+  "best_cmdl_predictions": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\figures_region_proxy\\best_cmdl_predictions.png",
+  "best_multiseq_cmdl_omega_heatmap": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\figures_region_proxy\\best_cmdl_omega_heatmap.png",
+  "best_multiseq_cmdl_proxy_kstar": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\figures_region_proxy\\best_cmdl_proxy_kstar.png",
+  "best_multiseq_cmdl_predictions": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\figures_region_proxy\\best_cmdl_predictions.png"
+}

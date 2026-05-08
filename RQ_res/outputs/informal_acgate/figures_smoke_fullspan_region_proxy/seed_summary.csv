@@ -1,0 +1,6 @@
+run_group,seed_count,test_mse_mean,test_mse_std,test_mae_mean,test_mae_std,test_kstar_proxy_spearman_adjusted_rho_mean,test_kstar_proxy_spearman_adjusted_rho_std,test_kstar_proxy_spearman_adjusted_rho_positive_seed_share,test_kstar_proxy_mean_spearman_adjusted_rho_mean,test_kstar_proxy_mean_spearman_adjusted_rho_std,test_kstar_proxy_mean_spearman_adjusted_rho_positive_seed_share,test_kstar_std_mean,test_kstar_std_std,test_lag_gate_sensitivity_range_mean,test_lag_gate_sensitivity_range_std,test_omega_entropy_mean_mean,test_omega_entropy_mean_std
+Fullspan CMDL,1,14.171820009375107,0.0,3.740428564094362,0.0,0.3285714285714285,0.0,1.0,0.7493506493506493,0.0,1.0,0.1913565412988263,0.0,0.5182349681854248,0.0,0.8339867968429321,0.0
+Fullspan No AC Encoder,1,14.170000913588485,0.0,3.740246518736794,0.0,,0.0,,,0.0,,0.0,0.0,0.0,0.0,0.9260534650956732,0.0
+Fullspan No Recon,1,14.171820012453416,0.0,3.740428564094362,0.0,0.3285714285714285,0.0,1.0,0.7493506493506493,0.0,1.0,0.1913565412988263,0.0,0.5182349681854248,0.0,0.8339867989120022,0.0
+Fullspan Plain LSTM,1,9.222490453597445,0.0,2.981170933989305,0.0,,0.0,,,0.0,,0.0,0.0,,0.0,1.0986122916069845,0.0
+Fullspan Uniform Lag,1,14.14738857148942,0.0,3.736965557885549,0.0,,0.0,,,0.0,,0.0,0.0,0.5183651447296143,0.0,1.0986122916069845,0.0
