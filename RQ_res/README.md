@@ -214,6 +214,70 @@ Add the following comparison figures after the full-span 20-seed suite exists:
 7. Add proxy permutation or noise-proxy falsification checks.
 8. Update the notebook with the selected final evidence path.
 
+## One-Shot Improvement Matrix
+
+The one-shot runner implements the full improvement roadmap while keeping all
+new RQ code and outputs inside `RQ_res`.
+
+New code entry points:
+
+- `RQ_res/informal_acgate/experiment_matrix.py`: central variant matrix.
+- `RQ_res/informal_acgate/suite_all_improvements.py`: dry-run, smoke, resume,
+  and full matrix execution.
+- `RQ_res/informal_acgate/aggregate_multi.py`: cross-variant aggregation.
+- `RQ_res/informal_acgate/report_improvements.py`: final report builder.
+- `RQ_res/informal_acgate/falsification.py`: proxy shuffle/noise helpers.
+
+Default output tree:
+
+- `RQ_res/outputs/informal_acgate/improvement_matrix/<matrix_name>/`
+- `RQ_res/outputs/informal_acgate/improvement_report/<matrix_name>/`
+
+Dry-run the full matrix without training:
+
+```powershell
+python RQ_res/informal_acgate/suite_all_improvements.py --dry-run --device cpu
+```
+
+Smoke-test every variant with one seed and one epoch:
+
+```powershell
+python RQ_res/informal_acgate/suite_all_improvements.py --smoke --device cpu --force --seeds 0 --screening-seeds 0
+```
+
+Run the default one-shot matrix. Capacity-grid and falsification tracks use the
+screening seed set by default; pass `--use-all-seeds-for-screening` only when the
+screening results justify the extra runtime.
+
+```powershell
+python RQ_res/informal_acgate/suite_all_improvements.py --device cpu --resume
+```
+
+Run only the core expanded-sample comparison:
+
+```powershell
+python RQ_res/informal_acgate/suite_all_improvements.py --include-track reference fullspan_income --device cpu --resume
+```
+
+Build or rebuild the report from an existing matrix directory:
+
+```powershell
+python RQ_res/informal_acgate/report_improvements.py --matrix-dir RQ_res/outputs/informal_acgate/improvement_matrix/default
+```
+
+The default matrix includes:
+
+- Reference overlap variants.
+- Full-span income `max_lag=3` and `max_lag=2` variants.
+- Feature subset variants for RPCYD, RYDGDP ratio, RPCYD+ratio, no per-capita
+  multiseq, and train-window PCA1 multiseq.
+- A compact low-capacity/gate-regularization grid.
+- Proxy shuffle and noise-proxy falsification variants.
+
+For the full factorial capacity grid, add `--expanded-grid`. This can be large,
+so it should be used after the compact grid passes smoke and shows a plausible
+mechanism signal.
+
 ## Success Criteria
 
 Treat an improved experiment as credible only if it satisfies all of the
