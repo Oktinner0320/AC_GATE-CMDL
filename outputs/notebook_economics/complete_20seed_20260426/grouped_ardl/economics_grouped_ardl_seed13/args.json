@@ -28,7 +28,7 @@
   "epochs": 120,
   "patience": 20,
   "log_every": 10,
-  "seed": 13,
   "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\notebook_economics\\complete_20seed_20260426\\grouped_ardl",
+  "seed": 13,
   "experiment_name": "economics_grouped_ardl_seed13"
 }

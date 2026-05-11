@@ -1,7 +1,0 @@
-display_name,family,variant,target_column,feature_bundle,n_seeds,test_r2_mean,test_r2_std,anchor_adjusted_rho_mean,anchor_positive_seed_share,mean_proxy_adjusted_rho_mean,mean_proxy_positive_seed_share,kstar_std_mean,entropy_mean,lag_gate_sensitivity_range_mean,proxy_signal_r2_mean
-No AC Encoder,ablation,no_ac_encoder,co2_per_unit_energy,minimal,20,-0.028401154046766686,0.004633887071293897,,,,,0.0,1.8449641633781773,0.0,
-No Recon Regularization,ablation,no_recon_regularization,co2_per_unit_energy,minimal,20,-0.0285662963737612,0.005017599756864618,-0.01437523581160185,0.5,-0.01240631712564918,0.45,0.1079111921268568,1.857060798490938,0.26904250383377076,0.6736991217977821
-Uniform Lag,ablation,uniform_lag,co2_per_unit_energy,minimal,20,-0.029856017581911698,0.0034992931430746633,,,,,0.0,2.302585112404075,0.39365037679672243,0.7908373249389906
-CMDL,cmdl,,co2_per_unit_energy,minimal,20,-0.028567153527486667,0.0050179120056919975,-0.014338563591048481,0.5,-0.012375967696228696,0.45,0.10791174350509096,1.857061770785299,0.2690467834472656,0.6736955048053643
-Grouped ARDL,grouped_ardl,,co2_per_unit_energy,minimal,20,0.6070779775073338,1.1390647892519134e-16,,,,,,,,
-Plain LSTM,plain_lstm,,co2_per_unit_energy,minimal,20,-0.028771130809167506,0.004242278150817936,0.09253877741880136,0.75,0.08967927028779357,0.7,1.3312766845690542,2.059065958053438,,

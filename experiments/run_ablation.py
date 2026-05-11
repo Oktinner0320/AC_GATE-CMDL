@@ -24,6 +24,7 @@ import torch
 from torch import nn
 
 from config.cmdl_config import CMDLConfig
+from experiments._checkpoint_io import save_torch_checkpoint
 from experiments._runtime_meta import attach_runtime_metadata, start_runtime_timer
 from experiments.run_synthetic import (
     ExperimentResult,
@@ -358,7 +359,7 @@ def run_variant(
                 best_epoch = epoch
                 patience_counter = 0
                 best_state = copy.deepcopy(model.state_dict())
-                torch.save(
+                save_torch_checkpoint(
                     {
                         "experiment": experiment_name,
                         "variant": variant,
@@ -377,7 +378,7 @@ def run_variant(
 
         model.load_state_dict(best_state)
         refit_proxy_reconstructor(model, train_panel)
-        torch.save(
+        save_torch_checkpoint(
             {
                 "experiment": experiment_name,
                 "variant": variant,

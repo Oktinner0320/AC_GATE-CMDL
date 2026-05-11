@@ -48,6 +48,7 @@ from data.energy.energy_loader import (
 )
 from evaluation.metrics import compute_mae, compute_mse, compute_r2
 from evaluation.realdata_diagnostics import build_realdata_diagnostics, proxy_metadata_payload
+from experiments._checkpoint_io import save_torch_checkpoint
 from experiments._runtime_meta import attach_runtime_metadata, start_runtime_timer
 from experiments.run_energy import (
     build_sqlite_tracking_uri,
@@ -589,7 +590,7 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
                 best_epoch = epoch
                 patience_counter = 0
                 best_state = copy.deepcopy(setup.model.state_dict())
-                torch.save(
+                save_torch_checkpoint(
                     {
                         "experiment": args.experiment_name,
                         "model": "plain_lstm",

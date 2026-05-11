@@ -1,10 +1,13 @@
-domain,layer,verdict,evidence
-synthetic,L0_forecast,certified,CMDL beats Plain LSTM on task loss in both linear and nonlinear scenarios.
-synthetic,L2_structured_mechanism,certified,CMDL beats Plain LSTM on k* MAE and ablation controls collapse lag recovery.
-synthetic,L3_directional_alignment,certified,CMDL keeps positive-seed share high and rank alignment strong across both scenarios.
-economics,L0_forecast,not_certified,CMDL mean test_r2=0.05414579722609828; best competing mean test_r2=0.10396524533015572.
-economics,L2_structured_mechanism,certified,CMDL stratified rows remain valid while No AC Encoder and Uniform Lag are structurally degenerate.
-economics,L3_directional_alignment,mixed,"anchor_adjusted_rho_mean=-0.10869306317884078, anchor_positive_seed_share=0.35."
-energy,L0_forecast,not_certified,CMDL mean test_r2=-0.028567153527486667; best competing mean test_r2=0.6070779775073338.
-energy,L2_structured_mechanism,certified,CMDL stratified rows remain valid while No AC Encoder and Uniform Lag are structurally degenerate.
-energy,L3_directional_alignment,mixed,"anchor_adjusted_rho_mean=-0.014338563591048481, anchor_positive_seed_share=0.5."
+domain,domain_label,layer,layer_name,verdict,label,evidence,task_test_max_p,task_missing_competitors,cmdl_min_positive_share,control_max_positive_share,kstar_test_max_p,controls_collapsed,kstar_missing_competitors,cmdl_min_rho,cmdl_test_r2_mean,best_competing_test_r2_mean,cmdl_kstar_std_mean,controls_degenerate,cmdl_rows,cmdl_max_fisher_p
+synthetic,Synthetic,L0,forecast,not_certified,n/c,Paired task-loss tests versus Plain LSTM/TFT/GA-Net; max p=0.43.,0.4304332733154297,,,,,,,,,,,,,
+synthetic,Synthetic,L1,nondegenerate_lag,certified,yes,CMDL retains nonzero seed-level lag-rank signal while No AC Encoder/Uniform Lag collapse.,,,1.0,0.0,,,,,,,,,,
+synthetic,Synthetic,L2,structured_heterogeneity,certified,yes,CMDL k* recovery beats Plain LSTM/TFT/GA-Net and collapse controls have no rank signal; max p=1.91e-06.,,,,,1.9073486328125e-06,True,,,,,,,,
+synthetic,Synthetic,L3,ground_truth_alignment,certified,yes,Known-lag alignment requires Spearman rho>=0.8 and positive-seed share>=0.8.,,,1.0,,,,,0.906987608493093,,,,,,
+economics,Economics,L0,forecast,not_certified,n/c,CMDL mean test R2=0.0541; best competing mean test R2=0.104.,,,,,,,,,0.05414579722609828,0.10396524533015572,,,,
+economics,Economics,L1,nondegenerate_lag,certified,yes,"CMDL k* std must exceed epsilon=1e-06, while No AC Encoder/Uniform Lag are degenerate controls.",,,,,,,,,,,0.16728880060700596,True,,
+economics,Economics,L2,structured_heterogeneity,certified,yes,"CMDL stratifier rows require valid seeds, Fisher p<0.05, and degenerate controls.",,,,,,True,,,,,,,3.0,1.382787629911831e-24
+economics,Economics,L3,ground_truth_alignment,not_claimed,n/a,No optional ground-truth lag is available for this real-data domain.,,,,,,,,,,,,,,
+energy,Energy,L0,forecast,not_certified,n/c,CMDL mean test R2=-0.0286; best competing mean test R2=0.607.,,,,,,,,,-0.028567153527486667,0.6070779775073338,,,,
+energy,Energy,L1,nondegenerate_lag,certified,yes,"CMDL k* std must exceed epsilon=1e-06, while No AC Encoder/Uniform Lag are degenerate controls.",,,,,,,,,,,0.10791174350509096,True,,
+energy,Energy,L2,structured_heterogeneity,certified,yes,"CMDL stratifier rows require valid seeds, Fisher p<0.05, and degenerate controls.",,,,,,True,,,,,,,3.0,9.0340168721252e-77
+energy,Energy,L3,ground_truth_alignment,not_claimed,n/a,No optional ground-truth lag is available for this real-data domain.,,,,,,,,,,,,,,

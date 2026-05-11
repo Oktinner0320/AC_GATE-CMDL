@@ -25,7 +25,6 @@ import pandas as pd
 
 REPO = Path(__file__).resolve().parents[1]
 LOCKED_PLAN = "complete_20seed_20260426"
-TFT_PLAN = "complete_20seed"
 
 METHOD_ORDER = [
     "Grouped ARDL",
@@ -65,14 +64,14 @@ DOMAIN_STYLE = {
 }
 
 
-def _load_locked_r2(domain: str) -> pd.DataFrame:
-    path = REPO / "outputs" / f"notebook_{domain}" / LOCKED_PLAN / "comparison" / f"{domain}_comparison.csv"
+def _load_locked_r2(domain: str, plan: str = LOCKED_PLAN) -> pd.DataFrame:
+    path = REPO / "outputs" / f"notebook_{domain}" / plan / "comparison" / f"{domain}_comparison.csv"
     df = pd.read_csv(path)
     return df[["display_name", "test_r2"]].rename(columns={"display_name": "method", "test_r2": "r2"}).copy()
 
 
-def _load_tft_r2(domain: str) -> pd.DataFrame:
-    base = REPO / "outputs" / f"notebook_{domain}" / TFT_PLAN / "tft"
+def _load_tft_r2(domain: str, plan: str = LOCKED_PLAN) -> pd.DataFrame:
+    base = REPO / "outputs" / f"notebook_{domain}" / plan / "tft"
     rows = []
     if base.exists():
         for run_dir in sorted(p for p in base.iterdir() if p.is_dir()):
@@ -88,8 +87,8 @@ def _load_tft_r2(domain: str) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def _load_ganet_r2(domain: str) -> pd.DataFrame:
-    base = REPO / "outputs" / f"notebook_{domain}" / TFT_PLAN / "ganet"
+def _load_ganet_r2(domain: str, plan: str = LOCKED_PLAN) -> pd.DataFrame:
+    base = REPO / "outputs" / f"notebook_{domain}" / plan / "ganet"
     rows = []
     if base.exists():
         for run_dir in sorted(p for p in base.iterdir() if p.is_dir()):
@@ -105,11 +104,15 @@ def _load_ganet_r2(domain: str) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def _domain_frame(domain: str) -> pd.DataFrame:
-    return pd.concat(
-        [_load_locked_r2(domain), _load_tft_r2(domain), _load_ganet_r2(domain)],
-        ignore_index=True,
-    )
+def _domain_frame(domain: str, plan: str = LOCKED_PLAN) -> pd.DataFrame:
+    locked = _load_locked_r2(domain, plan=plan)
+    frames = [locked]
+    present = set(locked["method"].dropna().astype(str).unique().tolist())
+    if "TFT" not in present:
+        frames.append(_load_tft_r2(domain, plan=plan))
+    if "GA-Net" not in present:
+        frames.append(_load_ganet_r2(domain, plan=plan))
+    return pd.concat(frames, ignore_index=True)
 
 
 def _setup_style() -> None:
@@ -211,10 +214,10 @@ def _draw_merged_panel(ax: plt.Axes, frames: dict[str, pd.DataFrame]) -> None:
         ax.axhline(y + 0.5, color="#E4E8EE", linewidth=0.45, zorder=0.5)
 
 
-def build_figure(output_dir: Path, formats: list[str]) -> list[Path]:
+def build_figure(output_dir: Path, formats: list[str], plan: str = LOCKED_PLAN) -> list[Path]:
     _setup_style()
     fig, ax = plt.subplots(1, 1, figsize=(6.9, 3.45))
-    frames = {domain: _domain_frame(domain) for domain in ("economics", "energy")}
+    frames = {domain: _domain_frame(domain, plan=plan) for domain in ("economics", "energy")}
     _draw_merged_panel(ax, frames)
 
     legend_handles = [
@@ -246,13 +249,14 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--output-dir", type=Path,
                    default=REPO / "outputs" / "paper_assets" / LOCKED_PLAN / "compact_figures")
     p.add_argument("--formats", nargs="+", default=["png", "svg"])
+    p.add_argument("--plan", default=LOCKED_PLAN)
     p.add_argument("--copy-to-paper-img", action="store_true")
     return p.parse_args()
 
 
 def main() -> None:
     args = parse_args()
-    saved = build_figure(args.output_dir, args.formats)
+    saved = build_figure(args.output_dir, args.formats, plan=args.plan)
     print("Generated:")
     for s in saved:
         print(" ", s)

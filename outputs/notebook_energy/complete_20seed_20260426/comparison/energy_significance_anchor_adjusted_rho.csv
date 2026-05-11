@@ -1,3 +1,0 @@
-target_column,feature_bundle,metric,reference,method,n_pairs,reference_mean,method_mean,mean_diff,median_diff,wilcoxon_statistic,wilcoxon_p,greater_is_better,reference_better_mean
-co2_per_unit_energy,minimal,test_effective_kstar_proxy_spearman_adjusted_rho,CMDL,No Recon Regularization,20,-0.014338563591048481,-0.01437523581160185,3.667222055337427e-05,0.0,0.0,0.17971249487899976,True,True
-co2_per_unit_energy,minimal,test_effective_kstar_proxy_spearman_adjusted_rho,CMDL,Plain LSTM,20,-0.014338563591048481,0.09253877741880136,-0.10687734100984984,-0.196648978532032,86.0,0.49800872802734375,True,False

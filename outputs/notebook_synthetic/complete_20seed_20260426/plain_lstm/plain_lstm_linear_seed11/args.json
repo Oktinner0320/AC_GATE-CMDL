@@ -17,6 +17,6 @@
   "epochs": 200,
   "patience": 20,
   "log_every": 10,
-  "seed": 11,
-  "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\notebook_synthetic\\complete_20seed_20260426\\plain_lstm"
+  "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\notebook_synthetic\\complete_20seed_20260426\\plain_lstm",
+  "seed": 11
 }

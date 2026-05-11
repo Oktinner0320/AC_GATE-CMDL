@@ -28,6 +28,7 @@
   "epochs": 120,
   "patience": 20,
   "log_every": 10,
+  "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\notebook_economics\\complete_20seed_20260426\\ablation",
   "variant": "all",
   "seeds": [
     0,
@@ -51,7 +52,6 @@
     18,
     19
   ],
-  "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\notebook_economics\\complete_20seed_20260426\\ablation",
   "experiment_prefix": "economics_ablation",
   "seed": 18,
   "experiment_name": "economics_ablation_no_recon_regularization_seed18"

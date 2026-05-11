@@ -23,6 +23,13 @@ _ABLATION_LABELS = {
     "no_recon_regularization": "No Recon Regularization",
 }
 
+_POSTHOC_LAG_FAMILIES = {"plain_lstm", "tft", "ganet"}
+_POSTHOC_LAG_LABELS = {
+    "plain_lstm": "Plain LSTM",
+    "tft": "TFT",
+    "ganet": "GA-Net",
+}
+
 _SPLITS = ("train", "val", "test")
 _IDENTITY_COLUMNS = [
     "family",
@@ -134,8 +141,8 @@ def _summary_paths(output_root: Path | str | None) -> list[Path]:
 def _display_name(family: str, experiment: str, variant: str | None) -> str:
     if family == "grouped_ardl":
         return "Grouped ARDL"
-    if family == "plain_lstm":
-        return "Plain LSTM"
+    if family in _POSTHOC_LAG_LABELS:
+        return _POSTHOC_LAG_LABELS[family]
     if family == "ablation":
         return _ABLATION_LABELS.get(variant or "", variant or experiment)
     return "CMDL"
@@ -148,6 +155,8 @@ def _year_bounds(years: Any) -> tuple[int | None, int | None]:
 
 
 def _family_model_name(payload: dict[str, Any], family: str) -> str:
+    if family in {"tft", "ganet"}:
+        return family
     if payload.get("model"):
         return str(payload["model"])
     if family == "grouped_ardl":
@@ -162,7 +171,7 @@ def _family_model_name(payload: dict[str, Any], family: str) -> str:
 def _lag_method(payload: dict[str, Any], family: str) -> str:
     if family == "grouped_ardl":
         return "grouped_distributed_lag_ols"
-    if family == "plain_lstm":
+    if family in _POSTHOC_LAG_FAMILIES:
         return str(payload.get("posthoc_lag_method", "lag_occlusion"))
     return "learned_omega"
 
@@ -226,7 +235,7 @@ def _normalize_split_metrics(
         f"{split}_r2": _finite_or_none(metrics.get("r2")),
     }
 
-    if family == "plain_lstm":
+    if family in _POSTHOC_LAG_FAMILIES:
         kstar_metric_valid = _bool_flag(
             metrics.get("posthoc_kstar_proxy_metric_valid", metrics.get("kstar_proxy_metric_valid"))
         )
@@ -561,6 +570,8 @@ def build_economics_comparison(
     baseline_root: Path | str | None = None,
     ablation_root: Path | str | None = None,
     grouped_ardl_root: Path | str | None = None,
+    tft_root: Path | str | None = None,
+    ganet_root: Path | str | None = None,
 ) -> pd.DataFrame:
     """Combine economics CMDL, baseline, and ablation runs into one table.
 
@@ -570,6 +581,8 @@ def build_economics_comparison(
     frames = [
         _load_summary_runs(cmdl_root, family="cmdl"),
         _load_summary_runs(baseline_root, family="plain_lstm"),
+        _load_summary_runs(tft_root, family="tft"),
+        _load_summary_runs(ganet_root, family="ganet"),
         _load_summary_runs(ablation_root, family="ablation"),
         _load_summary_runs(grouped_ardl_root, family="grouped_ardl"),
     ]

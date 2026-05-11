@@ -22,6 +22,7 @@ from evaluation.energy_comparison import build_energy_comparison, build_mechanis
 from evaluation.synthetic_comparison import build_significance_tables as build_synthetic_significance_tables
 from evaluation.synthetic_comparison import build_synthetic_comparison
 from evaluation.stratified_kstar import build_economics_stratifiers, build_energy_stratifiers
+from evaluation.verdict_matrix import build_verdict_matrix
 from visualization.paper_figures import (
     plot_case_study_scatter,
     plot_seed_distribution,
@@ -273,7 +274,7 @@ def _build_ablation_degeneracy_table(
     energy_stratified: pd.DataFrame,
 ) -> pd.DataFrame:
     rows: list[dict[str, Any]] = []
-    method_focus = ["CMDL", "No Recon Regularization", "Plain LSTM", "No AC Encoder", "Uniform Lag"]
+    method_focus = ["CMDL", "No Recon Regularization", "Plain LSTM", "TFT", "GA-Net", "No AC Encoder", "Uniform Lag"]
     for domain, compact, stratified in (
         ("economics", economics_compact, economics_stratified),
         ("energy", energy_compact, energy_stratified),
@@ -294,6 +295,10 @@ def _build_ablation_degeneracy_table(
                 continue
             kstar_std = row.get("kstar_std_mean")
             valid_stratifiers = int(valid_counts.get(method, 0))
+            structured_lag_valid = valid_stratifiers > 0
+            degenerate_control = bool(
+                (pd.notna(kstar_std) and float(kstar_std) == 0.0) or not structured_lag_valid
+            )
             rows.append(
                 {
                     "domain": domain,
@@ -302,7 +307,8 @@ def _build_ablation_degeneracy_table(
                     "lag_gate_sensitivity_range_mean": row.get("lag_gate_sensitivity_range_mean"),
                     "anchor_adjusted_rho_mean": row.get("anchor_adjusted_rho_mean"),
                     "valid_stratifiers": valid_stratifiers,
-                    "degenerate_control": bool(pd.notna(kstar_std) and float(kstar_std) == 0.0),
+                    "structured_lag_valid": structured_lag_valid,
+                    "degenerate_control": degenerate_control,
                 }
             )
     return pd.DataFrame(rows).sort_values(["domain", "method"], na_position="last").reset_index(drop=True)
@@ -683,7 +689,7 @@ def _generate_figures(
 
     synthetic_order = [
         method
-        for method in ["CMDL", "No Recon Regularization", "Plain LSTM", "No AC Encoder", "Uniform Lag"]
+        for method in ["CMDL", "No Recon Regularization", "Plain LSTM", "TFT", "GA-Net", "No AC Encoder", "Uniform Lag"]
         if method in synthetic_frame["display_name"].dropna().unique().tolist()
     ]
     for scenario_name in ("linear", "nonlinear"):
@@ -705,7 +711,7 @@ def _generate_figures(
 
     realdata_order = [
         method
-        for method in ["CMDL", "No Recon Regularization", "Plain LSTM", "Grouped ARDL", "No AC Encoder", "Uniform Lag"]
+        for method in ["CMDL", "No Recon Regularization", "Plain LSTM", "TFT", "GA-Net", "Grouped ARDL", "No AC Encoder", "Uniform Lag"]
         if method in pd.concat([economics_frame["display_name"], energy_frame["display_name"]]).dropna().unique().tolist()
     ]
     figure_paths["economics_forecast_seed_distribution.png"] = output_dir / "economics_forecast_seed_distribution.png"
@@ -827,17 +833,23 @@ def generate_paper_assets(
     synthetic_frame = build_synthetic_comparison(
         cmdl_root=paths.synthetic_root / "cmdl",
         baseline_root=paths.synthetic_root / "plain_lstm",
+        tft_root=paths.synthetic_root / "tft",
+        ganet_root=paths.synthetic_root / "ganet",
         ablation_root=paths.synthetic_root / "ablation",
     )
     economics_frame = build_economics_comparison(
         cmdl_root=paths.economics_root / "cmdl",
         baseline_root=paths.economics_root / "plain_lstm",
+        tft_root=paths.economics_root / "tft",
+        ganet_root=paths.economics_root / "ganet",
         ablation_root=paths.economics_root / "ablation",
         grouped_ardl_root=paths.economics_root / "grouped_ardl",
     )
     energy_frame = build_energy_comparison(
         cmdl_root=paths.energy_root / "cmdl",
         baseline_root=paths.energy_root / "plain_lstm",
+        tft_root=paths.energy_root / "tft",
+        ganet_root=paths.energy_root / "ganet",
         ablation_root=paths.energy_root / "ablation",
         grouped_ardl_root=paths.energy_root / "grouped_ardl",
     )
@@ -867,6 +879,23 @@ def generate_paper_assets(
         sort=False,
     )
 
+    ablation_degeneracy = _build_ablation_degeneracy_table(
+        economics_compact,
+        energy_compact,
+        economics_stratified,
+        energy_stratified,
+    )
+    verdict_matrix = build_verdict_matrix(
+        synthetic_summary=synthetic_summary,
+        synthetic_significance_task=synthetic_significance_task,
+        synthetic_significance_kstar=synthetic_significance_kstar,
+        economics_compact=economics_compact,
+        economics_stratified=economics_stratified,
+        energy_compact=energy_compact,
+        energy_stratified=energy_stratified,
+        ablation_degeneracy=ablation_degeneracy,
+    )
+
     economics_case_study, economics_case_meta = _build_case_study_frame(
         domain="economics",
         comparison_frame=economics_frame,
@@ -893,21 +922,8 @@ def generate_paper_assets(
         "baseline_compact_table.csv": _build_baseline_compact_table(synthetic_summary, economics_compact, energy_compact),
         "economics_stratified_main_table.csv": _build_stratified_main_table("economics", economics_stratified),
         "energy_stratified_main_table.csv": _build_stratified_main_table("energy", energy_stratified),
-        "ablation_degeneracy_table.csv": _build_ablation_degeneracy_table(
-            economics_compact,
-            energy_compact,
-            economics_stratified,
-            energy_stratified,
-        ),
-        "verdict_matrix.csv": _build_verdict_matrix(
-            synthetic_summary,
-            synthetic_significance_task,
-            synthetic_significance_kstar,
-            economics_compact,
-            economics_stratified,
-            energy_compact,
-            energy_stratified,
-        ),
+        "ablation_degeneracy_table.csv": ablation_degeneracy,
+        "verdict_matrix.csv": verdict_matrix,
         "proxy_metadata_table.csv": proxy_metadata,
         "economics_case_study_source.csv": economics_case_study,
         "energy_case_study_source.csv": energy_case_study,

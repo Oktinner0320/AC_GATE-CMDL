@@ -28,7 +28,7 @@
   "epochs": 120,
   "patience": 20,
   "log_every": 10,
-  "seed": 18,
   "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\notebook_economics\\complete_20seed_20260426\\plain_lstm",
+  "seed": 18,
   "experiment_name": "economics_lstm_seed18"
 }

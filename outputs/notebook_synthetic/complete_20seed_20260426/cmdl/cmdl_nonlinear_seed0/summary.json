@@ -59,6 +59,6 @@
     "deterministic_algorithms": false,
     "cudnn_deterministic": false,
     "cudnn_benchmark": false,
-    "wall_time_seconds": 2.842857900002855
+    "wall_time_seconds": 3.0393632000050275
   }
 }

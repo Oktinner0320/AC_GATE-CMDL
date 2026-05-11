@@ -22,6 +22,12 @@ _ABLATION_LABELS = {
     "no_recon_regularization": "No Recon Regularization",
 }
 
+_POSTHOC_BASELINE_LABELS = {
+    "plain_lstm": "Plain LSTM",
+    "tft": "TFT",
+    "ganet": "GA-Net",
+}
+
 _BASE_COLUMNS = [
     "family",
     "display_name",
@@ -58,8 +64,8 @@ def _summary_paths(output_root: Path) -> list[Path]:
 
 
 def _display_name(family: str, experiment: str, model: str | None, variant: str | None) -> str:
-    if family == "plain_lstm":
-        return "Plain LSTM"
+    if family in _POSTHOC_BASELINE_LABELS:
+        return _POSTHOC_BASELINE_LABELS[family]
     if family == "ablation":
         return _ABLATION_LABELS.get(variant or "", variant or experiment)
     return "CMDL"
@@ -102,7 +108,7 @@ def _normalize_summary(summary_path: Path, output_root: Path, family: str) -> di
         ),
     }
 
-    if family == "plain_lstm":
+    if family in _POSTHOC_BASELINE_LABELS:
         row["effective_kstar_mae"] = metrics.get("posthoc_kstar_mae")
         row["effective_kstar_spearman_rho"] = metrics.get("posthoc_kstar_spearman_rho")
         row["effective_lag_entropy_mean"] = metrics.get("posthoc_profile_entropy_mean")
@@ -142,15 +148,19 @@ def build_synthetic_comparison(
     cmdl_root: Path | str | None = None,
     baseline_root: Path | str | None = None,
     ablation_root: Path | str | None = None,
+    tft_root: Path | str | None = None,
+    ganet_root: Path | str | None = None,
 ) -> pd.DataFrame:
     """Combine CMDL, baseline, and ablation runs into one normalized table.
 
-    将 CMDL、baseline 与 ablation 的结果合并为统一格式的总表。
+    将 CMDL、baseline、TFT、GA-Net 与 ablation 的结果合并为统一格式的总表。
     """
 
     frames = [
         load_summary_runs(cmdl_root, family="cmdl"),
         load_summary_runs(baseline_root, family="plain_lstm"),
+        load_summary_runs(tft_root, family="tft"),
+        load_summary_runs(ganet_root, family="ganet"),
         load_summary_runs(ablation_root, family="ablation"),
     ]
     frames = [frame for frame in frames if not frame.empty]

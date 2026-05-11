@@ -27,7 +27,7 @@ from matplotlib.patches import Circle, Rectangle
 
 
 DEFAULT_PLAN = "complete_20seed_20260426"
-DEFAULT_TFT_PLAN = "complete_20seed"
+DEFAULT_TFT_PLAN = DEFAULT_PLAN
 
 METHOD_ORDER = [
     "CMDL",
@@ -648,9 +648,27 @@ def _derive_l0_status(inputs: FigureInputs) -> dict[str, str]:
 
 
 def _derive_layer_status(inputs: FigureInputs) -> pd.DataFrame:
+    verdict = inputs.verdict.copy()
+    if not verdict.empty and {"domain", "layer", "verdict"}.issubset(verdict.columns):
+        verdict["domain"] = verdict["domain"].astype(str)
+        verdict["layer_code"] = verdict["layer"].astype(str).str.extract(r"^(L[0-3])", expand=False)
+        verdict["verdict"] = verdict["verdict"].astype(str).replace({"mixed": "not_claimed"})
+        rows: list[dict[str, str]] = []
+        for domain in ("synthetic", "economics", "energy"):
+            for layer in ("L0", "L1", "L2", "L3"):
+                status = verdict.loc[(verdict["domain"] == domain) & (verdict["layer_code"] == layer), "verdict"]
+                rows.append(
+                    {
+                        "domain": domain,
+                        "layer": layer,
+                        "status": str(status.iloc[0]) if not status.empty else "not_certified",
+                    }
+                )
+        if len(rows) == 12 and not any(row["status"] == "not_certified" for row in rows if row["layer"] in {"L0", "L1", "L2", "L3"} and verdict.loc[(verdict["domain"] == row["domain"]) & (verdict["layer_code"] == row["layer"])].empty):
+            return pd.DataFrame(rows)
+
     l0 = _derive_l0_status(inputs)
     l1 = _derive_l1_status(inputs)
-    verdict = inputs.verdict.copy()
     verdict["domain"] = verdict["domain"].astype(str)
     verdict["layer"] = verdict["layer"].astype(str)
     verdict["verdict"] = verdict["verdict"].astype(str)
@@ -1181,7 +1199,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--tft-plan",
         default=DEFAULT_TFT_PLAN,
-        help="Plan name under outputs/notebook_*/<tft_plan>/tft holding TFT runs. Empty string disables TFT.",
+        help="Plan name under outputs/notebook_*/<tft_plan> holding TFT and GA-Net runs. Empty string disables TFT/GA-Net.",
     )
     return parser.parse_args()
 

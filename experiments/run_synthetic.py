@@ -34,6 +34,7 @@ import torch
 from config.cmdl_config import CMDLConfig
 from data.synthetic.generate import SyntheticPanel, generate_cmdl_synthetic
 from evaluation.kstar_eval import evaluate_kstar, evaluate_omega_distribution, evaluate_z_identification
+from experiments._checkpoint_io import save_torch_checkpoint
 from experiments._runtime_meta import attach_runtime_metadata, start_runtime_timer
 from model.cmdl_model import CMDLModel
 from model.loss import DomainAgnosticLoss
@@ -652,7 +653,7 @@ def run_experiment(
                 best_epoch = epoch
                 patience_counter = 0
                 best_state = copy.deepcopy(setup.model.state_dict())
-                torch.save(
+                save_torch_checkpoint(
                     {
                         "experiment": experiment_name,
                         "best_epoch": best_epoch,
@@ -672,7 +673,7 @@ def run_experiment(
         refit_proxy_reconstructor(setup.model, setup.train_panel)
         # 覆盖最佳 checkpoint，确保落盘模型与最终 summary / predictions 使用的是同一组参数。
         # Overwrite the best checkpoint so the serialized model matches the final summary and predictions.
-        torch.save(
+        save_torch_checkpoint(
             {
                 "experiment": experiment_name,
                 "best_epoch": best_epoch,

@@ -1,0 +1,22 @@
+{
+  "scenario": "all",
+  "lr": 0.001,
+  "lambda_r": 0.1,
+  "temperature": 1.0,
+  "omega_transform": "softmax",
+  "lambda_omega_entropy": 0.0,
+  "omega_entropy_min": null,
+  "omega_entropy_max": null,
+  "lambda_z_anchor": 0.0,
+  "z_anchor_target_sign": 1.0,
+  "lag_bias_strength": 1.0,
+  "grad_clip": 1.0,
+  "val_fraction": 0.2,
+  "device": "auto",
+  "disable_mlflow": true,
+  "epochs": 200,
+  "patience": 20,
+  "log_every": 10,
+  "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\notebook_synthetic\\complete_20seed_20260426\\ganet",
+  "seed": 0
+}

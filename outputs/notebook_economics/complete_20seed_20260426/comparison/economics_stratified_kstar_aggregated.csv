@@ -2,15 +2,21 @@ method,stratifier,n_seeds_total,n_seeds_valid,rho_mean,rho_median,abs_rho_mean,s
 CMDL,hc_mean_train,20,20,-0.14165191098307556,-0.2958646770879847,0.3705994647853369,0.8,0.75,1.0097785084638574e-46
 CMDL,log_capital_per_worker_train,20,20,-0.0993471305743811,-0.1352101017928217,0.2567913910794708,0.65,0.5,1.3827876299118313e-24
 CMDL,log_gdp_per_worker_train,20,20,-0.10946302199052618,-0.1460938325525695,0.27826827717702896,0.7,0.55,3.494822716844449e-37
+GA-Net,hc_mean_train,20,0,,,,,,
+GA-Net,log_capital_per_worker_train,20,0,,,,,,
+GA-Net,log_gdp_per_worker_train,20,0,,,,,,
 No AC Encoder,hc_mean_train,20,0,,,,,,
 No AC Encoder,log_capital_per_worker_train,20,0,,,,,,
 No AC Encoder,log_gdp_per_worker_train,20,0,,,,,,
-No Recon Reg,hc_mean_train,20,20,-0.21844246416117788,-0.2983075622556445,0.4184618364974817,0.8,0.65,1.5335429091461952e-50
-No Recon Reg,log_capital_per_worker_train,20,20,-0.11215437990912616,-0.12381564580324753,0.27158870768905646,0.6,0.45,6.1374822211816096e-30
-No Recon Reg,log_gdp_per_worker_train,20,20,-0.11109858758057131,-0.12603465887076892,0.28688140607939144,0.65,0.45,2.4816222818317574e-31
+No Recon Regularization,hc_mean_train,20,20,-0.21844246416117788,-0.2983075622556445,0.4184618364974817,0.8,0.65,1.5335429091461952e-50
+No Recon Regularization,log_capital_per_worker_train,20,20,-0.11215437990912616,-0.12381564580324753,0.27158870768905646,0.6,0.45,6.1374822211816096e-30
+No Recon Regularization,log_gdp_per_worker_train,20,20,-0.11109858758057131,-0.12603465887076892,0.28688140607939144,0.65,0.45,2.4816222818317574e-31
 Plain LSTM,hc_mean_train,20,0,,,,,,
 Plain LSTM,log_capital_per_worker_train,20,0,,,,,,
 Plain LSTM,log_gdp_per_worker_train,20,0,,,,,,
+TFT,hc_mean_train,20,0,,,,,,
+TFT,log_capital_per_worker_train,20,0,,,,,,
+TFT,log_gdp_per_worker_train,20,0,,,,,,
 Uniform Lag,hc_mean_train,20,0,,,,,,
 Uniform Lag,log_capital_per_worker_train,20,0,,,,,,
 Uniform Lag,log_gdp_per_worker_train,20,0,,,,,,

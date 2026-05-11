@@ -2,15 +2,21 @@ domain,method,stratifier,n_seeds_total,n_seeds_valid,rho_mean,rho_median,abs_rho
 economics,CMDL,hc_mean_train,20,20,-0.1416519109830755,-0.2958646770879847,0.3705994647853369,0.8,0.75,1.0097785084638574e-46
 economics,CMDL,log_gdp_per_worker_train,20,20,-0.1094630219905261,-0.1460938325525695,0.2782682771770289,0.7,0.55,3.494822716844449e-37
 economics,CMDL,log_capital_per_worker_train,20,20,-0.0993471305743811,-0.1352101017928217,0.2567913910794708,0.65,0.5,1.382787629911831e-24
+economics,GA-Net,hc_mean_train,20,0,,,,,,
+economics,GA-Net,log_capital_per_worker_train,20,0,,,,,,
+economics,GA-Net,log_gdp_per_worker_train,20,0,,,,,,
 economics,No AC Encoder,hc_mean_train,20,0,,,,,,
 economics,No AC Encoder,log_capital_per_worker_train,20,0,,,,,,
 economics,No AC Encoder,log_gdp_per_worker_train,20,0,,,,,,
-economics,No Recon Reg,hc_mean_train,20,20,-0.2184424641611778,-0.2983075622556445,0.4184618364974817,0.8,0.65,1.5335429091461952e-50
-economics,No Recon Reg,log_gdp_per_worker_train,20,20,-0.1110985875805713,-0.1260346588707689,0.2868814060793914,0.65,0.45,2.481622281831757e-31
-economics,No Recon Reg,log_capital_per_worker_train,20,20,-0.1121543799091261,-0.1238156458032475,0.2715887076890564,0.6,0.45,6.1374822211816096e-30
+economics,No Recon Regularization,hc_mean_train,20,20,-0.2184424641611778,-0.2983075622556445,0.4184618364974817,0.8,0.65,1.5335429091461952e-50
+economics,No Recon Regularization,log_gdp_per_worker_train,20,20,-0.1110985875805713,-0.1260346588707689,0.2868814060793914,0.65,0.45,2.481622281831757e-31
+economics,No Recon Regularization,log_capital_per_worker_train,20,20,-0.1121543799091261,-0.1238156458032475,0.2715887076890564,0.6,0.45,6.1374822211816096e-30
 economics,Plain LSTM,hc_mean_train,20,0,,,,,,
 economics,Plain LSTM,log_capital_per_worker_train,20,0,,,,,,
 economics,Plain LSTM,log_gdp_per_worker_train,20,0,,,,,,
+economics,TFT,hc_mean_train,20,0,,,,,,
+economics,TFT,log_capital_per_worker_train,20,0,,,,,,
+economics,TFT,log_gdp_per_worker_train,20,0,,,,,,
 economics,Uniform Lag,hc_mean_train,20,0,,,,,,
 economics,Uniform Lag,log_capital_per_worker_train,20,0,,,,,,
 economics,Uniform Lag,log_gdp_per_worker_train,20,0,,,,,,

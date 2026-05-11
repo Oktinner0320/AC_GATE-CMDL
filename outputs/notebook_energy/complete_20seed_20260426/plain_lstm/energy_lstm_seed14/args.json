@@ -26,7 +26,8 @@
   "epochs": 120,
   "patience": 20,
   "log_every": 10,
-  "seed": 14,
   "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\notebook_energy\\complete_20seed_20260426\\plain_lstm",
+  "seed": 14,
+  "seeds": null,
   "experiment_name": "energy_lstm_seed14"
 }

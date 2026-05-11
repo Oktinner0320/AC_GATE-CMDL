@@ -24,6 +24,7 @@ import torch
 
 from config.cmdl_config import CMDLConfig
 from data.economics.economics_loader import DEFAULT_ECONOMICS_FEATURE_BUNDLE, SUPPORTED_ECONOMICS_FEATURE_BUNDLES
+from experiments._checkpoint_io import save_torch_checkpoint
 from experiments._runtime_meta import attach_runtime_metadata, start_runtime_timer
 from experiments.run_ablation import NoACEncoderCMDLModel, UniformLagCMDLModel
 from experiments.run_economics import (
@@ -276,7 +277,7 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
                 best_epoch = epoch
                 patience_counter = 0
                 best_state = copy.deepcopy(setup.model.state_dict())
-                torch.save(
+                save_torch_checkpoint(
                     {
                         "experiment": variant_args.experiment_name,
                         "model": "cmdl_ablation",
@@ -304,7 +305,7 @@ def run_variant(args: argparse.Namespace, variant: str, seed: int) -> dict[str, 
                 f"{proxy_refit_result.reason} (rank={proxy_refit_result.design_rank}/"
                 f"{proxy_refit_result.design_columns})"
             )
-        torch.save(
+        save_torch_checkpoint(
             {
                 "experiment": variant_args.experiment_name,
                 "model": "cmdl_ablation",

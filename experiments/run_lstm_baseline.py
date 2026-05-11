@@ -30,6 +30,7 @@ from config.cmdl_config import CMDLConfig
 from data.synthetic.generate import SyntheticPanel, generate_cmdl_synthetic
 from evaluation.kstar_eval import evaluate_kstar, evaluate_omega_distribution
 from evaluation.metrics import compute_mae, compute_mse, compute_r2
+from experiments._checkpoint_io import save_torch_checkpoint
 from experiments._runtime_meta import attach_runtime_metadata, start_runtime_timer
 from experiments.run_synthetic import (
     finish_mlflow,
@@ -433,7 +434,7 @@ def run_experiment(
                 best_epoch = epoch
                 patience_counter = 0
                 best_state = copy.deepcopy(setup.model.state_dict())
-                torch.save(
+                save_torch_checkpoint(
                     {
                         "experiment": experiment_name,
                         "model": "plain_lstm",
