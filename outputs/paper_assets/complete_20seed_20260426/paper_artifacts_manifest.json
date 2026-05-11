@@ -3,13 +3,19 @@
   "output_root": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426",
   "tables": {
     "synthetic_main_table.csv": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\synthetic_main_table.csv",
+    "synthetic_significance_kstar_mae.csv": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\synthetic_significance_kstar_mae.csv",
+    "synthetic_significance_task_loss.csv": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\synthetic_significance_task_loss.csv",
     "synthetic_bootstrap_ci.csv": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\synthetic_bootstrap_ci.csv",
     "realdata_forecast_table.csv": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\realdata_forecast_table.csv",
+    "economics_significance_test_r2.csv": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\economics_significance_test_r2.csv",
+    "energy_significance_test_r2.csv": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\energy_significance_test_r2.csv",
+    "real_r2_wilcoxon.csv": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\real_r2_wilcoxon.csv",
     "baseline_compact_table.csv": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\baseline_compact_table.csv",
     "economics_stratified_main_table.csv": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\economics_stratified_main_table.csv",
     "energy_stratified_main_table.csv": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\energy_stratified_main_table.csv",
     "ablation_degeneracy_table.csv": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\ablation_degeneracy_table.csv",
     "verdict_matrix.csv": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\verdict_matrix.csv",
+    "proxy_shuffle_compact_table.csv": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\proxy_shuffle_compact_table.csv",
     "proxy_metadata_table.csv": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\proxy_metadata_table.csv",
     "economics_case_study_source.csv": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\economics_case_study_source.csv",
     "energy_case_study_source.csv": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\tables\\energy_case_study_source.csv",
@@ -28,6 +34,7 @@
     "energy_case_study.png": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\figures\\energy_case_study.png",
     "realdata_case_study_panel.png": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\paper_assets\\complete_20seed_20260426\\figures\\realdata_case_study_panel.png"
   },
+  "proxy_shuffle_root": "C:\\DevSpace\\PyDevspace\\CMDL\\outputs\\negative_controls\\proxy_shuffle_20seed_20260511",
   "case_studies": {
     "economics": {
       "domain": "economics",

@@ -17,8 +17,16 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from evaluation.economics_comparison import build_economics_comparison, build_mechanism_result_log as build_economics_result_log
-from evaluation.energy_comparison import build_energy_comparison, build_mechanism_result_log as build_energy_result_log
+from evaluation.economics_comparison import (
+    build_economics_comparison,
+    build_mechanism_result_log as build_economics_result_log,
+    build_significance_tables as build_economics_significance_tables,
+)
+from evaluation.energy_comparison import (
+    build_energy_comparison,
+    build_mechanism_result_log as build_energy_result_log,
+    build_significance_tables as build_energy_significance_tables,
+)
 from evaluation.synthetic_comparison import build_significance_tables as build_synthetic_significance_tables
 from evaluation.synthetic_comparison import build_synthetic_comparison
 from evaluation.stratified_kstar import build_economics_stratifiers, build_energy_stratifiers
@@ -67,6 +75,10 @@ class PaperPaths:
     @property
     def energy_root(self) -> Path:
         return self.workspace_root / "outputs" / "notebook_energy" / self.plan_name
+
+    @property
+    def proxy_shuffle_root(self) -> Path:
+        return self.workspace_root / "outputs" / "negative_controls" / "proxy_shuffle_20seed_20260511"
 
 
 @dataclass
@@ -201,6 +213,105 @@ def _build_synthetic_bootstrap_table(comparison_frame: pd.DataFrame, n_boot: int
                 }
             )
     return pd.DataFrame(rows).sort_values(["scenario", "metric", "method"], na_position="last").reset_index(drop=True)
+
+
+def _with_paper_diff_columns(significance_frame: pd.DataFrame) -> pd.DataFrame:
+    if significance_frame.empty:
+        return significance_frame
+    table = significance_frame.copy()
+    if "mean_diff" in table.columns:
+        table["paper_mean_diff_method_minus_reference"] = -pd.to_numeric(table["mean_diff"], errors="coerce")
+    if "median_diff" in table.columns:
+        table["paper_median_diff_method_minus_reference"] = -pd.to_numeric(table["median_diff"], errors="coerce")
+    table["paper_diff_direction"] = "method_minus_reference"
+    return table
+
+
+def _build_real_r2_wilcoxon_table(economics_r2: pd.DataFrame, energy_r2: pd.DataFrame) -> pd.DataFrame:
+    frames: list[pd.DataFrame] = []
+    for domain, domain_label, frame in (
+        ("economics", "Economics", economics_r2),
+        ("energy", "Energy", energy_r2),
+    ):
+        if frame.empty:
+            continue
+        domain_frame = frame.copy()
+        domain_frame.insert(0, "domain", domain)
+        domain_frame.insert(1, "domain_label", domain_label)
+        frames.append(domain_frame)
+    if not frames:
+        return pd.DataFrame()
+    table = pd.concat(frames, ignore_index=True, sort=False)
+    table = _with_paper_diff_columns(table)
+    sort_columns = [column for column in ["domain", "target_column", "feature_bundle", "method"] if column in table.columns]
+    return table.sort_values(sort_columns, na_position="last").reset_index(drop=True)
+
+
+def _read_proxy_shuffle_summary(proxy_root: Path) -> pd.DataFrame:
+    comparison_dir = proxy_root / "comparison"
+    combined_path = comparison_dir / "proxy_shuffle_summary.csv"
+    if combined_path.exists():
+        return pd.read_csv(combined_path)
+    frames = [
+        pd.read_csv(path)
+        for path in sorted(comparison_dir.glob("*_proxy_shuffle_summary.csv"))
+        if path.is_file()
+    ]
+    if not frames:
+        return pd.DataFrame()
+    return pd.concat(frames, ignore_index=True, sort=False)
+
+
+def _build_proxy_shuffle_compact_table(proxy_root: Path) -> pd.DataFrame:
+    summary = _read_proxy_shuffle_summary(proxy_root)
+    columns = [
+        "domain",
+        "domain_label",
+        "model",
+        "mean_abs_rho",
+        "kstar_std_mean",
+        "frac_seed_p_lt_05",
+        "fisher_p_min",
+        "fisher_p_max",
+        "test_r2_mean",
+        "n_stratifiers",
+        "source_path",
+    ]
+    if summary.empty:
+        return pd.DataFrame(columns=columns)
+
+    rows: list[dict[str, Any]] = []
+    model_specs = [
+        ("AC-GATE", "original", "original_seed_p_lt_05_share"),
+        ("Proxy-shuf.", "proxy_shuffled", "proxy_shuffled_seed_p_lt_05_share"),
+    ]
+    for domain, group in summary.groupby("domain", dropna=False):
+        domain_text = str(domain)
+        for model, prefix, share_column in model_specs:
+            fisher = pd.to_numeric(group.get(f"{prefix}_fisher_p"), errors="coerce").dropna()
+            rows.append(
+                {
+                    "domain": domain_text,
+                    "domain_label": DOMAIN_DISPLAY_LABELS.get(domain_text, domain_text.title()),
+                    "model": model,
+                    "mean_abs_rho": _safe_mean(group[f"{prefix}_abs_rho_mean"]),
+                    "kstar_std_mean": _safe_mean(group[f"{prefix}_kstar_std_mean"]),
+                    "frac_seed_p_lt_05": _safe_mean(group[share_column]),
+                    "fisher_p_min": float(fisher.min()) if not fisher.empty else float("nan"),
+                    "fisher_p_max": float(fisher.max()) if not fisher.empty else float("nan"),
+                    "test_r2_mean": _safe_mean(group[f"{prefix}_test_r2_mean"]),
+                    "n_stratifiers": int(len(group)),
+                    "source_path": str(proxy_root / "comparison"),
+                }
+            )
+    table = pd.DataFrame(rows, columns=columns)
+    domain_order = {"economics": 0, "energy": 1}
+    model_order = {"AC-GATE": 0, "Proxy-shuf.": 1}
+    table["_domain_order"] = table["domain"].map(domain_order).fillna(99)
+    table["_model_order"] = table["model"].map(model_order).fillna(99)
+    return table.sort_values(["_domain_order", "_model_order", "domain", "model"]).drop(
+        columns=["_domain_order", "_model_order"]
+    ).reset_index(drop=True)
 
 
 def _build_baseline_compact_table(
@@ -823,10 +934,12 @@ def generate_paper_assets(
     include_figures: bool = True,
     n_boot: int = 5000,
     bootstrap_seed: int = 0,
+    proxy_root: Path | str | None = None,
 ) -> PaperArtifactBundle:
     """Build paper-facing tables and figures without touching model code paths."""
 
     output_root = Path(output_root) if output_root is not None else paths.workspace_root / "outputs" / "paper_assets" / paths.plan_name
+    proxy_root = Path(proxy_root) if proxy_root is not None else paths.proxy_shuffle_root
     tables_dir = output_root / "tables"
     figures_dir = output_root / "figures"
 
@@ -861,6 +974,21 @@ def generate_paper_assets(
     synthetic_significance = build_synthetic_significance_tables(synthetic_frame)
     synthetic_significance_task = synthetic_significance.get("synthetic_significance_task_loss.csv", pd.DataFrame())
     synthetic_significance_kstar = synthetic_significance.get("synthetic_significance_kstar_mae.csv", pd.DataFrame())
+    synthetic_significance_tables = {
+        name: _with_paper_diff_columns(frame)
+        for name, frame in synthetic_significance.items()
+    }
+
+    economics_significance = build_economics_significance_tables(economics_frame, split="test")
+    energy_significance = build_energy_significance_tables(energy_frame, split="test")
+    economics_significance_r2 = _with_paper_diff_columns(
+        economics_significance.get("economics_significance_test_r2.csv", pd.DataFrame())
+    )
+    energy_significance_r2 = _with_paper_diff_columns(
+        energy_significance.get("energy_significance_test_r2.csv", pd.DataFrame())
+    )
+    real_r2_wilcoxon = _build_real_r2_wilcoxon_table(economics_significance_r2, energy_significance_r2)
+    proxy_shuffle_compact = _build_proxy_shuffle_compact_table(proxy_root)
 
     economics_stratified = _read_csv(paths.economics_root / "comparison" / "economics_stratified_kstar_aggregated.csv")
     economics_stratified_seed = _read_csv(paths.economics_root / "comparison" / "economics_stratified_kstar_per_seed.csv")
@@ -913,17 +1041,22 @@ def generate_paper_assets(
 
     tables = {
         "synthetic_main_table.csv": synthetic_summary,
+        **synthetic_significance_tables,
         "synthetic_bootstrap_ci.csv": _build_synthetic_bootstrap_table(
             synthetic_frame,
             n_boot=n_boot,
             seed=bootstrap_seed,
         ),
         "realdata_forecast_table.csv": _build_realdata_forecast_table(economics_compact, energy_compact),
+        "economics_significance_test_r2.csv": economics_significance_r2,
+        "energy_significance_test_r2.csv": energy_significance_r2,
+        "real_r2_wilcoxon.csv": real_r2_wilcoxon,
         "baseline_compact_table.csv": _build_baseline_compact_table(synthetic_summary, economics_compact, energy_compact),
         "economics_stratified_main_table.csv": _build_stratified_main_table("economics", economics_stratified),
         "energy_stratified_main_table.csv": _build_stratified_main_table("energy", energy_stratified),
         "ablation_degeneracy_table.csv": ablation_degeneracy,
         "verdict_matrix.csv": verdict_matrix,
+        "proxy_shuffle_compact_table.csv": proxy_shuffle_compact,
         "proxy_metadata_table.csv": proxy_metadata,
         "economics_case_study_source.csv": economics_case_study,
         "energy_case_study_source.csv": energy_case_study,
@@ -952,6 +1085,7 @@ def generate_paper_assets(
         "output_root": str(output_root),
         "tables": {name: str(path) for name, path in table_paths.items()},
         "figures": {name: str(path) for name, path in figure_paths.items()},
+        "proxy_shuffle_root": str(proxy_root),
         "case_studies": {
             "economics": economics_case_meta,
             "energy": energy_case_meta,

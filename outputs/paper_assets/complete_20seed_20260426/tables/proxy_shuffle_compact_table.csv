@@ -1,0 +1,5 @@
+domain,domain_label,model,mean_abs_rho,kstar_std_mean,frac_seed_p_lt_05,fisher_p_min,fisher_p_max,test_r2_mean,n_stratifiers,source_path
+economics,Economics,AC-GATE,0.3018863776806122,0.1682474835305888,0.7166666666666668,1.0097785084638574e-46,1.382787629911831e-24,0.0541457972260982,3,C:\DevSpace\PyDevspace\CMDL\outputs\negative_controls\proxy_shuffle_20seed_20260511\comparison
+economics,Economics,Proxy-shuf.,0.05754376386883162,0.1838788085396478,0.0,0.9365659014471172,0.995776560588894,0.0549633977025308,3,C:\DevSpace\PyDevspace\CMDL\outputs\negative_controls\proxy_shuffle_20seed_20260511\comparison
+energy,Energy,AC-GATE,0.6863234107765632,0.10861020868356049,0.9166666666666666,1.788747239368012e-79,9.0340168721252e-77,-0.028567153527486604,3,C:\DevSpace\PyDevspace\CMDL\outputs\negative_controls\proxy_shuffle_20seed_20260511\comparison
+energy,Energy,Proxy-shuf.,0.08751252300901298,0.0732451988886946,0.06666666666666667,0.3874395042025548,0.7522985518019001,-0.0280235396442052,3,C:\DevSpace\PyDevspace\CMDL\outputs\negative_controls\proxy_shuffle_20seed_20260511\comparison
