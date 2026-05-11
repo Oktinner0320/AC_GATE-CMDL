@@ -1,0 +1,11 @@
+{
+  "status": "success",
+  "updated_at": "2026-05-10T12:21:31.161918+00:00",
+  "variant_id": "feature_subset_rydgdp_ratio_overlap_k2",
+  "track": "feature_subset",
+  "run_spec": "plain_lstm",
+  "seed": 13,
+  "experiment_name": "feature_subset_rydgdp_ratio_overlap_k2_plain_lstm_seed13",
+  "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\full_all_improvements\\feature_subset_rydgdp_ratio_overlap_k2\\feature_subset_rydgdp_ratio_overlap_k2_plain_lstm_seed13",
+  "skipped_existing_summary": false
+}

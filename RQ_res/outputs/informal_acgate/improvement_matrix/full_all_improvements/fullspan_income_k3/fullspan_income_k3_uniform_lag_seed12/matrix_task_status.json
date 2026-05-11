@@ -1,0 +1,11 @@
+{
+  "status": "success",
+  "updated_at": "2026-05-10T12:19:14.263196+00:00",
+  "variant_id": "fullspan_income_k3",
+  "track": "fullspan_income",
+  "run_spec": "uniform_lag",
+  "seed": 12,
+  "experiment_name": "fullspan_income_k3_uniform_lag_seed12",
+  "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\full_all_improvements\\fullspan_income_k3\\fullspan_income_k3_uniform_lag_seed12",
+  "skipped_existing_summary": false
+}

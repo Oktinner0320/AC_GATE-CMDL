@@ -1,0 +1,54 @@
+{
+  "matrix_name": "full_all_improvements",
+  "variant": {
+    "variant_id": "fullspan_income_k3",
+    "track": "fullspan_income",
+    "scenario": "fullspan_region_proxy",
+    "feature_bundle": "single_fullspan_region_proxy",
+    "max_lag": 3,
+    "run_specs": [
+      {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      {
+        "name": "plain_lstm",
+        "model": "plain_lstm",
+        "ablation": "none"
+      },
+      {
+        "name": "no_ac_encoder",
+        "model": "cmdl",
+        "ablation": "no_ac_encoder"
+      },
+      {
+        "name": "uniform_lag",
+        "model": "cmdl",
+        "ablation": "uniform_lag"
+      },
+      {
+        "name": "no_recon_regularization",
+        "model": "cmdl",
+        "ablation": "no_recon_regularization"
+      }
+    ],
+    "year_start": 2006,
+    "year_end": 2023,
+    "stats_end_year": 2018,
+    "train_end_year": 2018,
+    "val_end_year": 2020,
+    "proxy_perturbation": "none",
+    "hyperparameters": {},
+    "interpretation": "main_expanded_sample"
+  },
+  "run_spec": {
+    "name": "cmdl",
+    "model": "cmdl",
+    "ablation": "none"
+  },
+  "seed": 4,
+  "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\full_all_improvements\\fullspan_income_k3",
+  "experiment_name": "fullspan_income_k3_cmdl_seed4",
+  "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\full_all_improvements\\fullspan_income_k3\\fullspan_income_k3_cmdl_seed4"
+}

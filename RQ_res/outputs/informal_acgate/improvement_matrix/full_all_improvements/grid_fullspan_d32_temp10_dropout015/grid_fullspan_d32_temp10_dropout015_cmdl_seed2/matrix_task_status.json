@@ -1,0 +1,11 @@
+{
+  "status": "success",
+  "updated_at": "2026-05-10T12:23:03.523818+00:00",
+  "variant_id": "grid_fullspan_d32_temp10_dropout015",
+  "track": "capacity_gate_grid",
+  "run_spec": "cmdl",
+  "seed": 2,
+  "experiment_name": "grid_fullspan_d32_temp10_dropout015_cmdl_seed2",
+  "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\full_all_improvements\\grid_fullspan_d32_temp10_dropout015\\grid_fullspan_d32_temp10_dropout015_cmdl_seed2",
+  "skipped_existing_summary": false
+}

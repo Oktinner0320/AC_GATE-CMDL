@@ -1,0 +1,53 @@
+{
+  "plan_name": "complete_20seed_20260426",
+  "output_root": "outputs\\paper_assets\\_tmp_case_study_vertical",
+  "tables": {
+    "synthetic_main_table.csv": "outputs\\paper_assets\\_tmp_case_study_vertical\\tables\\synthetic_main_table.csv",
+    "synthetic_bootstrap_ci.csv": "outputs\\paper_assets\\_tmp_case_study_vertical\\tables\\synthetic_bootstrap_ci.csv",
+    "realdata_forecast_table.csv": "outputs\\paper_assets\\_tmp_case_study_vertical\\tables\\realdata_forecast_table.csv",
+    "baseline_compact_table.csv": "outputs\\paper_assets\\_tmp_case_study_vertical\\tables\\baseline_compact_table.csv",
+    "economics_stratified_main_table.csv": "outputs\\paper_assets\\_tmp_case_study_vertical\\tables\\economics_stratified_main_table.csv",
+    "energy_stratified_main_table.csv": "outputs\\paper_assets\\_tmp_case_study_vertical\\tables\\energy_stratified_main_table.csv",
+    "ablation_degeneracy_table.csv": "outputs\\paper_assets\\_tmp_case_study_vertical\\tables\\ablation_degeneracy_table.csv",
+    "verdict_matrix.csv": "outputs\\paper_assets\\_tmp_case_study_vertical\\tables\\verdict_matrix.csv",
+    "proxy_metadata_table.csv": "outputs\\paper_assets\\_tmp_case_study_vertical\\tables\\proxy_metadata_table.csv",
+    "economics_case_study_source.csv": "outputs\\paper_assets\\_tmp_case_study_vertical\\tables\\economics_case_study_source.csv",
+    "energy_case_study_source.csv": "outputs\\paper_assets\\_tmp_case_study_vertical\\tables\\energy_case_study_source.csv",
+    "economics_mechanism_result_log.csv": "outputs\\paper_assets\\_tmp_case_study_vertical\\tables\\economics_mechanism_result_log.csv",
+    "energy_mechanism_result_log.csv": "outputs\\paper_assets\\_tmp_case_study_vertical\\tables\\energy_mechanism_result_log.csv"
+  },
+  "figures": {
+    "workflow_overview.png": "outputs\\paper_assets\\_tmp_case_study_vertical\\figures\\workflow_overview.png",
+    "synthetic_kstar_mae_seed_distribution_linear.png": "outputs\\paper_assets\\_tmp_case_study_vertical\\figures\\synthetic_kstar_mae_seed_distribution_linear.png",
+    "synthetic_kstar_mae_seed_distribution_nonlinear.png": "outputs\\paper_assets\\_tmp_case_study_vertical\\figures\\synthetic_kstar_mae_seed_distribution_nonlinear.png",
+    "economics_forecast_seed_distribution.png": "outputs\\paper_assets\\_tmp_case_study_vertical\\figures\\economics_forecast_seed_distribution.png",
+    "energy_forecast_seed_distribution.png": "outputs\\paper_assets\\_tmp_case_study_vertical\\figures\\energy_forecast_seed_distribution.png",
+    "economics_structured_mechanism_seed_distribution.png": "outputs\\paper_assets\\_tmp_case_study_vertical\\figures\\economics_structured_mechanism_seed_distribution.png",
+    "energy_structured_mechanism_seed_distribution.png": "outputs\\paper_assets\\_tmp_case_study_vertical\\figures\\energy_structured_mechanism_seed_distribution.png",
+    "economics_case_study.png": "outputs\\paper_assets\\_tmp_case_study_vertical\\figures\\economics_case_study.png",
+    "energy_case_study.png": "outputs\\paper_assets\\_tmp_case_study_vertical\\figures\\energy_case_study.png",
+    "realdata_case_study_panel.png": "outputs\\paper_assets\\_tmp_case_study_vertical\\figures\\realdata_case_study_panel.png"
+  },
+  "case_studies": {
+    "economics": {
+      "domain": "economics",
+      "aggregation": "20-seed mean",
+      "n_seeds": 20,
+      "stratifier": "hc_mean_train",
+      "x_label": "Human capital (training-window mean)",
+      "y_label": "Mean learned effective lag across 20 seeds",
+      "title": "Economics: Human capital (training-window mean)",
+      "point_color": "#66ccff"
+    },
+    "energy": {
+      "domain": "energy",
+      "aggregation": "20-seed mean",
+      "n_seeds": 20,
+      "stratifier": "rule_of_law_train",
+      "x_label": "Rule of law (training-window mean)",
+      "y_label": "Mean learned effective lag across 20 seeds",
+      "title": "Energy: Rule of law (training-window mean)",
+      "point_color": "#cc55ee"
+    }
+  }
+}

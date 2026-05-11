@@ -30,6 +30,15 @@ MULTISEQ_COLUMNS = [
     "x_seq_rydgdp_grdp_per_capita",
     "x_seq_rydgdp_ratio",
 ]
+MULTISEQ_NO_PER_CAPITA_COLUMNS = [
+    "x_seq_rpcyd_total_income",
+    "x_seq_rydgdp_disposable_income",
+    "x_seq_rydgdp_grdp",
+    "x_seq_rydgdp_ratio",
+]
+RPCYD_COLUMN = "x_seq_rpcyd_total_income"
+RYDGDP_RATIO_COLUMN = "x_seq_rydgdp_ratio"
+COMPRESSED_MULTISEQ_COLUMN = "x_seq_multiseq_pca1"
 PROXY_COLUMNS = ["proxy_atm_count", "proxy_terminal_count", "proxy_credit_card_depth"]
 STATIC_COLUMNS = ["static_noncash_value", "static_withdrawal_value"]
 DERIVED_PROXY_COLUMNS = [
@@ -96,6 +105,17 @@ SUPPORTED_FEATURE_BUNDLES = {
         "static_columns": list(INCOME_STATIC_COLUMNS),
         "derived_source_columns": [LEGACY_SEQUENCE_COLUMN],
     },
+    "rpcyd_fullspan_region_proxy": {
+        "file_name": "informal_acgate_multiseq_ready.csv",
+        "sequence_columns": [RPCYD_COLUMN],
+        "year_start": 2006,
+        "year_end": 2023,
+        "proxy_mode": "income_region_summary",
+        "proxy_columns": list(INCOME_PROXY_COLUMNS),
+        "static_columns": list(INCOME_STATIC_COLUMNS),
+        "derived_source_columns": [RPCYD_COLUMN],
+        "evidence_scope": "fullspan_rpcyd_sensitivity",
+    },
     "multiseq_overlap_region_proxy": {
         "file_name": "informal_acgate_multiseq_overlap_ready.csv",
         "sequence_columns": list(MULTISEQ_COLUMNS),
@@ -105,6 +125,63 @@ SUPPORTED_FEATURE_BUNDLES = {
         "proxy_columns": list(DERIVED_PROXY_COLUMNS),
         "static_columns": list(DERIVED_STATIC_COLUMNS),
         "derived_source_columns": [LEGACY_SEQUENCE_COLUMN, *MULTISEQ_COLUMNS],
+    },
+    "rpcyd_overlap_region_proxy": {
+        "file_name": "informal_acgate_multiseq_overlap_ready.csv",
+        "sequence_columns": [RPCYD_COLUMN],
+        "year_start": 2019,
+        "year_end": 2023,
+        "proxy_mode": "formal_region_summary",
+        "proxy_columns": list(DERIVED_PROXY_COLUMNS),
+        "static_columns": list(DERIVED_STATIC_COLUMNS),
+        "derived_source_columns": [LEGACY_SEQUENCE_COLUMN, RPCYD_COLUMN, RYDGDP_RATIO_COLUMN],
+        "evidence_scope": "overlap_feature_subset",
+    },
+    "rydgdp_ratio_overlap_region_proxy": {
+        "file_name": "informal_acgate_multiseq_overlap_ready.csv",
+        "sequence_columns": [RYDGDP_RATIO_COLUMN],
+        "year_start": 2019,
+        "year_end": 2023,
+        "proxy_mode": "formal_region_summary",
+        "proxy_columns": list(DERIVED_PROXY_COLUMNS),
+        "static_columns": list(DERIVED_STATIC_COLUMNS),
+        "derived_source_columns": [LEGACY_SEQUENCE_COLUMN, RPCYD_COLUMN, RYDGDP_RATIO_COLUMN],
+        "evidence_scope": "overlap_feature_subset",
+    },
+    "rpcyd_ratio_overlap_region_proxy": {
+        "file_name": "informal_acgate_multiseq_overlap_ready.csv",
+        "sequence_columns": [RPCYD_COLUMN, RYDGDP_RATIO_COLUMN],
+        "year_start": 2019,
+        "year_end": 2023,
+        "proxy_mode": "formal_region_summary",
+        "proxy_columns": list(DERIVED_PROXY_COLUMNS),
+        "static_columns": list(DERIVED_STATIC_COLUMNS),
+        "derived_source_columns": [LEGACY_SEQUENCE_COLUMN, RPCYD_COLUMN, RYDGDP_RATIO_COLUMN],
+        "evidence_scope": "overlap_feature_subset",
+    },
+    "multiseq_overlap_no_per_capita_region_proxy": {
+        "file_name": "informal_acgate_multiseq_overlap_ready.csv",
+        "sequence_columns": list(MULTISEQ_NO_PER_CAPITA_COLUMNS),
+        "year_start": 2019,
+        "year_end": 2023,
+        "proxy_mode": "formal_region_summary",
+        "proxy_columns": list(DERIVED_PROXY_COLUMNS),
+        "static_columns": list(DERIVED_STATIC_COLUMNS),
+        "derived_source_columns": [LEGACY_SEQUENCE_COLUMN, *MULTISEQ_NO_PER_CAPITA_COLUMNS],
+        "evidence_scope": "overlap_feature_subset",
+    },
+    "multiseq_overlap_pca1_region_proxy": {
+        "file_name": "informal_acgate_multiseq_overlap_ready.csv",
+        "sequence_columns": [COMPRESSED_MULTISEQ_COLUMN],
+        "source_sequence_columns": list(MULTISEQ_COLUMNS),
+        "sequence_transform": "train_window_pca1",
+        "year_start": 2019,
+        "year_end": 2023,
+        "proxy_mode": "formal_region_summary",
+        "proxy_columns": list(DERIVED_PROXY_COLUMNS),
+        "static_columns": list(DERIVED_STATIC_COLUMNS),
+        "derived_source_columns": [LEGACY_SEQUENCE_COLUMN, *MULTISEQ_COLUMNS],
+        "evidence_scope": "overlap_feature_subset_compressed",
     },
 }
 
@@ -212,6 +289,49 @@ def _linear_trend(values: pd.Series) -> float:
 def _safe_log1p(values: pd.Series) -> pd.Series:
     array = pd.to_numeric(values, errors="coerce").astype(float)
     return np.log1p(array.clip(lower=0.0))
+
+
+def _add_train_window_pca_sequence(
+    frame: pd.DataFrame,
+    source_columns: list[str],
+    output_column: str,
+    stats_end_year: int,
+) -> tuple[pd.DataFrame, dict[str, Any]]:
+    reference_mask = frame["year"].to_numpy(dtype=int) <= int(stats_end_year)
+    if not bool(reference_mask.any()):
+        raise ValueError("Cannot fit train-window PCA sequence without reference rows")
+
+    source_matrix = frame[source_columns].to_numpy(dtype=np.float64)
+    reference_matrix = source_matrix[reference_mask]
+    if not np.isfinite(reference_matrix).all():
+        raise ValueError("Cannot fit train-window PCA sequence with non-finite reference values")
+
+    means = reference_matrix.mean(axis=0)
+    stds = reference_matrix.std(axis=0, ddof=0)
+    stds = np.where(np.isfinite(stds) & (stds >= EPSILON), stds, 1.0)
+    scaled_matrix = (source_matrix - means) / stds
+    scaled_reference = scaled_matrix[reference_mask]
+    _, _, components = np.linalg.svd(scaled_reference, full_matrices=False)
+    weights = components[0].astype(np.float64)
+
+    if source_columns:
+        anchor_values = scaled_matrix[:, 0]
+        scores = scaled_matrix @ weights
+        if np.std(anchor_values) >= EPSILON and np.std(scores) >= EPSILON:
+            correlation = float(np.corrcoef(anchor_values, scores)[0, 1])
+            if np.isfinite(correlation) and correlation < 0.0:
+                weights = -weights
+
+    output = frame.copy()
+    output[output_column] = (scaled_matrix @ weights).astype(np.float32)
+    return output, {
+        "mode": "train_window_pca1",
+        "source_columns": list(source_columns),
+        "output_column": output_column,
+        "fit_window": [int(frame["year"].min()), int(stats_end_year)],
+        "uses_target_column": False,
+        "weights": {column: float(weight) for column, weight in zip(source_columns, weights)},
+    }
 
 
 def _resolve_first_available(frame: pd.DataFrame, candidates: list[str]) -> str:
@@ -368,6 +488,8 @@ def build_informal_dataframe(
 
     bundle = _resolve_bundle(feature_bundle)
     sequence_columns = list(bundle["sequence_columns"])
+    source_sequence_columns = list(bundle.get("source_sequence_columns", sequence_columns))
+    sequence_transform = str(bundle.get("sequence_transform", "identity"))
     proxy_mode = str(bundle.get("proxy_mode", "original"))
     proxy_columns = list(bundle.get("proxy_columns", PROXY_COLUMNS))
     static_columns = list(bundle.get("static_columns", STATIC_COLUMNS))
@@ -402,7 +524,7 @@ def build_informal_dataframe(
             "entity_name",
             "year",
             TARGET_COLUMN,
-            *sequence_columns,
+            *source_sequence_columns,
             *source_proxy_columns,
             *source_static_columns,
             *derived_source_columns,
@@ -422,7 +544,7 @@ def build_informal_dataframe(
         raise ValueError("No Informal rows remain after year filtering")
 
     value_columns = _unique_preserve_order(
-        [TARGET_COLUMN, *sequence_columns, *source_proxy_columns, *source_static_columns, *derived_source_columns]
+        [TARGET_COLUMN, *source_sequence_columns, *source_proxy_columns, *source_static_columns, *derived_source_columns]
     )
     for column_name in value_columns:
         frame[column_name] = pd.to_numeric(frame[column_name], errors="coerce")
@@ -444,6 +566,19 @@ def build_informal_dataframe(
             "Informal panel contains missing values in required columns after the selected missing policy: "
             f"{missing_counts[missing_counts > 0].astype(int).to_dict()}"
         )
+
+    sequence_transform_payload: dict[str, Any] = {"mode": "identity", "uses_target_column": False}
+    if sequence_transform == "train_window_pca1":
+        if len(sequence_columns) != 1:
+            raise ValueError("train_window_pca1 sequence transform must emit exactly one sequence column")
+        frame, sequence_transform_payload = _add_train_window_pca_sequence(
+            frame=frame,
+            source_columns=source_sequence_columns,
+            output_column=sequence_columns[0],
+            stats_end_year=int(stats_end_year),
+        )
+    elif sequence_transform != "identity":
+        raise ValueError(f"Unsupported Informal sequence_transform: {sequence_transform}")
 
     years = sorted(int(year) for year in frame["year"].unique().tolist())
     if not _is_contiguous_annual(years):
@@ -516,9 +651,12 @@ def build_informal_dataframe(
         "stats_end_year": int(stats_end_year),
         "missing_policy": missing_policy,
         "proxy_mode": proxy_mode,
+        "evidence_scope": str(bundle.get("evidence_scope", "primary_or_reference")),
         "audit": audit,
     }
     metadata["audit"]["proxy_mode"] = proxy_mode
+    metadata["audit"]["sequence_transform"] = sequence_transform_payload
+    metadata["audit"]["evidence_scope"] = metadata["evidence_scope"]
     if proxy_mode == "formal_region_summary":
         metadata["audit"]["proxy_construction"] = {
             "fit_window": [int(years[0]), int(stats_end_year)],
@@ -703,9 +841,13 @@ def move_panel_to_device(panel: InformalPanel, device: torch.device) -> Informal
 
 __all__ = [
     "DEFAULT_INPUT_DIR",
+    "COMPRESSED_MULTISEQ_COLUMN",
     "InformalPanel",
     "MISSING_POLICIES",
+    "MULTISEQ_NO_PER_CAPITA_COLUMNS",
     "PROXY_COLUMNS",
+    "RPCYD_COLUMN",
+    "RYDGDP_RATIO_COLUMN",
     "STATIC_COLUMNS",
     "DERIVED_PROXY_COLUMNS",
     "DERIVED_STATIC_COLUMNS",

@@ -38,6 +38,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", type=str, default=str(DEFAULT_OUTPUT_DIR))
     parser.add_argument("--figure-dir", type=str, default=None)
     parser.add_argument("--comparison-csv", type=str, default=None)
+    parser.add_argument("--matrix-runs-csv", type=str, default=None)
     return parser.parse_args()
 
 
@@ -444,8 +445,172 @@ def build_visualizations(
     return paths
 
 
+def _matrix_figure_dir(all_runs_csv: str | Path, figure_dir: str | Path | None) -> Path:
+    if figure_dir is not None:
+        return Path(figure_dir).resolve()
+    return Path(all_runs_csv).resolve().parent / "figures"
+
+
+def _prepare_matrix_frame(all_runs_csv: str | Path) -> pd.DataFrame:
+    dataframe = pd.read_csv(all_runs_csv)
+    if dataframe.empty:
+        raise ValueError(f"No matrix runs are available in {all_runs_csv}")
+    if "run_group" not in dataframe.columns:
+        dataframe["run_group"] = dataframe.apply(_run_group, axis=1)
+    for column_name in ["test_mse", "test_mae", "test_kstar_std", "test_kstar_proxy_spearman_adjusted_rho"]:
+        if column_name in dataframe.columns:
+            dataframe[column_name] = pd.to_numeric(dataframe[column_name], errors="coerce")
+    return dataframe
+
+
+def plot_matrix_error_by_variant(dataframe: pd.DataFrame, figure_dir: Path) -> Path:
+    plot_frame = dataframe.loc[dataframe["test_mse"].notna()].copy()
+    order = plot_frame.groupby("variant_id")["test_mse"].mean().sort_values().index.tolist()
+    figure, axis = plt.subplots(figsize=(max(10.0, 0.42 * len(order)), 6.2), constrained_layout=True)
+    sns.barplot(data=plot_frame, x="variant_id", y="test_mse", hue="run_group", order=order, errorbar="sd", ax=axis)
+    axis.set_title("Matrix Test MSE by Variant")
+    axis.set_xlabel("")
+    axis.set_ylabel("Test MSE")
+    axis.tick_params(axis="x", rotation=70)
+    axis.legend(title="Run", bbox_to_anchor=(1.02, 1.0), loc="upper left")
+    output_path = figure_dir / "matrix_test_mse_by_variant.png"
+    figure.savefig(output_path, dpi=180)
+    plt.close(figure)
+    return output_path
+
+
+def plot_matrix_mechanism_by_variant(dataframe: pd.DataFrame, figure_dir: Path) -> Path:
+    cmdl = dataframe.loc[dataframe["run_group"].eq("CMDL")].copy()
+    metrics = [
+        ("test_kstar_proxy_spearman_adjusted_rho", "Proxy-k* rho"),
+        ("test_kstar_std", "k* Std"),
+        ("test_omega_entropy_mean", "Omega Entropy"),
+    ]
+    figure, axes = plt.subplots(1, 3, figsize=(18, 5.4), constrained_layout=True)
+    for axis, (column_name, title) in zip(axes, metrics):
+        if column_name not in cmdl.columns:
+            axis.set_visible(False)
+            continue
+        values = cmdl.loc[cmdl[column_name].notna()].copy()
+        order = values.groupby("variant_id")[column_name].mean().sort_values().index.tolist()
+        sns.boxplot(data=values, x="variant_id", y=column_name, order=order, color="#d9dec8", ax=axis)
+        sns.stripplot(data=values, x="variant_id", y=column_name, order=order, color="#314d5a", size=2.5, alpha=0.45, ax=axis)
+        axis.axhline(0.0, color="#777777", linewidth=0.8)
+        axis.set_title(title)
+        axis.set_xlabel("")
+        axis.set_ylabel("")
+        axis.tick_params(axis="x", rotation=70)
+    output_path = figure_dir / "matrix_mechanism_by_variant.png"
+    figure.savefig(output_path, dpi=180)
+    plt.close(figure)
+    return output_path
+
+
+def plot_matrix_sample_counts(dataframe: pd.DataFrame, figure_dir: Path) -> Path:
+    count_columns = ["train_effective_samples", "val_effective_samples", "test_effective_samples"]
+    available = [column for column in count_columns if column in dataframe.columns]
+    sample_frame = dataframe.drop_duplicates("variant_id")[["variant_id", "track", *available]].copy()
+    long_frame = sample_frame.melt(id_vars=["variant_id", "track"], value_vars=available, var_name="split", value_name="samples")
+    long_frame["split"] = long_frame["split"].str.replace("_effective_samples", "", regex=False)
+    figure, axis = plt.subplots(figsize=(max(10.0, 0.42 * sample_frame["variant_id"].nunique()), 5.8), constrained_layout=True)
+    sns.barplot(data=long_frame, x="variant_id", y="samples", hue="split", ax=axis)
+    axis.set_title("Effective Supervised Samples by Variant")
+    axis.set_xlabel("")
+    axis.set_ylabel("Samples after lag warm-up")
+    axis.tick_params(axis="x", rotation=70)
+    output_path = figure_dir / "matrix_effective_samples.png"
+    figure.savefig(output_path, dpi=180)
+    plt.close(figure)
+    return output_path
+
+
+def plot_matrix_falsification(dataframe: pd.DataFrame, figure_dir: Path) -> Path | None:
+    if "proxy_perturbation" not in dataframe.columns:
+        return None
+    cmdl = dataframe.loc[dataframe["run_group"].eq("CMDL")].copy()
+    subset = cmdl.loc[
+        cmdl["track"].isin(["fullspan_income", "falsification"])
+        & cmdl["test_kstar_proxy_spearman_adjusted_rho"].notna()
+    ].copy()
+    if subset.empty:
+        return None
+    figure, axis = plt.subplots(figsize=(7.2, 5.2), constrained_layout=True)
+    sns.boxplot(data=subset, x="proxy_perturbation", y="test_kstar_proxy_spearman_adjusted_rho", hue="track", ax=axis)
+    sns.stripplot(
+        data=subset,
+        x="proxy_perturbation",
+        y="test_kstar_proxy_spearman_adjusted_rho",
+        color="#283845",
+        size=3,
+        alpha=0.5,
+        dodge=True,
+        ax=axis,
+    )
+    axis.axhline(0.0, color="#777777", linewidth=0.8)
+    axis.set_title("Real vs Falsified Proxy Mechanism Metric")
+    axis.set_xlabel("Proxy perturbation")
+    axis.set_ylabel("Adjusted proxy-k* rho")
+    output_path = figure_dir / "matrix_falsification_proxy_kstar.png"
+    figure.savefig(output_path, dpi=180)
+    plt.close(figure)
+    return output_path
+
+
+def plot_matrix_grid(dataframe: pd.DataFrame, figure_dir: Path) -> Path | None:
+    grid = dataframe.loc[(dataframe["track"] == "capacity_gate_grid") & dataframe["test_mse"].notna()].copy()
+    if grid.empty:
+        return None
+    summary = grid.groupby(["variant_id", "d_model", "temperature", "dropout"], dropna=False)["test_mse"].mean().reset_index()
+    figure, axis = plt.subplots(figsize=(8.0, 5.8), constrained_layout=True)
+    scatter = axis.scatter(
+        summary["d_model"],
+        summary["temperature"],
+        c=summary["test_mse"],
+        s=80 + 350 * pd.to_numeric(summary["dropout"], errors="coerce").fillna(0.05),
+        cmap="viridis_r",
+        alpha=0.85,
+        edgecolors="#333333",
+        linewidths=0.5,
+    )
+    figure.colorbar(scatter, ax=axis, label="Mean test MSE")
+    axis.set_title("Capacity/Gate Grid Screen")
+    axis.set_xlabel("d_model")
+    axis.set_ylabel("temperature")
+    output_path = figure_dir / "matrix_capacity_gate_grid.png"
+    figure.savefig(output_path, dpi=180)
+    plt.close(figure)
+    return output_path
+
+
+def build_matrix_visualizations(all_runs_csv: str | Path, figure_dir: str | Path | None = None) -> dict[str, str]:
+    sns.set_theme(style=PLOT_STYLE)
+    figure_root = _matrix_figure_dir(all_runs_csv, figure_dir)
+    figure_root.mkdir(parents=True, exist_ok=True)
+    dataframe = _prepare_matrix_frame(all_runs_csv)
+    paths: dict[str, str] = {
+        "matrix_test_mse_by_variant": str(plot_matrix_error_by_variant(dataframe, figure_root)),
+        "matrix_mechanism_by_variant": str(plot_matrix_mechanism_by_variant(dataframe, figure_root)),
+        "matrix_effective_samples": str(plot_matrix_sample_counts(dataframe, figure_root)),
+    }
+    falsification_path = plot_matrix_falsification(dataframe, figure_root)
+    if falsification_path is not None:
+        paths["matrix_falsification_proxy_kstar"] = str(falsification_path)
+    grid_path = plot_matrix_grid(dataframe, figure_root)
+    if grid_path is not None:
+        paths["matrix_capacity_gate_grid"] = str(grid_path)
+    with (figure_root / "matrix_figure_manifest.json").open("w", encoding="utf-8") as handle:
+        json.dump(paths, handle, indent=2, ensure_ascii=True)
+    return paths
+
+
 def main() -> None:
     args = parse_args()
+    if args.matrix_runs_csv:
+        paths = build_matrix_visualizations(args.matrix_runs_csv, args.figure_dir)
+        print(f"Built {len(paths)} Informal matrix visualization artifacts.")
+        for name, path in paths.items():
+            print(f"{name}: {path}")
+        return
     paths = build_visualizations(args.output_dir, args.figure_dir, args.comparison_csv)
     print(f"Built {len(paths)} Informal visualization artifacts.")
     for name, path in paths.items():

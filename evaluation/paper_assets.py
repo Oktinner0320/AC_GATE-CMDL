@@ -779,7 +779,7 @@ def _generate_figures(
     ))
 
     figure_paths["realdata_case_study_panel.png"] = output_dir / "realdata_case_study_panel.png"
-    combined_fig, axes = plt.subplots(1, 2, figsize=(11.8, 4.9), sharey=False)
+    combined_fig, axes = plt.subplots(2, 1, figsize=(7.3, 9.1), sharey=False)
     plot_case_study_scatter(
         economics_case_study,
         x_col="stratifier_value",
@@ -804,7 +804,7 @@ def _generate_figures(
         point_color=energy_case_meta["point_color"],
         axis=axes[1],
     )
-    combined_fig.tight_layout()
+    combined_fig.tight_layout(h_pad=1.4)
     combined_fig.savefig(figure_paths["realdata_case_study_panel.png"], dpi=200, bbox_inches="tight")
     plt.close(combined_fig)
 

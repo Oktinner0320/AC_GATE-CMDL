@@ -1,0 +1,11 @@
+{
+  "status": "success",
+  "updated_at": "2026-05-10T12:20:41.420293+00:00",
+  "variant_id": "feature_subset_rpcyd_fullspan_k3",
+  "track": "feature_subset",
+  "run_spec": "plain_lstm",
+  "seed": 4,
+  "experiment_name": "feature_subset_rpcyd_fullspan_k3_plain_lstm_seed4",
+  "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\full_all_improvements\\feature_subset_rpcyd_fullspan_k3\\feature_subset_rpcyd_fullspan_k3_plain_lstm_seed4",
+  "skipped_existing_summary": false
+}

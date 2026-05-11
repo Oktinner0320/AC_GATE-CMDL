@@ -1,0 +1,34 @@
+{
+  "matrix_name": "full_all_improvements",
+  "variant": {
+    "variant_id": "reference_overlap_single_k2",
+    "track": "reference",
+    "scenario": "overlap_region_proxy",
+    "feature_bundle": "single_overlap_region_proxy",
+    "max_lag": 2,
+    "run_specs": [
+      {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      }
+    ],
+    "year_start": 2019,
+    "year_end": 2023,
+    "stats_end_year": 2021,
+    "train_end_year": 2021,
+    "val_end_year": 2022,
+    "proxy_perturbation": "none",
+    "hyperparameters": {},
+    "interpretation": "current_single_feature_reference"
+  },
+  "run_spec": {
+    "name": "cmdl",
+    "model": "cmdl",
+    "ablation": "none"
+  },
+  "seed": 5,
+  "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\full_all_improvements\\reference_overlap_single_k2",
+  "experiment_name": "reference_overlap_single_k2_cmdl_seed5",
+  "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\full_all_improvements\\reference_overlap_single_k2\\reference_overlap_single_k2_cmdl_seed5"
+}

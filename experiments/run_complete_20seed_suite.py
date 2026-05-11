@@ -29,8 +29,14 @@ from experiments import run_energy
 from experiments import run_energy_ablation
 from experiments import run_energy_grouped_ardl
 from experiments import run_energy_lstm_baseline
+from experiments import run_economics_tft_baseline
+from experiments import run_energy_tft_baseline
+from experiments import run_economics_ganet_baseline
+from experiments import run_energy_ganet_baseline
 from experiments import run_lstm_baseline as synthetic_lstm
 from experiments import run_synthetic
+from experiments import run_tft_baseline as synthetic_tft
+from experiments import run_ganet_baseline as synthetic_ganet
 
 
 SEEDS = list(range(20))
@@ -190,8 +196,10 @@ def run_synthetic_suite(force: bool, seeds: list[int]) -> None:
     root = WORKSPACE_ROOT / "outputs" / "notebook_synthetic" / "complete_20seed"
     cmdl_dir = root / "cmdl"
     lstm_dir = root / "plain_lstm"
+    tft_dir = root / "tft"
+    ganet_dir = root / "ganet"
     ablation_dir = root / "ablation"
-    for path in [cmdl_dir, lstm_dir, ablation_dir, root / "comparison", root / "comparison_plots"]:
+    for path in [cmdl_dir, lstm_dir, tft_dir, ganet_dir, ablation_dir, root / "comparison", root / "comparison_plots"]:
         path.mkdir(parents=True, exist_ok=True)
 
     for seed in seeds:
@@ -216,6 +224,28 @@ def run_synthetic_suite(force: bool, seeds: list[int]) -> None:
                 lambda args=args, name=name, scenario=scenario: synthetic_lstm.run_experiment(args, name, scenario),
             )
 
+    for seed in seeds:
+        for scenario in SCENARIOS:
+            name = f"tft_{scenario}_seed{seed}"
+            args = Namespace(**synthetic_common_args(tft_dir), seed=seed)
+            run_task(
+                f"synthetic TFT {scenario} seed {seed}",
+                tft_dir / name,
+                force,
+                lambda args=args, name=name, scenario=scenario: synthetic_tft.run_experiment(args, name, scenario),
+            )
+
+    for seed in seeds:
+        for scenario in SCENARIOS:
+            name = f"ganet_{scenario}_seed{seed}"
+            args = Namespace(**synthetic_common_args(ganet_dir), seed=seed)
+            run_task(
+                f"synthetic GA-Net {scenario} seed {seed}",
+                ganet_dir / name,
+                force,
+                lambda args=args, name=name, scenario=scenario: synthetic_ganet.run_experiment(args, name, scenario),
+            )
+
     ablation_args = Namespace(**synthetic_common_args(ablation_dir), variant="all", seeds=seeds)
     for seed in seeds:
         for scenario in SCENARIOS:
@@ -238,9 +268,11 @@ def run_economics_suite(force: bool, seeds: list[int]) -> None:
     root = WORKSPACE_ROOT / "outputs" / "notebook_economics" / "complete_20seed"
     cmdl_dir = root / "cmdl"
     lstm_dir = root / "plain_lstm"
+    tft_dir = root / "tft"
+    ganet_dir = root / "ganet"
     grouped_dir = root / "grouped_ardl"
     ablation_dir = root / "ablation"
-    for path in [cmdl_dir, lstm_dir, grouped_dir, ablation_dir, root / "comparison", root / "comparison_plots"]:
+    for path in [cmdl_dir, lstm_dir, tft_dir, ganet_dir, grouped_dir, ablation_dir, root / "comparison", root / "comparison_plots"]:
         path.mkdir(parents=True, exist_ok=True)
 
     for seed in seeds:
@@ -261,6 +293,26 @@ def run_economics_suite(force: bool, seeds: list[int]) -> None:
             lstm_dir / name,
             force,
             lambda args=args: run_economics_lstm_baseline.run_experiment(args),
+        )
+
+    for seed in seeds:
+        name = f"economics_tft_seed{seed}"
+        args = Namespace(**economics_common_args(tft_dir), seed=seed, experiment_name=name)
+        run_task(
+            f"economics TFT seed {seed}",
+            tft_dir / name,
+            force,
+            lambda args=args: run_economics_tft_baseline.run_experiment(args),
+        )
+
+    for seed in seeds:
+        name = f"economics_ganet_seed{seed}"
+        args = Namespace(**economics_common_args(ganet_dir), seed=seed, experiment_name=name)
+        run_task(
+            f"economics GA-Net seed {seed}",
+            ganet_dir / name,
+            force,
+            lambda args=args: run_economics_ganet_baseline.run_experiment(args),
         )
 
     for seed in seeds:
@@ -294,9 +346,11 @@ def run_energy_suite(force: bool, seeds: list[int]) -> None:
     root = WORKSPACE_ROOT / "outputs" / "notebook_energy" / "complete_20seed"
     cmdl_dir = root / "cmdl"
     lstm_dir = root / "plain_lstm"
+    tft_dir = root / "tft"
+    ganet_dir = root / "ganet"
     grouped_dir = root / "grouped_ardl"
     ablation_dir = root / "ablation"
-    for path in [cmdl_dir, lstm_dir, grouped_dir, ablation_dir, root / "comparison", root / "comparison_plots"]:
+    for path in [cmdl_dir, lstm_dir, tft_dir, ganet_dir, grouped_dir, ablation_dir, root / "comparison", root / "comparison_plots"]:
         path.mkdir(parents=True, exist_ok=True)
 
     for seed in seeds:
@@ -317,6 +371,26 @@ def run_energy_suite(force: bool, seeds: list[int]) -> None:
             lstm_dir / name,
             force,
             lambda args=args: run_energy_lstm_baseline.run_experiment(args),
+        )
+
+    for seed in seeds:
+        name = f"energy_tft_seed{seed}"
+        args = Namespace(**energy_common_args(tft_dir), seed=seed, seeds=None, experiment_name=name)
+        run_task(
+            f"energy TFT seed {seed}",
+            tft_dir / name,
+            force,
+            lambda args=args: run_energy_tft_baseline.run_experiment(args),
+        )
+
+    for seed in seeds:
+        name = f"energy_ganet_seed{seed}"
+        args = Namespace(**energy_common_args(ganet_dir), seed=seed, seeds=None, experiment_name=name)
+        run_task(
+            f"energy GA-Net seed {seed}",
+            ganet_dir / name,
+            force,
+            lambda args=args: run_energy_ganet_baseline.run_experiment(args),
         )
 
     for seed in seeds:

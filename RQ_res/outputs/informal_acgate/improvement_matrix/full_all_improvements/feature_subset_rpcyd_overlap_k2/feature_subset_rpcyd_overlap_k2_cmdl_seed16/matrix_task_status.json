@@ -1,0 +1,11 @@
+{
+  "status": "success",
+  "updated_at": "2026-05-10T12:21:13.774683+00:00",
+  "variant_id": "feature_subset_rpcyd_overlap_k2",
+  "track": "feature_subset",
+  "run_spec": "cmdl",
+  "seed": 16,
+  "experiment_name": "feature_subset_rpcyd_overlap_k2_cmdl_seed16",
+  "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\full_all_improvements\\feature_subset_rpcyd_overlap_k2\\feature_subset_rpcyd_overlap_k2_cmdl_seed16",
+  "skipped_existing_summary": false
+}

@@ -15,7 +15,7 @@ import random
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
 
@@ -46,6 +46,7 @@ from data.economics.economics_loader import (
 )
 from evaluation.metrics import compute_mae, compute_mse, compute_r2
 from evaluation.realdata_diagnostics import build_realdata_diagnostics, proxy_metadata_payload
+from experiments._proxy_shuffle_control import negative_control_metadata
 from experiments._runtime_meta import attach_runtime_metadata, start_runtime_timer
 from model.cmdl_model import CMDLModel
 from model.loss import DomainAgnosticLoss
@@ -778,7 +779,10 @@ def setup_experiment(args: argparse.Namespace) -> EconomicsExperimentSetup:
 	)
 
 
-def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
+def run_experiment(
+	args: argparse.Namespace,
+	setup_transform: Callable[[EconomicsExperimentSetup], EconomicsExperimentSetup | None] | None = None,
+) -> dict[str, Any]:
 	"""Train and evaluate the economics real-data experiment.
 
 	完成 economics 现实数据实验的训练、评估、日志与落盘。
@@ -786,6 +790,10 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
 
 	run_started_at = start_runtime_timer()
 	setup = setup_experiment(args)
+	if setup_transform is not None:
+		transformed_setup = setup_transform(setup)
+		if transformed_setup is not None:
+			setup = transformed_setup
 	save_json(setup.run_dir / "args.json", vars(args))
 
 	tracking_backend = try_start_mlflow(
@@ -928,6 +936,9 @@ def run_experiment(args: argparse.Namespace) -> dict[str, Any]:
 			test_metrics=test_metrics,
 			proxy_refit_result=proxy_refit_result,
 		)
+		control_metadata = negative_control_metadata(setup.full_panel.metadata)
+		if control_metadata is not None:
+			summary["negative_control"] = control_metadata
 		attach_runtime_metadata(summary, setup.device, started_at=run_started_at)
 		save_json(setup.summary_path, summary)
 		return summary

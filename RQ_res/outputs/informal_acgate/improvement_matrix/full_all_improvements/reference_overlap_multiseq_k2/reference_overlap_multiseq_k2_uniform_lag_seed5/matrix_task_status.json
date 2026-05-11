@@ -1,0 +1,11 @@
+{
+  "status": "success",
+  "updated_at": "2026-05-10T12:17:41.406891+00:00",
+  "variant_id": "reference_overlap_multiseq_k2",
+  "track": "reference",
+  "run_spec": "uniform_lag",
+  "seed": 5,
+  "experiment_name": "reference_overlap_multiseq_k2_uniform_lag_seed5",
+  "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\full_all_improvements\\reference_overlap_multiseq_k2\\reference_overlap_multiseq_k2_uniform_lag_seed5",
+  "skipped_existing_summary": false
+}

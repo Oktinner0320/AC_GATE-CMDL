@@ -1,0 +1,39 @@
+{
+  "matrix_name": "full_all_improvements",
+  "variant": {
+    "variant_id": "feature_subset_rpcyd_fullspan_k3",
+    "track": "feature_subset",
+    "scenario": "fullspan_region_proxy",
+    "feature_bundle": "rpcyd_fullspan_region_proxy",
+    "max_lag": 3,
+    "run_specs": [
+      {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      {
+        "name": "plain_lstm",
+        "model": "plain_lstm",
+        "ablation": "none"
+      }
+    ],
+    "year_start": 2006,
+    "year_end": 2023,
+    "stats_end_year": 2018,
+    "train_end_year": 2018,
+    "val_end_year": 2020,
+    "proxy_perturbation": "none",
+    "hyperparameters": {},
+    "interpretation": "rpcyd_only_fullspan_sensitivity"
+  },
+  "run_spec": {
+    "name": "cmdl",
+    "model": "cmdl",
+    "ablation": "none"
+  },
+  "seed": 18,
+  "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\full_all_improvements\\feature_subset_rpcyd_fullspan_k3",
+  "experiment_name": "feature_subset_rpcyd_fullspan_k3_cmdl_seed18",
+  "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\full_all_improvements\\feature_subset_rpcyd_fullspan_k3\\feature_subset_rpcyd_fullspan_k3_cmdl_seed18"
+}

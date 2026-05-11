@@ -1,0 +1,11 @@
+{
+  "status": "success",
+  "updated_at": "2026-05-10T12:17:36.889130+00:00",
+  "variant_id": "reference_overlap_multiseq_k2",
+  "track": "reference",
+  "run_spec": "no_recon_regularization",
+  "seed": 3,
+  "experiment_name": "reference_overlap_multiseq_k2_no_recon_regularization_seed3",
+  "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\full_all_improvements\\reference_overlap_multiseq_k2\\reference_overlap_multiseq_k2_no_recon_regularization_seed3",
+  "skipped_existing_summary": false
+}

@@ -50,6 +50,7 @@ from informal_acgate.loader import (
     load_informal_panel,
     move_panel_to_device,
 )
+from informal_acgate.falsification import PROXY_PERTURBATION_CHOICES, apply_proxy_perturbation
 
 
 MODEL_CHOICES = ("cmdl", "plain_lstm")
@@ -125,6 +126,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--train-end-year", type=int, default=2021)
     parser.add_argument("--val-end-year", type=int, default=2022)
     parser.add_argument("--missing-policy", choices=sorted(MISSING_POLICIES), default="error")
+    parser.add_argument("--proxy-perturbation", choices=PROXY_PERTURBATION_CHOICES, default="none")
+    parser.add_argument("--proxy-perturbation-seed", type=int, default=None)
     parser.add_argument("--model", choices=MODEL_CHOICES, default="cmdl")
     parser.add_argument("--ablation", choices=ABLATION_CHOICES, default="none")
     parser.add_argument("--seed", type=int, default=defaults.seed)
@@ -630,6 +633,8 @@ def summarize_run(
                 "omega_entropy_max": args.omega_entropy_max,
                 "lambda_z_anchor": float(args.lambda_z_anchor),
                 "z_anchor_target_sign": float(args.z_anchor_target_sign),
+                "proxy_perturbation": getattr(args, "proxy_perturbation", "none"),
+                "proxy_perturbation_seed": getattr(args, "proxy_perturbation_seed", None),
             },
         },
         "runtime": {
@@ -657,6 +662,15 @@ def setup_experiment(args: argparse.Namespace) -> tuple[InformalExperimentSetup,
         year_end=args.year_end,
         stats_end_year=stats_end_year,
         missing_policy=args.missing_policy,
+    )
+    proxy_perturbation = getattr(args, "proxy_perturbation", "none")
+    proxy_perturbation_seed = getattr(args, "proxy_perturbation_seed", None)
+    if proxy_perturbation_seed is None:
+        proxy_perturbation_seed = int(args.seed)
+    full_panel_cpu = apply_proxy_perturbation(
+        full_panel_cpu,
+        mode=proxy_perturbation,
+        seed=proxy_perturbation_seed,
     )
     cfg = CMDLConfig.from_domain(
         "economics",

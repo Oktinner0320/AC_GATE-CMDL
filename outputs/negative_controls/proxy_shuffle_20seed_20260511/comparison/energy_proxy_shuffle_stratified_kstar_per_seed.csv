@@ -1,0 +1,121 @@
+method,seed,stratifier,n_entities,spearman_rho,perm_p_two_sided,kstar_std,degenerate
+AC-GATE Original,0,log_gdp_per_capita_train,78,-0.5910165783583505,0.0,0.062237981741399856,False
+AC-GATE Original,0,government_effectiveness_train,78,-0.6443303531911126,0.0,0.062237981741399856,False
+AC-GATE Original,0,rule_of_law_train,78,-0.680117351003427,0.0,0.062237981741399856,False
+AC-GATE Original,1,log_gdp_per_capita_train,78,0.724908003389016,0.0,0.11288925756658834,False
+AC-GATE Original,1,government_effectiveness_train,78,0.8717990869889604,0.0,0.11288925756658834,False
+AC-GATE Original,1,rule_of_law_train,78,0.891576777652727,0.0,0.11288925756658834,False
+AC-GATE Original,2,log_gdp_per_capita_train,78,-0.7402091579306768,0.0,0.14451537209662677,False
+AC-GATE Original,2,government_effectiveness_train,78,-0.8705598199269083,0.0,0.14451537209662677,False
+AC-GATE Original,2,rule_of_law_train,78,-0.9193970586375649,0.0,0.14451537209662677,False
+AC-GATE Original,3,log_gdp_per_capita_train,78,-0.6494179834092267,0.0,0.002024736834193504,False
+AC-GATE Original,3,government_effectiveness_train,78,-0.8273424508723329,0.0,0.002024736834193504,False
+AC-GATE Original,3,rule_of_law_train,78,-0.8033283383128136,0.0,0.002024736834193504,False
+AC-GATE Original,4,log_gdp_per_capita_train,78,-0.7895016376029034,0.0,0.12586733214162113,False
+AC-GATE Original,4,government_effectiveness_train,78,-0.9541471187040806,0.0,0.12586733214162113,False
+AC-GATE Original,4,rule_of_law_train,78,-0.9510615966312169,0.0,0.12586733214162113,False
+AC-GATE Original,5,log_gdp_per_capita_train,78,0.6478711162255465,0.0,0.1519278177491006,False
+AC-GATE Original,5,government_effectiveness_train,78,0.7930424006373372,0.0,0.1519278177491006,False
+AC-GATE Original,5,rule_of_law_train,78,0.7497692181236485,0.0,0.1519278177491006,False
+AC-GATE Original,6,log_gdp_per_capita_train,78,0.13294300636072787,0.233,0.006602545260195929,False
+AC-GATE Original,6,government_effectiveness_train,78,-0.0038316114265481353,0.9735,0.006602545260195929,False
+AC-GATE Original,6,rule_of_law_train,78,0.15550272512297827,0.169,0.006602545260195929,False
+AC-GATE Original,7,log_gdp_per_capita_train,78,0.7746557240228126,0.0,0.11877455601218599,False
+AC-GATE Original,7,government_effectiveness_train,78,0.933990060572339,0.0,0.11877455601218599,False
+AC-GATE Original,7,rule_of_law_train,78,0.8844446692547957,0.0,0.11877455601218599,False
+AC-GATE Original,8,log_gdp_per_capita_train,78,-0.8253139265797492,0.0,0.4171236848979256,False
+AC-GATE Original,8,government_effectiveness_train,78,-0.956726817486311,0.0,0.4171236848979256,False
+AC-GATE Original,8,rule_of_law_train,78,-0.9404140163633834,0.0,0.4171236848979256,False
+AC-GATE Original,9,log_gdp_per_capita_train,78,0.7259196499702828,0.0,0.18973531906249078,False
+AC-GATE Original,9,government_effectiveness_train,78,0.8744040769357224,0.0,0.18973531906249078,False
+AC-GATE Original,9,rule_of_law_train,78,0.8603168982915818,0.0,0.18973531906249078,False
+AC-GATE Original,10,log_gdp_per_capita_train,78,0.5184056449879234,0.0,0.045497720753666204,False
+AC-GATE Original,10,government_effectiveness_train,78,0.6672947305858697,0.0,0.045497720753666204,False
+AC-GATE Original,10,rule_of_law_train,78,0.7120095094778638,0.0,0.045497720753666204,False
+AC-GATE Original,11,log_gdp_per_capita_train,78,0.584213255099331,0.0,0.08401522356478842,False
+AC-GATE Original,11,government_effectiveness_train,78,0.6461766082019246,0.0,0.08401522356478842,False
+AC-GATE Original,11,rule_of_law_train,78,0.6734657747315975,0.0,0.08401522356478842,False
+AC-GATE Original,12,log_gdp_per_capita_train,78,-0.19042982334121575,0.098,0.03310737269640147,False
+AC-GATE Original,12,government_effectiveness_train,78,-0.12922520517457226,0.254,0.03310737269640147,False
+AC-GATE Original,12,rule_of_law_train,78,-0.2839565497793346,0.0105,0.03310737269640147,False
+AC-GATE Original,13,log_gdp_per_capita_train,78,0.7758696999203328,0.0,0.14139275813066776,False
+AC-GATE Original,13,government_effectiveness_train,78,0.9270855726551929,0.0,0.14139275813066776,False
+AC-GATE Original,13,rule_of_law_train,78,0.9452699199534641,0.0,0.14139275813066776,False
+AC-GATE Original,14,log_gdp_per_capita_train,78,0.6386904235005499,0.0,0.01807882751659046,False
+AC-GATE Original,14,government_effectiveness_train,78,0.7825465673566939,0.0,0.01807882751659046,False
+AC-GATE Original,14,rule_of_law_train,78,0.8443328823075658,0.0,0.01807882751659046,False
+AC-GATE Original,15,log_gdp_per_capita_train,78,0.4412675931663273,0.0,0.14617180279745295,False
+AC-GATE Original,15,government_effectiveness_train,78,0.5460488878210397,0.0,0.14617180279745295,False
+AC-GATE Original,15,rule_of_law_train,78,0.5223257754903323,0.0,0.14617180279745295,False
+AC-GATE Original,16,log_gdp_per_capita_train,78,-0.7529306136901074,0.0,0.07176029746037203,False
+AC-GATE Original,16,government_effectiveness_train,78,-0.9177531329430063,0.0,0.07176029746037203,False
+AC-GATE Original,16,rule_of_law_train,78,-0.8884912555798631,0.0,0.07176029746037203,False
+AC-GATE Original,17,log_gdp_per_capita_train,78,-0.710315001454242,0.0,0.10418144172477126,False
+AC-GATE Original,17,government_effectiveness_train,78,-0.8254909647314711,0.0,0.10418144172477126,False
+AC-GATE Original,17,rule_of_law_train,78,-0.793295312282654,0.0,0.10418144172477126,False
+AC-GATE Original,18,log_gdp_per_capita_train,78,0.23737022471199684,0.0365,0.015543457106286117,False
+AC-GATE Original,18,government_effectiveness_train,78,0.2620544012949076,0.0245,0.015543457106286117,False
+AC-GATE Original,18,rule_of_law_train,78,0.3182260777197486,0.004,0.015543457106286117,False
+AC-GATE Original,19,log_gdp_per_capita_train,78,-0.7237699009850909,0.0,0.18075666855788625,False
+AC-GATE Original,19,government_effectiveness_train,78,-0.8767055729081045,0.0,0.18075666855788625,False
+AC-GATE Original,19,rule_of_law_train,78,-0.8765285347563828,0.0,0.18075666855788625,False
+AC-GATE Proxy Shuffled,0,log_gdp_per_capita_train,78,0.09285651057802956,0.3965,0.10014527861718657,False
+AC-GATE Proxy Shuffled,0,government_effectiveness_train,78,0.05451510514801654,0.6355,0.10014527861718657,False
+AC-GATE Proxy Shuffled,0,rule_of_law_train,78,0.07039795647390583,0.549,0.10014527861718657,False
+AC-GATE Proxy Shuffled,1,log_gdp_per_capita_train,78,-0.0023900150482428963,0.9805,0.13185890136101552,False
+AC-GATE Proxy Shuffled,1,government_effectiveness_train,78,0.032081842208424485,0.774,0.13185890136101552,False
+AC-GATE Proxy Shuffled,1,rule_of_law_train,78,-0.014049241897343162,0.8985,0.13185890136101552,False
+AC-GATE Proxy Shuffled,2,log_gdp_per_capita_train,78,-0.057954703524323775,0.6135,0.09006317443470652,False
+AC-GATE Proxy Shuffled,2,government_effectiveness_train,78,-0.037140075114758656,0.75,0.09006317443470652,False
+AC-GATE Proxy Shuffled,2,rule_of_law_train,78,-0.08951807685984901,0.4375,0.09006317443470652,False
+AC-GATE Proxy Shuffled,3,log_gdp_per_capita_train,78,0.14892702234474386,0.19,0.007039618556965297,False
+AC-GATE Proxy Shuffled,3,government_effectiveness_train,78,0.23104743357907911,0.0405,0.007039618556965297,False
+AC-GATE Proxy Shuffled,3,rule_of_law_train,78,0.19475461247613146,0.094,0.007039618556965297,False
+AC-GATE Proxy Shuffled,4,log_gdp_per_capita_train,78,-0.017084181641143666,0.8945,0.03338387300631151,False
+AC-GATE Proxy Shuffled,4,government_effectiveness_train,78,0.012304151544657872,0.915,0.03338387300631151,False
+AC-GATE Proxy Shuffled,4,rule_of_law_train,78,0.026214292037076845,0.8215,0.03338387300631151,False
+AC-GATE Proxy Shuffled,5,log_gdp_per_capita_train,78,-0.08064087810923254,0.477,0.1413814358464488,False
+AC-GATE Proxy Shuffled,5,government_effectiveness_train,78,-0.14905347816740222,0.1905,0.1413814358464488,False
+AC-GATE Proxy Shuffled,5,rule_of_law_train,78,-0.12133436184069094,0.2865,0.1413814358464488,False
+AC-GATE Proxy Shuffled,6,log_gdp_per_capita_train,78,-0.04728183209195867,0.6845,0.014508631387015419,False
+AC-GATE Proxy Shuffled,6,government_effectiveness_train,78,0.061697795875011056,0.5975,0.014508631387015419,False
+AC-GATE Proxy Shuffled,6,rule_of_law_train,78,0.02909748479368732,0.8155,0.014508631387015419,False
+AC-GATE Proxy Shuffled,7,log_gdp_per_capita_train,78,0.03370047673845142,0.765,0.09993736628430837,False
+AC-GATE Proxy Shuffled,7,government_effectiveness_train,78,-0.06908281591825896,0.543,0.09993736628430837,False
+AC-GATE Proxy Shuffled,7,rule_of_law_train,78,-0.10393404064290139,0.3855,0.09993736628430837,False
+AC-GATE Proxy Shuffled,8,log_gdp_per_capita_train,78,-0.1006461892537842,0.3895,0.05047153462143936,False
+AC-GATE Proxy Shuffled,8,government_effectiveness_train,78,-0.07194071751033775,0.5255,0.05047153462143936,False
+AC-GATE Proxy Shuffled,8,rule_of_law_train,78,-0.0947280567533732,0.4155,0.05047153462143936,False
+AC-GATE Proxy Shuffled,9,log_gdp_per_capita_train,78,-0.019208639461804018,0.874,0.11866237850747573,False
+AC-GATE Proxy Shuffled,9,government_effectiveness_train,78,-0.017640587260840425,0.882,0.11866237850747573,False
+AC-GATE Proxy Shuffled,9,rule_of_law_train,78,-0.02525322778487335,0.852,0.11866237850747573,False
+AC-GATE Proxy Shuffled,10,log_gdp_per_capita_train,78,-0.06463157096068488,0.5735,0.07754378358833568,False
+AC-GATE Proxy Shuffled,10,government_effectiveness_train,78,-0.06369579787301305,0.5765,0.07754378358833568,False
+AC-GATE Proxy Shuffled,10,rule_of_law_train,78,-0.07323056690145296,0.513,0.07754378358833568,False
+AC-GATE Proxy Shuffled,11,log_gdp_per_capita_train,78,-0.005880195753613475,0.963,0.09226650734719885,False
+AC-GATE Proxy Shuffled,11,government_effectiveness_train,78,0.030109131374954162,0.8095,0.09226650734719885,False
+AC-GATE Proxy Shuffled,11,rule_of_law_train,78,0.044474512828943207,0.699,0.09226650734719885,False
+AC-GATE Proxy Shuffled,12,log_gdp_per_capita_train,78,0.09907813705282058,0.3945,0.07642520341874406,False
+AC-GATE Proxy Shuffled,12,government_effectiveness_train,78,-0.0637463802020764,0.584,0.07642520341874406,False
+AC-GATE Proxy Shuffled,12,rule_of_law_train,78,-0.07993272550234574,0.471,0.07642520341874406,False
+AC-GATE Proxy Shuffled,13,log_gdp_per_capita_train,78,0.09171840817410437,0.4255,0.223089189150678,False
+AC-GATE Proxy Shuffled,13,government_effectiveness_train,78,0.10717130970295526,0.3505,0.223089189150678,False
+AC-GATE Proxy Shuffled,13,rule_of_law_train,78,0.13562386980108498,0.2315,0.223089189150678,False
+AC-GATE Proxy Shuffled,14,log_gdp_per_capita_train,78,-0.007043589322070334,0.9525,0.017367307188797254,False
+AC-GATE Proxy Shuffled,14,government_effectiveness_train,78,-0.09176899050316772,0.4285,0.017367307188797254,False
+AC-GATE Proxy Shuffled,14,rule_of_law_train,78,-0.10825882977781712,0.3575,0.017367307188797254,False
+AC-GATE Proxy Shuffled,15,log_gdp_per_capita_train,78,0.24543810619759984,0.0275,0.03167348699478929,False
+AC-GATE Proxy Shuffled,15,government_effectiveness_train,78,0.2725249434110193,0.019,0.03167348699478929,False
+AC-GATE Proxy Shuffled,15,rule_of_law_train,78,0.2868650337004767,0.011,0.03167348699478929,False
+AC-GATE Proxy Shuffled,16,log_gdp_per_capita_train,78,0.11458234539326266,0.3125,0.0586640588524359,False
+AC-GATE Proxy Shuffled,16,government_effectiveness_train,78,0.09144078352705909,0.426,0.0586640588524359,False
+AC-GATE Proxy Shuffled,16,rule_of_law_train,78,0.13081937568627106,0.261,0.0586640588524359,False
+AC-GATE Proxy Shuffled,17,log_gdp_per_capita_train,78,-0.12320590801603458,0.263,0.04277974941356768,False
+AC-GATE Proxy Shuffled,17,government_effectiveness_train,78,-0.09217364913567445,0.4075,0.04277974941356768,False
+AC-GATE Proxy Shuffled,17,rule_of_law_train,78,-0.06187483402673276,0.5855,0.04277974941356768,False
+AC-GATE Proxy Shuffled,18,log_gdp_per_capita_train,78,0.17651968284879677,0.112,0.011499578170263508,False
+AC-GATE Proxy Shuffled,18,government_effectiveness_train,78,0.13193135977946105,0.241,0.011499578170263508,False
+AC-GATE Proxy Shuffled,18,rule_of_law_train,78,0.1814261687679409,0.113,0.011499578170263508,False
+AC-GATE Proxy Shuffled,19,log_gdp_per_capita_train,78,-0.053503458566749706,0.6555,0.04614292102620855,False
+AC-GATE Proxy Shuffled,19,government_effectiveness_train,78,-0.04611843852350181,0.6825,0.04614292102620855,False
+AC-GATE Proxy Shuffled,19,rule_of_law_train,78,-0.06948747455076569,0.5585,0.04614292102620855,False

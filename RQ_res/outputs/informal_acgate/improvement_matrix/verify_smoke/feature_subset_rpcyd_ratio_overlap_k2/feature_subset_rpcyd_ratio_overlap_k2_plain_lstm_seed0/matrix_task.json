@@ -1,0 +1,39 @@
+{
+  "matrix_name": "verify_smoke",
+  "variant": {
+    "variant_id": "feature_subset_rpcyd_ratio_overlap_k2",
+    "track": "feature_subset",
+    "scenario": "overlap_region_proxy",
+    "feature_bundle": "rpcyd_ratio_overlap_region_proxy",
+    "max_lag": 2,
+    "run_specs": [
+      {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      {
+        "name": "plain_lstm",
+        "model": "plain_lstm",
+        "ablation": "none"
+      }
+    ],
+    "year_start": 2019,
+    "year_end": 2023,
+    "stats_end_year": 2021,
+    "train_end_year": 2021,
+    "val_end_year": 2022,
+    "proxy_perturbation": "none",
+    "hyperparameters": {},
+    "interpretation": "rpcyd_ratio_overlap_sensitivity"
+  },
+  "run_spec": {
+    "name": "plain_lstm",
+    "model": "plain_lstm",
+    "ablation": "none"
+  },
+  "seed": 0,
+  "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_rpcyd_ratio_overlap_k2",
+  "experiment_name": "feature_subset_rpcyd_ratio_overlap_k2_plain_lstm_seed0",
+  "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_rpcyd_ratio_overlap_k2\\feature_subset_rpcyd_ratio_overlap_k2_plain_lstm_seed0"
+}

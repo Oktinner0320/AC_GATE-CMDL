@@ -31,7 +31,7 @@ def plot_workflow_overview(save_path: str | Path | None = None) -> plt.Figure:
 
     boxes = [
         (0.80, "Data and Splits", "balanced panel\ntrain/val/test windows\nproxy metadata", "#EAF2FB"),
-        (0.50, "AC-GATE and Baselines", "AC-GATE\nPlain LSTM\nGrouped ARDL\nablations", "#EAF6EE"),
+        (0.50, "AC-GATE and Baselines", "AC-GATE\nPlain LSTM\nTFT\nGA-Net\nGrouped ARDL\nablations", "#EAF6EE"),
         (0.20, "Diagnostics", "significance\nstratified k*\nablation guard\nseed stability", "#FFF3D8"),
     ]
     box_left = 0.15

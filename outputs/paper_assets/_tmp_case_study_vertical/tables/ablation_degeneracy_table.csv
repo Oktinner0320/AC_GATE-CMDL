@@ -1,0 +1,11 @@
+domain,method,kstar_std_mean,lag_gate_sensitivity_range_mean,anchor_adjusted_rho_mean,valid_stratifiers,degenerate_control
+economics,CMDL,0.16728880060700596,0.49912182092666624,-0.10869306317884078,3,False
+economics,No AC Encoder,0.0,0.0,,0,True
+economics,No Recon Regularization,0.1092029128666679,0.3387750625610352,0.1637728505512311,0,False
+economics,Plain LSTM,1.8942366941108073,,-0.017294734488074767,0,False
+economics,Uniform Lag,0.0,0.7348997116088867,,0,True
+energy,CMDL,0.10791174350509096,0.2690467834472656,-0.014338563591048481,3,False
+energy,No AC Encoder,0.0,0.0,,0,True
+energy,No Recon Regularization,0.1079111921268568,0.26904250383377076,-0.01437523581160185,0,False
+energy,Plain LSTM,1.3312766845690542,,0.09253877741880136,0,False
+energy,Uniform Lag,0.0,0.39365037679672243,,0,True

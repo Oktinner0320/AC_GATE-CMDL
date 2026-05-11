@@ -12,6 +12,11 @@ but all new code and default outputs live under `RQ_res`.
 | `runner.py` | Runs one CMDL, plain LSTM, or CMDL ablation experiment. |
 | `suite.py` | Runs the isolated 20-seed RQ suite with region-varying proxy bundles. |
 | `aggregate.py` | Builds a compact `comparison.csv` from run-level `summary.json` files. |
+| `aggregate_multi.py` | Aggregates one-shot matrix results across variant directories. |
+| `experiment_matrix.py` | Defines all one-shot improvement variants and runner arguments. |
+| `falsification.py` | Applies proxy shuffle/noise perturbations for mechanism checks. |
+| `report_improvements.py` | Builds the matrix-level Markdown report and figures. |
+| `suite_all_improvements.py` | Runs the one-shot improvement matrix with dry-run, smoke, resume, and report modes. |
 | `visualize.py` | Builds seed summaries and RQ figures from the suite outputs. |
 | `sample_audit.py` | Audits feature-year support and effective sample counts for overlap/full-span scenarios. |
 | `../informal_rq_acgate_workflow.ipynb` | Notebook entry point for running, aggregating, plotting, and documenting the explicit lag construction. |
@@ -122,6 +127,36 @@ For full-span outputs, the visualization script writes to
 
 ```powershell
 python RQ_res/informal_acgate/visualize.py --output-dir RQ_res/outputs/informal_acgate/suite_fullspan_region_proxy
+```
+
+Dry-run the one-shot improvement matrix:
+
+```powershell
+python RQ_res/informal_acgate/suite_all_improvements.py --dry-run --device cpu
+```
+
+Smoke-test all one-shot variants:
+
+```powershell
+python RQ_res/informal_acgate/suite_all_improvements.py --smoke --device cpu --force --seeds 0 --screening-seeds 0
+```
+
+Run the default one-shot matrix with resume behavior:
+
+```powershell
+python RQ_res/informal_acgate/suite_all_improvements.py --device cpu --resume
+```
+
+Rebuild a matrix report:
+
+```powershell
+python RQ_res/informal_acgate/report_improvements.py --matrix-dir RQ_res/outputs/informal_acgate/improvement_matrix/default
+```
+
+Build matrix-level visualizations directly from aggregated runs:
+
+```powershell
+python RQ_res/informal_acgate/visualize.py --matrix-runs-csv RQ_res/outputs/informal_acgate/improvement_report/default/all_runs.csv
 ```
 
 The notebook workflow is available at `RQ_res/informal_rq_acgate_workflow.ipynb`.

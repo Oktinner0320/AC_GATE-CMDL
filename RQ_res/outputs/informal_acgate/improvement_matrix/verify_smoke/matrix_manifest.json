@@ -1,0 +1,2133 @@
+{
+  "matrix_name": "verify_smoke",
+  "created_at": "2026-05-10T12:12:31.372327+00:00",
+  "dry_run": false,
+  "smoke": true,
+  "expanded_grid": false,
+  "task_count": 36,
+  "variant_count": 18,
+  "variants": [
+    {
+      "variant_id": "reference_overlap_multiseq_k2",
+      "track": "reference",
+      "scenario": "overlap_region_proxy",
+      "feature_bundle": "multiseq_overlap_region_proxy",
+      "max_lag": 2,
+      "run_specs": [
+        {
+          "name": "cmdl",
+          "model": "cmdl",
+          "ablation": "none"
+        },
+        {
+          "name": "plain_lstm",
+          "model": "plain_lstm",
+          "ablation": "none"
+        },
+        {
+          "name": "no_ac_encoder",
+          "model": "cmdl",
+          "ablation": "no_ac_encoder"
+        },
+        {
+          "name": "uniform_lag",
+          "model": "cmdl",
+          "ablation": "uniform_lag"
+        },
+        {
+          "name": "no_recon_regularization",
+          "model": "cmdl",
+          "ablation": "no_recon_regularization"
+        }
+      ],
+      "year_start": 2019,
+      "year_end": 2023,
+      "stats_end_year": 2021,
+      "train_end_year": 2021,
+      "val_end_year": 2022,
+      "proxy_perturbation": "none",
+      "hyperparameters": {},
+      "interpretation": "current_overlap_reference"
+    },
+    {
+      "variant_id": "reference_overlap_single_k2",
+      "track": "reference",
+      "scenario": "overlap_region_proxy",
+      "feature_bundle": "single_overlap_region_proxy",
+      "max_lag": 2,
+      "run_specs": [
+        {
+          "name": "cmdl",
+          "model": "cmdl",
+          "ablation": "none"
+        }
+      ],
+      "year_start": 2019,
+      "year_end": 2023,
+      "stats_end_year": 2021,
+      "train_end_year": 2021,
+      "val_end_year": 2022,
+      "proxy_perturbation": "none",
+      "hyperparameters": {},
+      "interpretation": "current_single_feature_reference"
+    },
+    {
+      "variant_id": "fullspan_income_k3",
+      "track": "fullspan_income",
+      "scenario": "fullspan_region_proxy",
+      "feature_bundle": "single_fullspan_region_proxy",
+      "max_lag": 3,
+      "run_specs": [
+        {
+          "name": "cmdl",
+          "model": "cmdl",
+          "ablation": "none"
+        },
+        {
+          "name": "plain_lstm",
+          "model": "plain_lstm",
+          "ablation": "none"
+        },
+        {
+          "name": "no_ac_encoder",
+          "model": "cmdl",
+          "ablation": "no_ac_encoder"
+        },
+        {
+          "name": "uniform_lag",
+          "model": "cmdl",
+          "ablation": "uniform_lag"
+        },
+        {
+          "name": "no_recon_regularization",
+          "model": "cmdl",
+          "ablation": "no_recon_regularization"
+        }
+      ],
+      "year_start": 2006,
+      "year_end": 2023,
+      "stats_end_year": 2018,
+      "train_end_year": 2018,
+      "val_end_year": 2020,
+      "proxy_perturbation": "none",
+      "hyperparameters": {},
+      "interpretation": "main_expanded_sample"
+    },
+    {
+      "variant_id": "fullspan_income_k2",
+      "track": "fullspan_income",
+      "scenario": "fullspan_region_proxy",
+      "feature_bundle": "single_fullspan_region_proxy",
+      "max_lag": 2,
+      "run_specs": [
+        {
+          "name": "cmdl",
+          "model": "cmdl",
+          "ablation": "none"
+        },
+        {
+          "name": "plain_lstm",
+          "model": "plain_lstm",
+          "ablation": "none"
+        },
+        {
+          "name": "no_ac_encoder",
+          "model": "cmdl",
+          "ablation": "no_ac_encoder"
+        },
+        {
+          "name": "uniform_lag",
+          "model": "cmdl",
+          "ablation": "uniform_lag"
+        },
+        {
+          "name": "no_recon_regularization",
+          "model": "cmdl",
+          "ablation": "no_recon_regularization"
+        }
+      ],
+      "year_start": 2006,
+      "year_end": 2023,
+      "stats_end_year": 2018,
+      "train_end_year": 2018,
+      "val_end_year": 2020,
+      "proxy_perturbation": "none",
+      "hyperparameters": {},
+      "interpretation": "lag_window_sensitivity"
+    },
+    {
+      "variant_id": "feature_subset_rpcyd_fullspan_k3",
+      "track": "feature_subset",
+      "scenario": "fullspan_region_proxy",
+      "feature_bundle": "rpcyd_fullspan_region_proxy",
+      "max_lag": 3,
+      "run_specs": [
+        {
+          "name": "cmdl",
+          "model": "cmdl",
+          "ablation": "none"
+        },
+        {
+          "name": "plain_lstm",
+          "model": "plain_lstm",
+          "ablation": "none"
+        }
+      ],
+      "year_start": 2006,
+      "year_end": 2023,
+      "stats_end_year": 2018,
+      "train_end_year": 2018,
+      "val_end_year": 2020,
+      "proxy_perturbation": "none",
+      "hyperparameters": {},
+      "interpretation": "rpcyd_only_fullspan_sensitivity"
+    },
+    {
+      "variant_id": "feature_subset_rpcyd_overlap_k2",
+      "track": "feature_subset",
+      "scenario": "overlap_region_proxy",
+      "feature_bundle": "rpcyd_overlap_region_proxy",
+      "max_lag": 2,
+      "run_specs": [
+        {
+          "name": "cmdl",
+          "model": "cmdl",
+          "ablation": "none"
+        },
+        {
+          "name": "plain_lstm",
+          "model": "plain_lstm",
+          "ablation": "none"
+        }
+      ],
+      "year_start": 2019,
+      "year_end": 2023,
+      "stats_end_year": 2021,
+      "train_end_year": 2021,
+      "val_end_year": 2022,
+      "proxy_perturbation": "none",
+      "hyperparameters": {},
+      "interpretation": "rpcyd_only_overlap_sensitivity"
+    },
+    {
+      "variant_id": "feature_subset_rydgdp_ratio_overlap_k2",
+      "track": "feature_subset",
+      "scenario": "overlap_region_proxy",
+      "feature_bundle": "rydgdp_ratio_overlap_region_proxy",
+      "max_lag": 2,
+      "run_specs": [
+        {
+          "name": "cmdl",
+          "model": "cmdl",
+          "ablation": "none"
+        },
+        {
+          "name": "plain_lstm",
+          "model": "plain_lstm",
+          "ablation": "none"
+        }
+      ],
+      "year_start": 2019,
+      "year_end": 2023,
+      "stats_end_year": 2021,
+      "train_end_year": 2021,
+      "val_end_year": 2022,
+      "proxy_perturbation": "none",
+      "hyperparameters": {},
+      "interpretation": "rydgdp_ratio_overlap_sensitivity"
+    },
+    {
+      "variant_id": "feature_subset_rpcyd_ratio_overlap_k2",
+      "track": "feature_subset",
+      "scenario": "overlap_region_proxy",
+      "feature_bundle": "rpcyd_ratio_overlap_region_proxy",
+      "max_lag": 2,
+      "run_specs": [
+        {
+          "name": "cmdl",
+          "model": "cmdl",
+          "ablation": "none"
+        },
+        {
+          "name": "plain_lstm",
+          "model": "plain_lstm",
+          "ablation": "none"
+        }
+      ],
+      "year_start": 2019,
+      "year_end": 2023,
+      "stats_end_year": 2021,
+      "train_end_year": 2021,
+      "val_end_year": 2022,
+      "proxy_perturbation": "none",
+      "hyperparameters": {},
+      "interpretation": "rpcyd_ratio_overlap_sensitivity"
+    },
+    {
+      "variant_id": "feature_subset_no_per_capita_overlap_k2",
+      "track": "feature_subset",
+      "scenario": "overlap_region_proxy",
+      "feature_bundle": "multiseq_overlap_no_per_capita_region_proxy",
+      "max_lag": 2,
+      "run_specs": [
+        {
+          "name": "cmdl",
+          "model": "cmdl",
+          "ablation": "none"
+        },
+        {
+          "name": "plain_lstm",
+          "model": "plain_lstm",
+          "ablation": "none"
+        }
+      ],
+      "year_start": 2019,
+      "year_end": 2023,
+      "stats_end_year": 2021,
+      "train_end_year": 2021,
+      "val_end_year": 2022,
+      "proxy_perturbation": "none",
+      "hyperparameters": {},
+      "interpretation": "no_per_capita_multiseq_sensitivity"
+    },
+    {
+      "variant_id": "feature_subset_pca1_overlap_k2",
+      "track": "feature_subset",
+      "scenario": "overlap_region_proxy",
+      "feature_bundle": "multiseq_overlap_pca1_region_proxy",
+      "max_lag": 2,
+      "run_specs": [
+        {
+          "name": "cmdl",
+          "model": "cmdl",
+          "ablation": "none"
+        },
+        {
+          "name": "plain_lstm",
+          "model": "plain_lstm",
+          "ablation": "none"
+        }
+      ],
+      "year_start": 2019,
+      "year_end": 2023,
+      "stats_end_year": 2021,
+      "train_end_year": 2021,
+      "val_end_year": 2022,
+      "proxy_perturbation": "none",
+      "hyperparameters": {},
+      "interpretation": "train_window_pca1_sensitivity"
+    },
+    {
+      "variant_id": "falsification_proxy_shuffle_fullspan_k3",
+      "track": "falsification",
+      "scenario": "fullspan_region_proxy",
+      "feature_bundle": "single_fullspan_region_proxy",
+      "max_lag": 3,
+      "run_specs": [
+        {
+          "name": "cmdl",
+          "model": "cmdl",
+          "ablation": "none"
+        }
+      ],
+      "year_start": 2006,
+      "year_end": 2023,
+      "stats_end_year": 2018,
+      "train_end_year": 2018,
+      "val_end_year": 2020,
+      "proxy_perturbation": "shuffle",
+      "hyperparameters": {},
+      "interpretation": "proxy_shuffle_null"
+    },
+    {
+      "variant_id": "falsification_noise_proxy_fullspan_k3",
+      "track": "falsification",
+      "scenario": "fullspan_region_proxy",
+      "feature_bundle": "single_fullspan_region_proxy",
+      "max_lag": 3,
+      "run_specs": [
+        {
+          "name": "cmdl",
+          "model": "cmdl",
+          "ablation": "none"
+        }
+      ],
+      "year_start": 2006,
+      "year_end": 2023,
+      "stats_end_year": 2018,
+      "train_end_year": 2018,
+      "val_end_year": 2020,
+      "proxy_perturbation": "noise",
+      "hyperparameters": {},
+      "interpretation": "noise_proxy_null"
+    },
+    {
+      "variant_id": "grid_fullspan_d8_temp10_dropout005",
+      "track": "capacity_gate_grid",
+      "scenario": "fullspan_region_proxy",
+      "feature_bundle": "single_fullspan_region_proxy",
+      "max_lag": 3,
+      "run_specs": [
+        {
+          "name": "cmdl",
+          "model": "cmdl",
+          "ablation": "none"
+        }
+      ],
+      "year_start": 2006,
+      "year_end": 2023,
+      "stats_end_year": 2018,
+      "train_end_year": 2018,
+      "val_end_year": 2020,
+      "proxy_perturbation": "none",
+      "hyperparameters": {
+        "d_model": 8,
+        "temperature": 1.0,
+        "dropout": 0.05
+      },
+      "interpretation": "capacity_gate_screen"
+    },
+    {
+      "variant_id": "grid_fullspan_d16_temp15_dropout015",
+      "track": "capacity_gate_grid",
+      "scenario": "fullspan_region_proxy",
+      "feature_bundle": "single_fullspan_region_proxy",
+      "max_lag": 3,
+      "run_specs": [
+        {
+          "name": "cmdl",
+          "model": "cmdl",
+          "ablation": "none"
+        }
+      ],
+      "year_start": 2006,
+      "year_end": 2023,
+      "stats_end_year": 2018,
+      "train_end_year": 2018,
+      "val_end_year": 2020,
+      "proxy_perturbation": "none",
+      "hyperparameters": {
+        "d_model": 16,
+        "temperature": 1.5,
+        "dropout": 0.15
+      },
+      "interpretation": "capacity_gate_screen"
+    },
+    {
+      "variant_id": "grid_fullspan_d32_temp10_dropout015",
+      "track": "capacity_gate_grid",
+      "scenario": "fullspan_region_proxy",
+      "feature_bundle": "single_fullspan_region_proxy",
+      "max_lag": 3,
+      "run_specs": [
+        {
+          "name": "cmdl",
+          "model": "cmdl",
+          "ablation": "none"
+        }
+      ],
+      "year_start": 2006,
+      "year_end": 2023,
+      "stats_end_year": 2018,
+      "train_end_year": 2018,
+      "val_end_year": 2020,
+      "proxy_perturbation": "none",
+      "hyperparameters": {
+        "d_model": 32,
+        "temperature": 1.0,
+        "dropout": 0.15
+      },
+      "interpretation": "capacity_gate_screen"
+    },
+    {
+      "variant_id": "grid_fullspan_d16_temp20_dropout015",
+      "track": "capacity_gate_grid",
+      "scenario": "fullspan_region_proxy",
+      "feature_bundle": "single_fullspan_region_proxy",
+      "max_lag": 3,
+      "run_specs": [
+        {
+          "name": "cmdl",
+          "model": "cmdl",
+          "ablation": "none"
+        }
+      ],
+      "year_start": 2006,
+      "year_end": 2023,
+      "stats_end_year": 2018,
+      "train_end_year": 2018,
+      "val_end_year": 2020,
+      "proxy_perturbation": "none",
+      "hyperparameters": {
+        "d_model": 16,
+        "temperature": 2.0,
+        "dropout": 0.15
+      },
+      "interpretation": "capacity_gate_screen"
+    },
+    {
+      "variant_id": "grid_fullspan_d16_temp15_dropout030",
+      "track": "capacity_gate_grid",
+      "scenario": "fullspan_region_proxy",
+      "feature_bundle": "single_fullspan_region_proxy",
+      "max_lag": 3,
+      "run_specs": [
+        {
+          "name": "cmdl",
+          "model": "cmdl",
+          "ablation": "none"
+        }
+      ],
+      "year_start": 2006,
+      "year_end": 2023,
+      "stats_end_year": 2018,
+      "train_end_year": 2018,
+      "val_end_year": 2020,
+      "proxy_perturbation": "none",
+      "hyperparameters": {
+        "d_model": 16,
+        "temperature": 1.5,
+        "dropout": 0.3
+      },
+      "interpretation": "capacity_gate_screen"
+    },
+    {
+      "variant_id": "grid_fullspan_d16_temp15_dropout015_entropy001",
+      "track": "capacity_gate_grid",
+      "scenario": "fullspan_region_proxy",
+      "feature_bundle": "single_fullspan_region_proxy",
+      "max_lag": 3,
+      "run_specs": [
+        {
+          "name": "cmdl",
+          "model": "cmdl",
+          "ablation": "none"
+        }
+      ],
+      "year_start": 2006,
+      "year_end": 2023,
+      "stats_end_year": 2018,
+      "train_end_year": 2018,
+      "val_end_year": 2020,
+      "proxy_perturbation": "none",
+      "hyperparameters": {
+        "d_model": 16,
+        "temperature": 1.5,
+        "dropout": 0.15,
+        "lambda_omega_entropy": 0.01
+      },
+      "interpretation": "capacity_gate_screen"
+    }
+  ],
+  "tasks": [
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "reference_overlap_multiseq_k2",
+        "track": "reference",
+        "scenario": "overlap_region_proxy",
+        "feature_bundle": "multiseq_overlap_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          },
+          {
+            "name": "no_ac_encoder",
+            "model": "cmdl",
+            "ablation": "no_ac_encoder"
+          },
+          {
+            "name": "uniform_lag",
+            "model": "cmdl",
+            "ablation": "uniform_lag"
+          },
+          {
+            "name": "no_recon_regularization",
+            "model": "cmdl",
+            "ablation": "no_recon_regularization"
+          }
+        ],
+        "year_start": 2019,
+        "year_end": 2023,
+        "stats_end_year": 2021,
+        "train_end_year": 2021,
+        "val_end_year": 2022,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "current_overlap_reference"
+      },
+      "run_spec": {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\reference_overlap_multiseq_k2",
+      "experiment_name": "reference_overlap_multiseq_k2_cmdl_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\reference_overlap_multiseq_k2\\reference_overlap_multiseq_k2_cmdl_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "reference_overlap_multiseq_k2",
+        "track": "reference",
+        "scenario": "overlap_region_proxy",
+        "feature_bundle": "multiseq_overlap_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          },
+          {
+            "name": "no_ac_encoder",
+            "model": "cmdl",
+            "ablation": "no_ac_encoder"
+          },
+          {
+            "name": "uniform_lag",
+            "model": "cmdl",
+            "ablation": "uniform_lag"
+          },
+          {
+            "name": "no_recon_regularization",
+            "model": "cmdl",
+            "ablation": "no_recon_regularization"
+          }
+        ],
+        "year_start": 2019,
+        "year_end": 2023,
+        "stats_end_year": 2021,
+        "train_end_year": 2021,
+        "val_end_year": 2022,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "current_overlap_reference"
+      },
+      "run_spec": {
+        "name": "plain_lstm",
+        "model": "plain_lstm",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\reference_overlap_multiseq_k2",
+      "experiment_name": "reference_overlap_multiseq_k2_plain_lstm_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\reference_overlap_multiseq_k2\\reference_overlap_multiseq_k2_plain_lstm_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "reference_overlap_multiseq_k2",
+        "track": "reference",
+        "scenario": "overlap_region_proxy",
+        "feature_bundle": "multiseq_overlap_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          },
+          {
+            "name": "no_ac_encoder",
+            "model": "cmdl",
+            "ablation": "no_ac_encoder"
+          },
+          {
+            "name": "uniform_lag",
+            "model": "cmdl",
+            "ablation": "uniform_lag"
+          },
+          {
+            "name": "no_recon_regularization",
+            "model": "cmdl",
+            "ablation": "no_recon_regularization"
+          }
+        ],
+        "year_start": 2019,
+        "year_end": 2023,
+        "stats_end_year": 2021,
+        "train_end_year": 2021,
+        "val_end_year": 2022,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "current_overlap_reference"
+      },
+      "run_spec": {
+        "name": "no_ac_encoder",
+        "model": "cmdl",
+        "ablation": "no_ac_encoder"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\reference_overlap_multiseq_k2",
+      "experiment_name": "reference_overlap_multiseq_k2_no_ac_encoder_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\reference_overlap_multiseq_k2\\reference_overlap_multiseq_k2_no_ac_encoder_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "reference_overlap_multiseq_k2",
+        "track": "reference",
+        "scenario": "overlap_region_proxy",
+        "feature_bundle": "multiseq_overlap_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          },
+          {
+            "name": "no_ac_encoder",
+            "model": "cmdl",
+            "ablation": "no_ac_encoder"
+          },
+          {
+            "name": "uniform_lag",
+            "model": "cmdl",
+            "ablation": "uniform_lag"
+          },
+          {
+            "name": "no_recon_regularization",
+            "model": "cmdl",
+            "ablation": "no_recon_regularization"
+          }
+        ],
+        "year_start": 2019,
+        "year_end": 2023,
+        "stats_end_year": 2021,
+        "train_end_year": 2021,
+        "val_end_year": 2022,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "current_overlap_reference"
+      },
+      "run_spec": {
+        "name": "uniform_lag",
+        "model": "cmdl",
+        "ablation": "uniform_lag"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\reference_overlap_multiseq_k2",
+      "experiment_name": "reference_overlap_multiseq_k2_uniform_lag_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\reference_overlap_multiseq_k2\\reference_overlap_multiseq_k2_uniform_lag_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "reference_overlap_multiseq_k2",
+        "track": "reference",
+        "scenario": "overlap_region_proxy",
+        "feature_bundle": "multiseq_overlap_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          },
+          {
+            "name": "no_ac_encoder",
+            "model": "cmdl",
+            "ablation": "no_ac_encoder"
+          },
+          {
+            "name": "uniform_lag",
+            "model": "cmdl",
+            "ablation": "uniform_lag"
+          },
+          {
+            "name": "no_recon_regularization",
+            "model": "cmdl",
+            "ablation": "no_recon_regularization"
+          }
+        ],
+        "year_start": 2019,
+        "year_end": 2023,
+        "stats_end_year": 2021,
+        "train_end_year": 2021,
+        "val_end_year": 2022,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "current_overlap_reference"
+      },
+      "run_spec": {
+        "name": "no_recon_regularization",
+        "model": "cmdl",
+        "ablation": "no_recon_regularization"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\reference_overlap_multiseq_k2",
+      "experiment_name": "reference_overlap_multiseq_k2_no_recon_regularization_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\reference_overlap_multiseq_k2\\reference_overlap_multiseq_k2_no_recon_regularization_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "reference_overlap_single_k2",
+        "track": "reference",
+        "scenario": "overlap_region_proxy",
+        "feature_bundle": "single_overlap_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2019,
+        "year_end": 2023,
+        "stats_end_year": 2021,
+        "train_end_year": 2021,
+        "val_end_year": 2022,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "current_single_feature_reference"
+      },
+      "run_spec": {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\reference_overlap_single_k2",
+      "experiment_name": "reference_overlap_single_k2_cmdl_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\reference_overlap_single_k2\\reference_overlap_single_k2_cmdl_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "fullspan_income_k3",
+        "track": "fullspan_income",
+        "scenario": "fullspan_region_proxy",
+        "feature_bundle": "single_fullspan_region_proxy",
+        "max_lag": 3,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          },
+          {
+            "name": "no_ac_encoder",
+            "model": "cmdl",
+            "ablation": "no_ac_encoder"
+          },
+          {
+            "name": "uniform_lag",
+            "model": "cmdl",
+            "ablation": "uniform_lag"
+          },
+          {
+            "name": "no_recon_regularization",
+            "model": "cmdl",
+            "ablation": "no_recon_regularization"
+          }
+        ],
+        "year_start": 2006,
+        "year_end": 2023,
+        "stats_end_year": 2018,
+        "train_end_year": 2018,
+        "val_end_year": 2020,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "main_expanded_sample"
+      },
+      "run_spec": {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\fullspan_income_k3",
+      "experiment_name": "fullspan_income_k3_cmdl_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\fullspan_income_k3\\fullspan_income_k3_cmdl_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "fullspan_income_k3",
+        "track": "fullspan_income",
+        "scenario": "fullspan_region_proxy",
+        "feature_bundle": "single_fullspan_region_proxy",
+        "max_lag": 3,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          },
+          {
+            "name": "no_ac_encoder",
+            "model": "cmdl",
+            "ablation": "no_ac_encoder"
+          },
+          {
+            "name": "uniform_lag",
+            "model": "cmdl",
+            "ablation": "uniform_lag"
+          },
+          {
+            "name": "no_recon_regularization",
+            "model": "cmdl",
+            "ablation": "no_recon_regularization"
+          }
+        ],
+        "year_start": 2006,
+        "year_end": 2023,
+        "stats_end_year": 2018,
+        "train_end_year": 2018,
+        "val_end_year": 2020,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "main_expanded_sample"
+      },
+      "run_spec": {
+        "name": "plain_lstm",
+        "model": "plain_lstm",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\fullspan_income_k3",
+      "experiment_name": "fullspan_income_k3_plain_lstm_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\fullspan_income_k3\\fullspan_income_k3_plain_lstm_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "fullspan_income_k3",
+        "track": "fullspan_income",
+        "scenario": "fullspan_region_proxy",
+        "feature_bundle": "single_fullspan_region_proxy",
+        "max_lag": 3,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          },
+          {
+            "name": "no_ac_encoder",
+            "model": "cmdl",
+            "ablation": "no_ac_encoder"
+          },
+          {
+            "name": "uniform_lag",
+            "model": "cmdl",
+            "ablation": "uniform_lag"
+          },
+          {
+            "name": "no_recon_regularization",
+            "model": "cmdl",
+            "ablation": "no_recon_regularization"
+          }
+        ],
+        "year_start": 2006,
+        "year_end": 2023,
+        "stats_end_year": 2018,
+        "train_end_year": 2018,
+        "val_end_year": 2020,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "main_expanded_sample"
+      },
+      "run_spec": {
+        "name": "no_ac_encoder",
+        "model": "cmdl",
+        "ablation": "no_ac_encoder"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\fullspan_income_k3",
+      "experiment_name": "fullspan_income_k3_no_ac_encoder_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\fullspan_income_k3\\fullspan_income_k3_no_ac_encoder_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "fullspan_income_k3",
+        "track": "fullspan_income",
+        "scenario": "fullspan_region_proxy",
+        "feature_bundle": "single_fullspan_region_proxy",
+        "max_lag": 3,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          },
+          {
+            "name": "no_ac_encoder",
+            "model": "cmdl",
+            "ablation": "no_ac_encoder"
+          },
+          {
+            "name": "uniform_lag",
+            "model": "cmdl",
+            "ablation": "uniform_lag"
+          },
+          {
+            "name": "no_recon_regularization",
+            "model": "cmdl",
+            "ablation": "no_recon_regularization"
+          }
+        ],
+        "year_start": 2006,
+        "year_end": 2023,
+        "stats_end_year": 2018,
+        "train_end_year": 2018,
+        "val_end_year": 2020,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "main_expanded_sample"
+      },
+      "run_spec": {
+        "name": "uniform_lag",
+        "model": "cmdl",
+        "ablation": "uniform_lag"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\fullspan_income_k3",
+      "experiment_name": "fullspan_income_k3_uniform_lag_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\fullspan_income_k3\\fullspan_income_k3_uniform_lag_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "fullspan_income_k3",
+        "track": "fullspan_income",
+        "scenario": "fullspan_region_proxy",
+        "feature_bundle": "single_fullspan_region_proxy",
+        "max_lag": 3,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          },
+          {
+            "name": "no_ac_encoder",
+            "model": "cmdl",
+            "ablation": "no_ac_encoder"
+          },
+          {
+            "name": "uniform_lag",
+            "model": "cmdl",
+            "ablation": "uniform_lag"
+          },
+          {
+            "name": "no_recon_regularization",
+            "model": "cmdl",
+            "ablation": "no_recon_regularization"
+          }
+        ],
+        "year_start": 2006,
+        "year_end": 2023,
+        "stats_end_year": 2018,
+        "train_end_year": 2018,
+        "val_end_year": 2020,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "main_expanded_sample"
+      },
+      "run_spec": {
+        "name": "no_recon_regularization",
+        "model": "cmdl",
+        "ablation": "no_recon_regularization"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\fullspan_income_k3",
+      "experiment_name": "fullspan_income_k3_no_recon_regularization_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\fullspan_income_k3\\fullspan_income_k3_no_recon_regularization_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "fullspan_income_k2",
+        "track": "fullspan_income",
+        "scenario": "fullspan_region_proxy",
+        "feature_bundle": "single_fullspan_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          },
+          {
+            "name": "no_ac_encoder",
+            "model": "cmdl",
+            "ablation": "no_ac_encoder"
+          },
+          {
+            "name": "uniform_lag",
+            "model": "cmdl",
+            "ablation": "uniform_lag"
+          },
+          {
+            "name": "no_recon_regularization",
+            "model": "cmdl",
+            "ablation": "no_recon_regularization"
+          }
+        ],
+        "year_start": 2006,
+        "year_end": 2023,
+        "stats_end_year": 2018,
+        "train_end_year": 2018,
+        "val_end_year": 2020,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "lag_window_sensitivity"
+      },
+      "run_spec": {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\fullspan_income_k2",
+      "experiment_name": "fullspan_income_k2_cmdl_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\fullspan_income_k2\\fullspan_income_k2_cmdl_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "fullspan_income_k2",
+        "track": "fullspan_income",
+        "scenario": "fullspan_region_proxy",
+        "feature_bundle": "single_fullspan_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          },
+          {
+            "name": "no_ac_encoder",
+            "model": "cmdl",
+            "ablation": "no_ac_encoder"
+          },
+          {
+            "name": "uniform_lag",
+            "model": "cmdl",
+            "ablation": "uniform_lag"
+          },
+          {
+            "name": "no_recon_regularization",
+            "model": "cmdl",
+            "ablation": "no_recon_regularization"
+          }
+        ],
+        "year_start": 2006,
+        "year_end": 2023,
+        "stats_end_year": 2018,
+        "train_end_year": 2018,
+        "val_end_year": 2020,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "lag_window_sensitivity"
+      },
+      "run_spec": {
+        "name": "plain_lstm",
+        "model": "plain_lstm",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\fullspan_income_k2",
+      "experiment_name": "fullspan_income_k2_plain_lstm_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\fullspan_income_k2\\fullspan_income_k2_plain_lstm_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "fullspan_income_k2",
+        "track": "fullspan_income",
+        "scenario": "fullspan_region_proxy",
+        "feature_bundle": "single_fullspan_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          },
+          {
+            "name": "no_ac_encoder",
+            "model": "cmdl",
+            "ablation": "no_ac_encoder"
+          },
+          {
+            "name": "uniform_lag",
+            "model": "cmdl",
+            "ablation": "uniform_lag"
+          },
+          {
+            "name": "no_recon_regularization",
+            "model": "cmdl",
+            "ablation": "no_recon_regularization"
+          }
+        ],
+        "year_start": 2006,
+        "year_end": 2023,
+        "stats_end_year": 2018,
+        "train_end_year": 2018,
+        "val_end_year": 2020,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "lag_window_sensitivity"
+      },
+      "run_spec": {
+        "name": "no_ac_encoder",
+        "model": "cmdl",
+        "ablation": "no_ac_encoder"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\fullspan_income_k2",
+      "experiment_name": "fullspan_income_k2_no_ac_encoder_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\fullspan_income_k2\\fullspan_income_k2_no_ac_encoder_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "fullspan_income_k2",
+        "track": "fullspan_income",
+        "scenario": "fullspan_region_proxy",
+        "feature_bundle": "single_fullspan_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          },
+          {
+            "name": "no_ac_encoder",
+            "model": "cmdl",
+            "ablation": "no_ac_encoder"
+          },
+          {
+            "name": "uniform_lag",
+            "model": "cmdl",
+            "ablation": "uniform_lag"
+          },
+          {
+            "name": "no_recon_regularization",
+            "model": "cmdl",
+            "ablation": "no_recon_regularization"
+          }
+        ],
+        "year_start": 2006,
+        "year_end": 2023,
+        "stats_end_year": 2018,
+        "train_end_year": 2018,
+        "val_end_year": 2020,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "lag_window_sensitivity"
+      },
+      "run_spec": {
+        "name": "uniform_lag",
+        "model": "cmdl",
+        "ablation": "uniform_lag"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\fullspan_income_k2",
+      "experiment_name": "fullspan_income_k2_uniform_lag_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\fullspan_income_k2\\fullspan_income_k2_uniform_lag_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "fullspan_income_k2",
+        "track": "fullspan_income",
+        "scenario": "fullspan_region_proxy",
+        "feature_bundle": "single_fullspan_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          },
+          {
+            "name": "no_ac_encoder",
+            "model": "cmdl",
+            "ablation": "no_ac_encoder"
+          },
+          {
+            "name": "uniform_lag",
+            "model": "cmdl",
+            "ablation": "uniform_lag"
+          },
+          {
+            "name": "no_recon_regularization",
+            "model": "cmdl",
+            "ablation": "no_recon_regularization"
+          }
+        ],
+        "year_start": 2006,
+        "year_end": 2023,
+        "stats_end_year": 2018,
+        "train_end_year": 2018,
+        "val_end_year": 2020,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "lag_window_sensitivity"
+      },
+      "run_spec": {
+        "name": "no_recon_regularization",
+        "model": "cmdl",
+        "ablation": "no_recon_regularization"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\fullspan_income_k2",
+      "experiment_name": "fullspan_income_k2_no_recon_regularization_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\fullspan_income_k2\\fullspan_income_k2_no_recon_regularization_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "feature_subset_rpcyd_fullspan_k3",
+        "track": "feature_subset",
+        "scenario": "fullspan_region_proxy",
+        "feature_bundle": "rpcyd_fullspan_region_proxy",
+        "max_lag": 3,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2006,
+        "year_end": 2023,
+        "stats_end_year": 2018,
+        "train_end_year": 2018,
+        "val_end_year": 2020,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "rpcyd_only_fullspan_sensitivity"
+      },
+      "run_spec": {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_rpcyd_fullspan_k3",
+      "experiment_name": "feature_subset_rpcyd_fullspan_k3_cmdl_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_rpcyd_fullspan_k3\\feature_subset_rpcyd_fullspan_k3_cmdl_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "feature_subset_rpcyd_fullspan_k3",
+        "track": "feature_subset",
+        "scenario": "fullspan_region_proxy",
+        "feature_bundle": "rpcyd_fullspan_region_proxy",
+        "max_lag": 3,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2006,
+        "year_end": 2023,
+        "stats_end_year": 2018,
+        "train_end_year": 2018,
+        "val_end_year": 2020,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "rpcyd_only_fullspan_sensitivity"
+      },
+      "run_spec": {
+        "name": "plain_lstm",
+        "model": "plain_lstm",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_rpcyd_fullspan_k3",
+      "experiment_name": "feature_subset_rpcyd_fullspan_k3_plain_lstm_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_rpcyd_fullspan_k3\\feature_subset_rpcyd_fullspan_k3_plain_lstm_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "feature_subset_rpcyd_overlap_k2",
+        "track": "feature_subset",
+        "scenario": "overlap_region_proxy",
+        "feature_bundle": "rpcyd_overlap_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2019,
+        "year_end": 2023,
+        "stats_end_year": 2021,
+        "train_end_year": 2021,
+        "val_end_year": 2022,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "rpcyd_only_overlap_sensitivity"
+      },
+      "run_spec": {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_rpcyd_overlap_k2",
+      "experiment_name": "feature_subset_rpcyd_overlap_k2_cmdl_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_rpcyd_overlap_k2\\feature_subset_rpcyd_overlap_k2_cmdl_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "feature_subset_rpcyd_overlap_k2",
+        "track": "feature_subset",
+        "scenario": "overlap_region_proxy",
+        "feature_bundle": "rpcyd_overlap_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2019,
+        "year_end": 2023,
+        "stats_end_year": 2021,
+        "train_end_year": 2021,
+        "val_end_year": 2022,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "rpcyd_only_overlap_sensitivity"
+      },
+      "run_spec": {
+        "name": "plain_lstm",
+        "model": "plain_lstm",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_rpcyd_overlap_k2",
+      "experiment_name": "feature_subset_rpcyd_overlap_k2_plain_lstm_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_rpcyd_overlap_k2\\feature_subset_rpcyd_overlap_k2_plain_lstm_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "feature_subset_rydgdp_ratio_overlap_k2",
+        "track": "feature_subset",
+        "scenario": "overlap_region_proxy",
+        "feature_bundle": "rydgdp_ratio_overlap_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2019,
+        "year_end": 2023,
+        "stats_end_year": 2021,
+        "train_end_year": 2021,
+        "val_end_year": 2022,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "rydgdp_ratio_overlap_sensitivity"
+      },
+      "run_spec": {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_rydgdp_ratio_overlap_k2",
+      "experiment_name": "feature_subset_rydgdp_ratio_overlap_k2_cmdl_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_rydgdp_ratio_overlap_k2\\feature_subset_rydgdp_ratio_overlap_k2_cmdl_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "feature_subset_rydgdp_ratio_overlap_k2",
+        "track": "feature_subset",
+        "scenario": "overlap_region_proxy",
+        "feature_bundle": "rydgdp_ratio_overlap_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2019,
+        "year_end": 2023,
+        "stats_end_year": 2021,
+        "train_end_year": 2021,
+        "val_end_year": 2022,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "rydgdp_ratio_overlap_sensitivity"
+      },
+      "run_spec": {
+        "name": "plain_lstm",
+        "model": "plain_lstm",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_rydgdp_ratio_overlap_k2",
+      "experiment_name": "feature_subset_rydgdp_ratio_overlap_k2_plain_lstm_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_rydgdp_ratio_overlap_k2\\feature_subset_rydgdp_ratio_overlap_k2_plain_lstm_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "feature_subset_rpcyd_ratio_overlap_k2",
+        "track": "feature_subset",
+        "scenario": "overlap_region_proxy",
+        "feature_bundle": "rpcyd_ratio_overlap_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2019,
+        "year_end": 2023,
+        "stats_end_year": 2021,
+        "train_end_year": 2021,
+        "val_end_year": 2022,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "rpcyd_ratio_overlap_sensitivity"
+      },
+      "run_spec": {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_rpcyd_ratio_overlap_k2",
+      "experiment_name": "feature_subset_rpcyd_ratio_overlap_k2_cmdl_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_rpcyd_ratio_overlap_k2\\feature_subset_rpcyd_ratio_overlap_k2_cmdl_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "feature_subset_rpcyd_ratio_overlap_k2",
+        "track": "feature_subset",
+        "scenario": "overlap_region_proxy",
+        "feature_bundle": "rpcyd_ratio_overlap_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2019,
+        "year_end": 2023,
+        "stats_end_year": 2021,
+        "train_end_year": 2021,
+        "val_end_year": 2022,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "rpcyd_ratio_overlap_sensitivity"
+      },
+      "run_spec": {
+        "name": "plain_lstm",
+        "model": "plain_lstm",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_rpcyd_ratio_overlap_k2",
+      "experiment_name": "feature_subset_rpcyd_ratio_overlap_k2_plain_lstm_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_rpcyd_ratio_overlap_k2\\feature_subset_rpcyd_ratio_overlap_k2_plain_lstm_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "feature_subset_no_per_capita_overlap_k2",
+        "track": "feature_subset",
+        "scenario": "overlap_region_proxy",
+        "feature_bundle": "multiseq_overlap_no_per_capita_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2019,
+        "year_end": 2023,
+        "stats_end_year": 2021,
+        "train_end_year": 2021,
+        "val_end_year": 2022,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "no_per_capita_multiseq_sensitivity"
+      },
+      "run_spec": {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_no_per_capita_overlap_k2",
+      "experiment_name": "feature_subset_no_per_capita_overlap_k2_cmdl_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_no_per_capita_overlap_k2\\feature_subset_no_per_capita_overlap_k2_cmdl_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "feature_subset_no_per_capita_overlap_k2",
+        "track": "feature_subset",
+        "scenario": "overlap_region_proxy",
+        "feature_bundle": "multiseq_overlap_no_per_capita_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2019,
+        "year_end": 2023,
+        "stats_end_year": 2021,
+        "train_end_year": 2021,
+        "val_end_year": 2022,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "no_per_capita_multiseq_sensitivity"
+      },
+      "run_spec": {
+        "name": "plain_lstm",
+        "model": "plain_lstm",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_no_per_capita_overlap_k2",
+      "experiment_name": "feature_subset_no_per_capita_overlap_k2_plain_lstm_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_no_per_capita_overlap_k2\\feature_subset_no_per_capita_overlap_k2_plain_lstm_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "feature_subset_pca1_overlap_k2",
+        "track": "feature_subset",
+        "scenario": "overlap_region_proxy",
+        "feature_bundle": "multiseq_overlap_pca1_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2019,
+        "year_end": 2023,
+        "stats_end_year": 2021,
+        "train_end_year": 2021,
+        "val_end_year": 2022,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "train_window_pca1_sensitivity"
+      },
+      "run_spec": {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_pca1_overlap_k2",
+      "experiment_name": "feature_subset_pca1_overlap_k2_cmdl_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_pca1_overlap_k2\\feature_subset_pca1_overlap_k2_cmdl_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "feature_subset_pca1_overlap_k2",
+        "track": "feature_subset",
+        "scenario": "overlap_region_proxy",
+        "feature_bundle": "multiseq_overlap_pca1_region_proxy",
+        "max_lag": 2,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          },
+          {
+            "name": "plain_lstm",
+            "model": "plain_lstm",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2019,
+        "year_end": 2023,
+        "stats_end_year": 2021,
+        "train_end_year": 2021,
+        "val_end_year": 2022,
+        "proxy_perturbation": "none",
+        "hyperparameters": {},
+        "interpretation": "train_window_pca1_sensitivity"
+      },
+      "run_spec": {
+        "name": "plain_lstm",
+        "model": "plain_lstm",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_pca1_overlap_k2",
+      "experiment_name": "feature_subset_pca1_overlap_k2_plain_lstm_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\feature_subset_pca1_overlap_k2\\feature_subset_pca1_overlap_k2_plain_lstm_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "falsification_proxy_shuffle_fullspan_k3",
+        "track": "falsification",
+        "scenario": "fullspan_region_proxy",
+        "feature_bundle": "single_fullspan_region_proxy",
+        "max_lag": 3,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2006,
+        "year_end": 2023,
+        "stats_end_year": 2018,
+        "train_end_year": 2018,
+        "val_end_year": 2020,
+        "proxy_perturbation": "shuffle",
+        "hyperparameters": {},
+        "interpretation": "proxy_shuffle_null"
+      },
+      "run_spec": {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\falsification_proxy_shuffle_fullspan_k3",
+      "experiment_name": "falsification_proxy_shuffle_fullspan_k3_cmdl_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\falsification_proxy_shuffle_fullspan_k3\\falsification_proxy_shuffle_fullspan_k3_cmdl_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "falsification_noise_proxy_fullspan_k3",
+        "track": "falsification",
+        "scenario": "fullspan_region_proxy",
+        "feature_bundle": "single_fullspan_region_proxy",
+        "max_lag": 3,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2006,
+        "year_end": 2023,
+        "stats_end_year": 2018,
+        "train_end_year": 2018,
+        "val_end_year": 2020,
+        "proxy_perturbation": "noise",
+        "hyperparameters": {},
+        "interpretation": "noise_proxy_null"
+      },
+      "run_spec": {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\falsification_noise_proxy_fullspan_k3",
+      "experiment_name": "falsification_noise_proxy_fullspan_k3_cmdl_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\falsification_noise_proxy_fullspan_k3\\falsification_noise_proxy_fullspan_k3_cmdl_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "grid_fullspan_d8_temp10_dropout005",
+        "track": "capacity_gate_grid",
+        "scenario": "fullspan_region_proxy",
+        "feature_bundle": "single_fullspan_region_proxy",
+        "max_lag": 3,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2006,
+        "year_end": 2023,
+        "stats_end_year": 2018,
+        "train_end_year": 2018,
+        "val_end_year": 2020,
+        "proxy_perturbation": "none",
+        "hyperparameters": {
+          "d_model": 8,
+          "temperature": 1.0,
+          "dropout": 0.05
+        },
+        "interpretation": "capacity_gate_screen"
+      },
+      "run_spec": {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\grid_fullspan_d8_temp10_dropout005",
+      "experiment_name": "grid_fullspan_d8_temp10_dropout005_cmdl_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\grid_fullspan_d8_temp10_dropout005\\grid_fullspan_d8_temp10_dropout005_cmdl_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "grid_fullspan_d16_temp15_dropout015",
+        "track": "capacity_gate_grid",
+        "scenario": "fullspan_region_proxy",
+        "feature_bundle": "single_fullspan_region_proxy",
+        "max_lag": 3,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2006,
+        "year_end": 2023,
+        "stats_end_year": 2018,
+        "train_end_year": 2018,
+        "val_end_year": 2020,
+        "proxy_perturbation": "none",
+        "hyperparameters": {
+          "d_model": 16,
+          "temperature": 1.5,
+          "dropout": 0.15
+        },
+        "interpretation": "capacity_gate_screen"
+      },
+      "run_spec": {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\grid_fullspan_d16_temp15_dropout015",
+      "experiment_name": "grid_fullspan_d16_temp15_dropout015_cmdl_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\grid_fullspan_d16_temp15_dropout015\\grid_fullspan_d16_temp15_dropout015_cmdl_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "grid_fullspan_d32_temp10_dropout015",
+        "track": "capacity_gate_grid",
+        "scenario": "fullspan_region_proxy",
+        "feature_bundle": "single_fullspan_region_proxy",
+        "max_lag": 3,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2006,
+        "year_end": 2023,
+        "stats_end_year": 2018,
+        "train_end_year": 2018,
+        "val_end_year": 2020,
+        "proxy_perturbation": "none",
+        "hyperparameters": {
+          "d_model": 32,
+          "temperature": 1.0,
+          "dropout": 0.15
+        },
+        "interpretation": "capacity_gate_screen"
+      },
+      "run_spec": {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\grid_fullspan_d32_temp10_dropout015",
+      "experiment_name": "grid_fullspan_d32_temp10_dropout015_cmdl_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\grid_fullspan_d32_temp10_dropout015\\grid_fullspan_d32_temp10_dropout015_cmdl_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "grid_fullspan_d16_temp20_dropout015",
+        "track": "capacity_gate_grid",
+        "scenario": "fullspan_region_proxy",
+        "feature_bundle": "single_fullspan_region_proxy",
+        "max_lag": 3,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2006,
+        "year_end": 2023,
+        "stats_end_year": 2018,
+        "train_end_year": 2018,
+        "val_end_year": 2020,
+        "proxy_perturbation": "none",
+        "hyperparameters": {
+          "d_model": 16,
+          "temperature": 2.0,
+          "dropout": 0.15
+        },
+        "interpretation": "capacity_gate_screen"
+      },
+      "run_spec": {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\grid_fullspan_d16_temp20_dropout015",
+      "experiment_name": "grid_fullspan_d16_temp20_dropout015_cmdl_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\grid_fullspan_d16_temp20_dropout015\\grid_fullspan_d16_temp20_dropout015_cmdl_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "grid_fullspan_d16_temp15_dropout030",
+        "track": "capacity_gate_grid",
+        "scenario": "fullspan_region_proxy",
+        "feature_bundle": "single_fullspan_region_proxy",
+        "max_lag": 3,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2006,
+        "year_end": 2023,
+        "stats_end_year": 2018,
+        "train_end_year": 2018,
+        "val_end_year": 2020,
+        "proxy_perturbation": "none",
+        "hyperparameters": {
+          "d_model": 16,
+          "temperature": 1.5,
+          "dropout": 0.3
+        },
+        "interpretation": "capacity_gate_screen"
+      },
+      "run_spec": {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\grid_fullspan_d16_temp15_dropout030",
+      "experiment_name": "grid_fullspan_d16_temp15_dropout030_cmdl_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\grid_fullspan_d16_temp15_dropout030\\grid_fullspan_d16_temp15_dropout030_cmdl_seed0"
+    },
+    {
+      "matrix_name": "verify_smoke",
+      "variant": {
+        "variant_id": "grid_fullspan_d16_temp15_dropout015_entropy001",
+        "track": "capacity_gate_grid",
+        "scenario": "fullspan_region_proxy",
+        "feature_bundle": "single_fullspan_region_proxy",
+        "max_lag": 3,
+        "run_specs": [
+          {
+            "name": "cmdl",
+            "model": "cmdl",
+            "ablation": "none"
+          }
+        ],
+        "year_start": 2006,
+        "year_end": 2023,
+        "stats_end_year": 2018,
+        "train_end_year": 2018,
+        "val_end_year": 2020,
+        "proxy_perturbation": "none",
+        "hyperparameters": {
+          "d_model": 16,
+          "temperature": 1.5,
+          "dropout": 0.15,
+          "lambda_omega_entropy": 0.01
+        },
+        "interpretation": "capacity_gate_screen"
+      },
+      "run_spec": {
+        "name": "cmdl",
+        "model": "cmdl",
+        "ablation": "none"
+      },
+      "seed": 0,
+      "output_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\grid_fullspan_d16_temp15_dropout015_entropy001",
+      "experiment_name": "grid_fullspan_d16_temp15_dropout015_entropy001_cmdl_seed0",
+      "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\verify_smoke\\grid_fullspan_d16_temp15_dropout015_entropy001\\grid_fullspan_d16_temp15_dropout015_entropy001_cmdl_seed0"
+    }
+  ]
+}

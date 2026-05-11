@@ -1,0 +1,66 @@
+{
+  "required_missing_counts_before_policy": {
+    "y_t": 0,
+    "x_seq_rpcyd_total_income": 0,
+    "x_seq_rydgdp_disposable_income": 0,
+    "x_seq_rydgdp_disposable_income_per_capita": 0,
+    "x_seq_rydgdp_grdp": 0,
+    "x_seq_rydgdp_grdp_per_capita": 0,
+    "x_seq_rydgdp_ratio": 0,
+    "x_t": 0
+  },
+  "dropped_years_due_to_missing_policy": [],
+  "entity_count": 21,
+  "year_count": 5,
+  "years": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023
+  ],
+  "sequence_columns": [
+    "x_seq_rpcyd_total_income",
+    "x_seq_rydgdp_disposable_income",
+    "x_seq_rydgdp_disposable_income_per_capita",
+    "x_seq_rydgdp_grdp",
+    "x_seq_rydgdp_grdp_per_capita",
+    "x_seq_rydgdp_ratio"
+  ],
+  "proxy_columns": [
+    "proxy_formal_income_level",
+    "proxy_formalization_ratio",
+    "proxy_formal_capacity_signal"
+  ],
+  "static_columns": [
+    "static_formal_income_trend",
+    "static_formal_income_volatility"
+  ],
+  "proxy_static_entity_mean_std": {
+    "proxy_formal_income_level": 1.0,
+    "proxy_formalization_ratio": 1.0,
+    "proxy_formal_capacity_signal": 1.0,
+    "static_formal_income_trend": 1.0,
+    "static_formal_income_volatility": 1.0
+  },
+  "zero_variance_proxy_static_columns": [],
+  "target_entity_mean_unique_count": 1,
+  "warning_flags": {
+    "proxy_static_cross_section_degenerate": false,
+    "target_entity_mean_degenerate": true
+  },
+  "proxy_mode": "formal_region_summary",
+  "sequence_transform": {
+    "mode": "identity",
+    "uses_target_column": false
+  },
+  "evidence_scope": "primary_or_reference",
+  "proxy_construction": {
+    "fit_window": [
+      2019,
+      2021
+    ],
+    "uses_target_column": false,
+    "description": "Region-varying AC/proxy signals are derived from train-window formal sequence summaries: formal income level, formalization ratio, and formal capacity signal."
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "status": "success",
+  "updated_at": "2026-05-10T12:18:22.946276+00:00",
+  "variant_id": "reference_overlap_single_k2",
+  "track": "reference",
+  "run_spec": "cmdl",
+  "seed": 2,
+  "experiment_name": "reference_overlap_single_k2_cmdl_seed2",
+  "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\full_all_improvements\\reference_overlap_single_k2\\reference_overlap_single_k2_cmdl_seed2",
+  "skipped_existing_summary": false
+}

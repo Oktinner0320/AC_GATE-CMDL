@@ -1,0 +1,11 @@
+{
+  "status": "success",
+  "updated_at": "2026-05-10T12:19:38.400916+00:00",
+  "variant_id": "fullspan_income_k2",
+  "track": "fullspan_income",
+  "run_spec": "no_ac_encoder",
+  "seed": 0,
+  "experiment_name": "fullspan_income_k2_no_ac_encoder_seed0",
+  "run_dir": "C:\\DevSpace\\PyDevspace\\CMDL\\RQ_res\\outputs\\informal_acgate\\improvement_matrix\\full_all_improvements\\fullspan_income_k2\\fullspan_income_k2_no_ac_encoder_seed0",
+  "skipped_existing_summary": false
+}
