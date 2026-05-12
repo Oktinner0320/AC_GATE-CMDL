@@ -1,4 +1,4 @@
-# CMDL: Conditional Moderated Distributed Lag
+# AC-GATE: Conditional Moderated Distributed Lag
 
 > A testable framework for **entity-conditioned heterogeneous lag discovery** in panel time series.
 
