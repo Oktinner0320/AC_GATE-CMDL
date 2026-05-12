@@ -3,6 +3,7 @@
 % The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
+\usepackage{bm} % bold math symbols (e.g., \bm{\xi} for a collection)
 
 % Algorithms / pseudocode (algorithm2e)
 \usepackage[ruled,vlined,linesnumbered]{algorithm2e}
@@ -82,33 +83,25 @@ email address or ORCID}
 \maketitle
 
 \begin{abstract}
-Panel time series data often contain heterogeneous temporal responses across entities, but existing neural forecasting models are not designed for observation of heterogeneous lag structures across entities. We propose AC-GATE, an Adaptive-Conditioning Encoder, which instantiates \emph{Conditional Moderated Distributed Lag} (CMDL) by utilizing observable entity-level proxy to condition lag-weight distributions over historical observations, thereby making effective lags as structural outputs of the model rather than post-hoc explanations.
-
-The evaluation base on a layered audit protocol that separates predictive calibration from lag discovery. A synthetic panel with known ground-truth lags is used for mechanism recovery testing, and two real-world country-level panels used for external audit and stress testing. The results show that AC-GATE can recover heterogeneous lag structure in synthetic, and generate non-degenerate, externally structured effective lags in real data. The framework provides an auditable approach for studying entity-conditioned lag heterogeneity, without claiming causal identification or universal forecasting superiority.
+Country-level temporal panels are common for analysis, researchers often need to audit different entities respond to historical signals over different time horizons. Current approaches do not directly reveal such lag heterogeneity. We formulate entity-conditioned heterogeneous lag discovery as an temporal panel mining task and propose AC-GATE, an Adaptive-Conditioning Encoder with a Scale-Invariant Lag Gate. It instantiates conditional Moderated Distributed Lag by utilizing observable entity-level proxy to condition lag-weight distributions over historical observations, thereby making effective lags as structural outputs of the model rather than post-hoc explanations. The evaluation base on a layered audit protocol that separates predictive calibration from lag discovery. A synthetic panel with known ground-truth lags is used for mechanism recovery testing, and two real-world country-level panels used for external audit and stress testing. The results show that AC-GATE can recover heterogeneous lag structure in synthetic, and generate non-degenerate, externally structured effective lags in real data. The framework provides an auditable approach for studying entity-conditioned lag heterogeneity, without claiming causal identification or universal forecasting superiority.
 \end{abstract}
 
 \begin{IEEEkeywords}
-Panel time series, heterogeneous lag discovery, entity-conditioned modeling, interpretable neural networks, gated sequence modeling, deep learning.
+Panel time series, heterogeneous lag mining, lag audit, entity-conditioned modeling, interpretable neural networks, real-data diagnostics
 \end{IEEEkeywords}
 
 \section{Introduction}
-Panel time series data are more and more used to study processes like economic productivity, energy transition and climate-related outcomes. These processes cover changes of countries, regions, enterprises or organizations over time. This type of data contains two intertwined structures: temporal dependence in each entity and cross-sectional heterogeneity across entities. Classic research and recent surveys point out that the merging of dynamic relationships across entities can be misleading and reduce explainability when response parameters differ across units \cite{pesaran1995pmg,thayasivam2025panelsurvey}. These challenges are significant when the research not only focuses on the predictive accuracy of the model but also focuses on different effective lags of different entities in response to historical information.
+Analysts of panel time series often need more than accurate forecasts. In different entity-level (e.g., country, region or organization), a practical question is: Do different entities respond to historical signals over systematically different time scales? Classic research and recent surveys point out that the merging of dynamic relationships across entities can be misleading and reduce explainability when response parameters differ across units \cite{pesaran1995pmg,thayasivam2025panelsurvey}. These challenges are significant when the research focuses on different effective lags of different entities in response to historical information. In productivity analysis, inputs related to technology or ability may only impact outcomes after an adjustment period, organizational learning or complementary investments \cite{schweikl2020lessons}. In research on energy and emissions, the impacts of renewable energy, energy efficiency or institutional conditions may differ by country, development stage and emissions regime \cite{akram2020energy,mirziyoyeva2022re}. These observations indicate that single global lag structures may be too restrictive. Neural forecasting models provide flexible tools for prediction, but they are not designed for entity-conditioned lag discovery like Temporal Fusion Transformer (TFT) \cite{lim2021tft} and Gated Attention Network (GA-Net) \cite{xue2020gated}.
 
-In many real-world panel data, heterogeneous lags have practical meaning. In productivity analysis, inputs related to technology or ability may only impact outcomes after an adjustment period, organizational learning or complementary investments \cite{schweikl2020lessons}. In research on energy and emissions, the impacts of renewable energy, energy efficiency or institutional conditions may differ by country, development stage and emissions regime \cite{akram2020energy,mirziyoyeva2022re}. These observations indicate that single global lag structures may be too restrictive.
+We propose AC-GATE, an Adaptive-Conditioning (AC) Encoder with a Scale-Invariant Lag Gate, which instantiates \emph{Conditional Moderated Distributed Lag} (CMDL) to discover entity-conditioned heterogeneous lags in panel time series. This structure uses observable entity-level proxy information to condition (and hence moderate) the past observations, thereby constructing weight distributions over lags based on entity characteristics. The result is an effective lag that is not a post-hoc explanation to a black-box, which is a structural output from the lag gate. To evaluate AC-GATE, we use a layered audit protocol that separates predictive calibration from lag discovery. Meanwhile, the empirical evaluation covers three domains: synthetic, economic and energy, which have different evidential roles. We further include structural ablations and a proxy-shuffle negative control to distinguish architectural necessity from semantic proxy conditioning.
 
-Current neural forecasting models provide flexible tools for nonlinear temporal prediction, but they are not designed for entity-conditioned lag discovery like Temporal Fusion Transformer (TFT) \cite{lim2021tft} and Gated Attention Network (GA-Net) \cite{xue2020gated}. As a result, the core question we consider in panel time series is: can the model discover systematically different effective lag structure across entities, and can the learned lag variation be validated by external entity-level features?
-
-We propose AC-GATE, an Adaptive-Conditioning (AC) Encoder with a Scale-Invariant Lag Gate, which instantiates \emph{Conditional Moderated Distributed Lag} (CMDL) to discover entity-conditioned heterogeneous lags in panel time series. This structure uses observable entity-level proxy information to condition (and hence moderate) the past observations, thereby constructing weight distributions over lags based on entity characteristics. The result is an effective lag that is not a post-hoc explanation to a black-box, which is a structural output from the lag gate. This design is inspired by the absorptive-capacity view \cite{cohen1990absorptive}, while keeping agnostic to causal identification.
-
-There is a layered audit protocol to evaluate AC-GATE, which separates predictive calibration from heterogeneous lag discovery. Meanwhile, the empirical evaluation covers three domains: synthetic, economic and energy, which have different evidential roles. In these domain, AC-GATE is compared against neural and econometric baselines, which include structural ablations that remove the AC encoder or disable the lag gate.
-
-The contribution of our work has three aspects, First, formulating entity-conditioned heterogeneous lag discovery as a testable panel time-series mining problem, which is independence from standard prediction. Second, introducing AC-GATE, which generates entity-level effective lags via an explicit lag gating structure. Third, proposing a layered audit protocol that evaluates forecast calibration, lag non-degeneracy, external stratifier alignment and directional mechanism recovery. Results show that AC-GATE can recover true heterogeneous lag structure in synthetic panels, and identify structured lag heterogeneity in two real-world country-level panels.
+This paper makes three contributions. First, formulating entity-conditioned heterogeneous lag discovery as a testable panel time-series mining task that is independence from standard prediction. Second, introducing AC-GATE, which generates entity-level effective lags via an explicit lag gating structure. Third, proposing a layered audit protocol that evaluates forecast calibration, lag non-degeneracy, external stratifier alignment and directional mechanism recovery. Results show that AC-GATE can recover true heterogeneous lag structure in synthetic panels, and identify structured lag heterogeneity in two real-world panels. Fig.~\ref{fig:use_case} illustrates the applied lag-audit use case studied in this paper.
 
 \begin{figure}[!tbhp]
     \centering
-    \includesvg[width=\columnwidth]{img/intro_use_case_box.svg}
-    \caption{use case.}
-    \label{fig:intro_case}
+    \includegraphics[width=\columnwidth,trim=0 6mm 0 6mm,clip]{img/intro_use_case_box.png}
+    \caption{Use-case overview of entity-conditioned lag auditing. }
+    \label{fig:use_case}
 \end{figure}
 
 \section{Related Work}\label{related_work}
@@ -123,7 +116,7 @@ Except for architecture design, the application of panel machine learning also b
 
 
 
-\section{Problem Formulation}
+\section{Problem Formulation}\label{sec:problem_formulation}
 % 这一段是面板设置
 % This is panel setup, about concept abstract
 \subsection{Panel Setup}
@@ -158,20 +151,14 @@ Separating heterogeneous lag mining from standard prediction. Forecasting evalua
 
 % 讨论具体方法
 % Discuss specific methods
-\section{Method: AC-gate}
+\section{Method: AC-GATE}
 We propose AC-GATE, an Adaptive-Conditioning Encoder with a Scale-Invariant Lag Gate on top of a recurrent backbone. The model follows the pipeline:
 \[
     p_i \rightarrow z_i \rightarrow \omega_i \rightarrow c_{i,t} \rightarrow \widehat{Y}_{i,t+1}.
 \]
-This design combines two reasons. First, the absorptive-capacity view we abstracted in section~\ref{related_work} suggests that entity-level prior knowledge can moderate how information is absorbed over time \cite{cohen1990absorptive}. Second, the sequence models base on gate and attention show that input-dependent selection can improve explainability by exposing which parts of a sequence or feature set are used by the model \cite{xue2020gated,lim2021tft}.
+This design combines two reasons. First, the absorptive-capacity view abstracted in Section~\ref{sec:problem_formulation} suggests that entity-level prior knowledge can moderate how information is absorbed over time \cite{cohen1990absorptive}. Second, the sequence models base on gate and attention show that input-dependent selection can improve explainability by exposing which parts of a sequence or feature set are used by the model \cite{xue2020gated,lim2021tft}.
 
-% AC architecture overview
-\begin{figure}[!tbhp]
-    \centering
-    \includesvg[width=\columnwidth]{img/ac_gate_architecture.svg}
-    \caption{Overview of the AC-GATE architecture.}
-    \label{fig:ac_gate_arch}
-\end{figure}
+
 
 
 \subsection{Adaptive Conditioning Encoder}
@@ -205,11 +192,19 @@ Where $g_{\theta}(z_i)\in\mathbb{R}^{K}$ outputs entity-specific lag logits, wit
 
 The relative-position term $\lambda\cdot k/K$ penalizes farther lags on a normalized scale. The normalization by $K$ makes the position bias scale-invariant with respect to the maximum lag horizon. The temperature $\tau$ controls the sharpness of the resulting lag distribution.
 
+
 \subsection{Backbone and Information-Flow Discipline}
 The lag-weighted context $c_{i,t}$ is connected with a learned entity embedding, the optional static feature vector $s_i$, and optional macro-level controls. The sequence is processed by a two-layer LSTM, and the resulting hidden state is mapped to $\widehat{Y}_{i,t+1}$.
 
 A key information-flow constraint is that the current sequential observation $X_{i,t}$ is not directly concatenated into the backbone input. Only lagged observations enter through $c_{i,t}$. This prevents a shortcut path where the recurrent backbone could ignore the lag gate and rely on contemporaneous covariates, which is a failure mode closely related to leakage concerns in panel machine learning \cite{cerqua2025mlpanel}.
 
+% AC architecture overview
+\begin{figure}[!tbhp]
+    \centering
+    \includesvg[width=\columnwidth]{img/ac_gate_architecture.svg}
+    \caption{Overview of the AC-GATE architecture.}
+    \label{fig:ac_gate_arch}
+\end{figure}
 
 % 改到这里
 \subsection{Training Objective}
@@ -223,13 +218,19 @@ Training minimizes the domain-agnostic objective:
 \end{equation}
 The task loss $\mathcal{L}_{\mathrm{task}}$ is the forecasting mean squared error (MSE) between the predicted target $\widehat{Y}_{i,t+1}$ and the true target at the corresponding valid post-warmup step. The reconstruction loss $\mathcal{L}_{\mathrm{recon}}$ compares the original proxy vector $p_i$ with the reconstructed proxy vector $\widehat{p}_i$. The coefficient $\lambda_r$ controls the weight of the reconstruction term. 
 
+
+\subsection{Computational Complexity}
+For a panel with $N$ entities, $T$ time steps, $F$ dynamic features, maximum lag $K$, LSTM hidden size $H$, and $L$ recurrent layers, the dominant per-epoch cost of AC-GATE is $O(NT(KF + LH(F+H)))$. The additional entity-conditioned lag gate costs $O(NKH)$ and is computed once per entity, while the lag aggregation costs $O(NTKF)$. So the main computational burden remains the recurrent backbone. At inference, the entity-specific lag distribution $\omega_i$ and effective lag $k_i^\star$ can be precomputed in each entity. And then, the prediction has the same order as the LSTM forward pass plus lag aggregation.
+
+
+
 \section{LAG DISCOVERY AND AUDIT PROTOCOL}\label{sec:audit_protocol}
 A layered audit protocol is used to evaluate AC-GATE. This reflects the view that the evaluation of predictive models not only pay attention to test-set accuracy but also to whether they yield useful, deployment-relevant understanding (e.g., transparency, accountability, or faithful structure) beyond what standard predictive metrics capture \cite{lipton2018mythos,rudin2019stop}. This separation is necessary because forecast accuracy and structured lag discovery are related but different: a model maybe weak in a real-world data prediction while still producing a non-degenerate and externally structured effective-lag signal. Conversely, a strong forecasting baseline does not automatically imply an interpretable, entity-conditioned lag distribution. Algorithm~\ref{alg:acgate_audit} summarizes the four-layer audit protocol used throughout the experiments.
 
 \begin{algorithm}[!tbhp]
 \caption{Lag Discovery and Layered Audit}
 \label{alg:acgate_audit}
-\Input{$\{X_{i,t},Y_{i,t}\}$; $\{p_i\}$; optional $\{s_i\}$; lag horizon $K$; seeds $\mathcal{S}$; stratifiers $\Xi$; permutations $B$; threshold $\epsilon$; optional truth $k^{\mathrm{true}}_i$}
+\Input{$\{X_{i,t},Y_{i,t}\}$; $\{p_i\}$; optional $\{s_i\}$; lag horizon $K$; seeds $\mathcal{S}$; stratifiers $\bm{\xi}$; permutations $B$; threshold $\epsilon$; optional truth $k^{\mathrm{true}}_i$}
 \Output{Forecast metrics; $\omega_i$; $k_i^\star$; L0--L3 verdicts}
 
 \ForEach{$r\in\mathcal{S}$}{
@@ -248,7 +249,7 @@ Compute $\mathrm{sd}_i(k_i^\star)$\;
 \If{$\mathrm{sd}_i(k_i^\star)\leq\epsilon$}{Mark seed degenerate\;\Continue}
 
 \tcp{L2 (structured heterogeneity):}
-\ForEach{$\xi^{(j)}\in\Xi$}{
+\ForEach{$\xi^{(j)}\in\bm{\xi}$}{
 Compute $\rho_{r,j}\gets\mathrm{Spearman}(k_i^\star,\xi_i^{(j)})$\;
 Draw $B$ entity-label permutations of $\xi^{(j)}$ and compute $\rho^{(b)}$\;
 Compute $p_{r,j}\gets(1+\#\{b:|\rho^{(b)}|\geq|\rho_{r,j}|\})/(B+1)$\;
@@ -264,14 +265,14 @@ Run paired seed-level tests vs. baselines/ablations\;
 Assemble the L0--L3 verdict matrix\;
 \end{algorithm}
 
+For AC-GATE and its lag-gate ablations, $k_i^\star$ is a structural quantity computed from the entity-specific lag distribution $\omega_i$. To baselines without an explicit entity-conditioned lag gate, a diagnostic $k_i^\star$ summary is reported when a comparable temporal-weight or lag-diagnostic output is available. Such baseline $k_i^\star$ values are used only for empirical comparison and are not interpreted as structural lag-gate outputs.
 
 \subsection{Audit Layers and Verdict Rules}
 L0 focuses on the predictive calibration of each method. This layer is included to show whether the learned representation remains predicatively calibrated, but it is not the main mechanism-claim layer.
 
 L1 is a degeneracy guard for lag discovery. For each seed, we compute the cross-entity standard deviation of the learned effective lag, $\mathrm{sd}_i(k_i^\star)$. If this value is below a small threshold $\epsilon$, the seed is marked as degenerate and is not used for L2 stratification. This rule prevents constant-lag models (e.g., uniform-lag or collapsed ablations) from being explained as evidence of heterogeneous lag structure.
 
-L2 evaluates whether the learned effective lag is externally structured. For each pre-specified entity stratifier $\xi_i$, computing the seed-level Spearman correlation between $k_i^\star$ and $\xi_i$. And then, we compare its absolute value with an entity-label permutation. L2 evidence is summarized by mean $|\rho|$ across seeds, the fraction of seeds with permutation $p<0.05$, and a Fisher-combined
-permutation $p$-value, which are shown in Table~\ref{tab:l2_sign_robust_quantities}. Stratifiers are only computed from the training window, so the test evaluates alignment with pre-existing entity characteristics rather than future information.
+L2 evaluates whether the learned effective lag is externally structured. For each pre-specified entity stratifier $\xi_i$, computing the seed-level Spearman correlation between $k_i^\star$ and $\xi_i$. And then, we compare its absolute value with an entity-label permutation. L2 is a sign-robust structural test, not a directional semantic test. It ask whether learned lag are non-randomly stratified by pre-specified entity-level variables. L2 evidence is summarized by mean $|\rho|$ across seeds, the fraction of seeds with permutation $p<0.05$, and a Fisher-combined permutation $p$-value, which are shown in Table~\ref{tab:l2_sign_robust_quantities}. Stratifiers are only computed from the training window, so the test evaluates alignment with pre-existing entity characteristics rather than future information.
 
 
 \begin{table}[!tbhp]
@@ -383,7 +384,7 @@ For the synthetic experiments, the main test metric is $k^\star$ MAE because the
     \centering    % In a two-column layout, \textwidth spans both columns; use \columnwidth for a single column figure.
     \includegraphics[width=\columnwidth]{img/realdata_case_study_panel.png}
     \caption{Relationship between entity-level stratifiers and learned effective lag.}
-    {\footnotesize\raggedright\textit{Notes.} Only use training window information, higher levels of human capital/rule of law correspond to shorter learned effective lags. This indicates that the national-level lag structure learned by AC-GATE is not random, which exhibits a systematic stratification related to the development/governance status during the training period.\par}
+    {\footnotesize\raggedright\textit{Notes.} Only use training window information. Per-entity $k^\star$ is the mean over 20 seeds; aggregating across seeds removes the per-seed sign-flip of the latent lag score (see L2 in Section~\ref{sec:audit_protocol}), so the cross-seed-averaged direction is stable while individual seeds may show either sign. Higher levels of human capital/rule of law correspond to shorter cross-seed-averaged effective lags, indicating that the national-level lag structure learned by AC-GATE is systematically stratified by development/governance status during the training period.\par}
     \label{fig:case_study_panel}
 \end{figure}
 
@@ -655,9 +656,7 @@ Grouped ARDL   & $-0.0891\,(0.0000)$    & ---     & ---     & --- \\
 \end{tabular*}
 
 \par\smallskip
-{\footnotesize\raggedright\textit{Notes.} \(k^\star_{\sigma}\) is the
-mean of the cross-entity standard deviation of \(k^\star\) per seed
-(L1); a value close to zero indicates a degenerate lag distribution.\par}
+{\footnotesize\raggedright\textit{Notes.} \(k^\star_{\sigma}\) is the mean of the cross-entity standard deviation of \(k^\star\) per seed (L1); a value close to zero indicates a degenerate lag distribution. For AC-GATE variants, $k^\star_\sigma$ is computed from the learned lag-gate distribution. For Plain LSTM, TFT, and GA-Net, $k^\star_\sigma$ is a diagnostic lag-summary statistic computed for comparison and is not a structural gate-derived effective lag.\par}
 \end{table}
 
 \begin{table}[!tbhp]
@@ -681,7 +680,7 @@ Grouped ARDL   & $\;\;0.6071\,(0.0000)$ & ---  & ---     & --- \\
 \bottomrule
 \end{tabular*}
 \par\smallskip
-{\footnotesize\raggedright\textit{Notes.} Cells: mean (sd) over 20 seeds.\par}
+{\footnotesize\raggedright\textit{Notes.} Cells: mean (sd) over 20 seeds. For AC-GATE variants, $k^\star_\sigma$ is computed from the learned lag-gate distribution. For Plain LSTM, TFT, and GA-Net, $k^\star_\sigma$ is a diagnostic lag-summary statistic computed for comparison and is not a structural gate-derived effective lag.\par}
 %Sources: \texttt{economics\_compact\_summary.csv},
 %\texttt{energy\_compact\_summary.csv}.\par}
 \end{table}
@@ -709,7 +708,7 @@ No Recon Reg. & log capital per worker & $0.272$ & $-0.124$ & $0.60$ & $6.1{\tim
 \bottomrule
 \end{tabular*}
 \par\smallskip
-{\footnotesize\raggedright\textit{Notes.} No-AC-Encoder, Uniform-Lag, Plain LSTM, TFT, and GA-Net are L1-degenerate (all 20 seeds invalid) and are omitted.\par}
+{\footnotesize\raggedright\textit{Notes.} No-AC-Encoder and Uniform-Lag are L1-degenerate (all 20 seeds invalid) and are omitted. Plain LSTM, TFT, and GA-Net may yield diagnostic lag summaries, but they do not produce structural gate-derived $k^\star$ values and are therefore excluded from L2 mechanism claims.\par}
 %Source: \texttt{economics\_stratified\_kstar\_aggregated.csv}.\par}
 \end{table}
 
@@ -733,7 +732,7 @@ No Recon Reg. & log GDP per capita & $0.609$ & $\;\;0.185$ & $0.90$ & $1.5{\time
 \bottomrule
 \end{tabular*}
 \par\smallskip
-{\footnotesize\raggedright\textit{Notes.} No-AC-Encoder, Uniform-Lag, Plain LSTM, TFT, and GA-Net are L1-degenerate (all 20 seeds invalid) and are omitted. \(\overline{|\rho|}\) is sign-robust; the near-zero seed-mean of signed \(\rho\) reflects the seed-wise sign-flip invariance discussed in Section~\ref{sec:audit_protocol} (L3).\par}
+{\footnotesize\raggedright\textit{Notes.} No-AC-Encoder and Uniform-Lag are L1-degenerate (all 20 seeds invalid) and are omitted. \(\overline{|\rho|}\) is sign-robust; the near-zero seed-mean of signed \(\rho\) reflects the seed-wise sign-flip invariance discussed in Section~\ref{sec:audit_protocol} (L2). Plain LSTM, TFT, and GA-Net may yield diagnostic lag summaries, but they do not produce structural gate-derived $k^\star$ values and are therefore excluded from L2 mechanism claims.\par}
 %Source: \texttt{energy\_stratified\_kstar\_aggregated.csv}.\par}
 \end{table}
 
@@ -769,9 +768,7 @@ Deterministic algorithms & off \\
 
 
 \FloatBarrier
-\section{Reproducibility Metadata}\label{app:repro}
 
-\FloatBarrier
 \subsection{Experiment Parameters}
 \begin{table}[!tbhp]
 \centering
