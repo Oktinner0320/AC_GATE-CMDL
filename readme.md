@@ -9,12 +9,12 @@ This repository contains the reference implementation, baselines, real-data pipe
 ## 1. What this repository provides
 
 - `model/` — AC-GATE: Adaptive Conditioning Encoder + Scale-Invariant Lag Gate + LSTM backbone, plus a domain-agnostic loss with optional reconstruction regularisation.
-- `baselines/` — Plain LSTM (no AC, no lag gate), Grouped ARDL (per–anchor-group distributed-lag OLS), and a Panel OLS reference. **TFT is not included in the 20-seed evaluation suite** (see [§4 Baselines](#4-baselines)).
+- `baselines/` — Plain LSTM, TFT and GA-Net neural baselines, Grouped ARDL for real-data distributed-lag OLS, and a Panel OLS reference.
 - `data/` — Loaders and download scripts for two real-world country-level panels (Penn World Table 11.0 + OWID-energy × WGI) and a synthetic generator with ground-truth `k*`.
-- `experiments/` — Self-contained runners; `experiments/run_complete_20seed_suite.py` is the single entry point that reproduces all paper artefacts.
-- `evaluation/` — Metrics (`metrics.py`), paired Wilcoxon significance (`significance.py`), real-data diagnostics (`realdata_diagnostics.py`) and the **stratified k\*** L2 mechanism test (`stratified_kstar.py`).
-- `notebooks/` — Final-figure notebooks for synthetic, economics and energy domains.
-- `outputs/notebook_*/complete_20seed_20260426/` — Locked 20-seed comparison CSVs reported in the paper.
+- `experiments/` — Self-contained runners; `experiments/run_complete_20seed_suite.py` is the resumable generic 20-seed suite entry point.
+- `evaluation/` — Metrics (`metrics.py`), paired Wilcoxon significance (`significance.py`), real-data diagnostics (`realdata_diagnostics.py`), the **stratified k\*** L2 mechanism test (`stratified_kstar.py`), and paper-facing asset assembly (`paper_assets.py`).
+- `notebooks/` — Locked reproducibility notebooks for synthetic, economics, energy, proxy-shuffle negative controls and final reporting.
+- `outputs/notebook_*/complete_20seed_20260426/` — Locked per-domain 20-seed comparison outputs; `outputs/paper_assets/complete_20seed_20260426/` contains the final paper-facing tables and figures.
 
 ---
 
@@ -59,18 +59,19 @@ python data/energy/download.py
 
 ## 4. Baselines
 
-All baselines share the same data loader, train/val/test split, optimiser, and 20 seeds (`SEEDS = list(range(20))`). See [§5 Hyperparameter Protocol](#5-hyperparameter-protocol) for shared backbone hyperparameters.
+All trainable neural methods share the same data loader, train/val/test split, optimiser, and 20 seeds (`SEEDS = list(range(20))`). The real-data Grouped ARDL baseline uses the same domain splits and seed protocol for matched comparison. See [§5 Hyperparameter Protocol](#5-hyperparameter-protocol) for shared backbone hyperparameters.
 
 | Method | Implementation | Reference | In 20-seed suite | Role |
 |---|---|---|---|---|
 | **CMDL / AC-GATE** (ours) | `model/cmdl_model.py` (self) | This work | ✅ | Main method |
 | Plain LSTM | `baselines/lstm_baseline.py` (self) | — | ✅ | Neural baseline without AC encoder / lag gate |
-| Grouped ARDL | `baselines/grouped_ardl.py` (self, on `linearmodels.PanelOLS`) | Pesaran & Smith (1995) | ✅ | Anchor-grouped distributed-lag OLS — strong econometric baseline |
+| TFT (Temporal Fusion Transformer) | `baselines/tft_baseline.py` (self) | Lim et al. (2021) | ✅ | TFT-style neural baseline run under the same splits and seeds |
+| GA-Net | `baselines/ganet_baseline.py` (self) | — | ✅ | Neural baseline included for post-hoc lag-comparison parity |
+| Grouped ARDL | `baselines/grouped_ardl.py` (self, on `linearmodels.PanelOLS`) | Pesaran & Smith (1995) | ✅ (economics/energy) | Anchor-grouped distributed-lag OLS — strong econometric baseline for real-data panels |
 | Panel OLS | `baselines/panel_ols.py` (self, on `linearmodels.PanelOLS`) | — | ⚪ Reference only | Used as a sanity-check during data preparation; not tabled in the paper |
 | Ablation: No AC Encoder | `experiments/run_*_ablation.py` (variant `no_ac_encoder`) | This work | ✅ | Removes AC conditioning |
 | Ablation: Uniform Lag | `experiments/run_*_ablation.py` (variant `uniform_lag`) | This work | ✅ | Disables lag gate ($\omega_k = 1/K$) |
 | Ablation: No Recon Reg | `experiments/run_*_ablation.py` (variant `no_recon_regularization`) | This work | ✅ | Sets $\lambda_r = 0$ |
-| TFT (Temporal Fusion Transformer) | — | Lim et al. (2021) | ⚪ Reference only | Early experiments with TFT-style gated attention inspired the AC encoder + lag gate design; not included in 20-seed suite due to data scale and focus on interpretability rather than SOTA forecasting |
 
 ---
 
@@ -101,12 +102,12 @@ The Plain LSTM baseline inherits `d_model`, `lstm_layers` and `dropout` from `CM
 
 ## 6. Reproducing paper tables and figures
 
-The full pipeline is **resumable**: tasks whose `summary.json` already exists are skipped unless `--force` is supplied.
+The experiment pipeline is **resumable**: tasks whose `summary.json` already exists are skipped unless `--force` is supplied. The CLI suite writes the generic `outputs/notebook_*/complete_20seed/` roots; the locked notebooks pin `PLAN_NAME = "complete_20seed_20260426"` and regenerate the dated artefacts reported in the paper. Notebook 05, or equivalently `evaluation/paper_assets.py`, assembles the final paper-facing tables and figures from the per-domain outputs plus the proxy-shuffle negative control tree.
 
 ```powershell
 # Conda must be activated first: conda activate PTenv
 
-# 1. Reproduce the entire 20-seed suite (all three domains)
+# 1. Reproduce the generic 20-seed suite (all three domains)
 python experiments/run_complete_20seed_suite.py --domain all
 
 # 2. Or run by domain (each can be parallelised across seed shards)
@@ -118,25 +119,33 @@ python experiments/run_complete_20seed_suite.py --domain energy
 python experiments/run_complete_20seed_suite.py --domain economics --seeds 0 1 2 3 4 5 6 7 8 9
 python experiments/run_complete_20seed_suite.py --domain economics --seeds 10 11 12 13 14 15 16 17 18 19
 
-# 4. Regenerate comparison CSVs, figures and the L2 stratified k* analysis
-jupyter nbconvert --to notebook --execute notebooks/01_synthetic_verify.ipynb
-jupyter nbconvert --to notebook --execute notebooks/02_economics_results.ipynb
-jupyter nbconvert --to notebook --execute notebooks/03_energy_results.ipynb
+# 4. Regenerate the locked dated comparison CSVs, negative controls and reporting artefacts
+jupyter nbconvert --to notebook --execute notebooks/01_synthetic_complete.ipynb
+jupyter nbconvert --to notebook --execute notebooks/02_economics_complete.ipynb
+jupyter nbconvert --to notebook --execute notebooks/03_energy_complete.ipynb
+jupyter nbconvert --to notebook --execute notebooks/04_proxy_shuffle_negative_control.ipynb
+jupyter nbconvert --to notebook --execute notebooks/05_visualization_reporting.ipynb
+
+# Optional direct reporting entry point used by notebook 05
+python evaluation/paper_assets.py --plan-name complete_20seed_20260426
 ```
 
 ### Mapping from paper artefacts to source files
 
-| Paper artefact | Source |
-|---|---|
-| Table 1 — Synthetic main results | `outputs/notebook_synthetic/complete_20seed_20260426/comparison/synthetic_multiseed_summary.csv` |
-| Table 2 — Synthetic significance (paired Wilcoxon) | `outputs/notebook_synthetic/complete_20seed_20260426/comparison/synthetic_significance_kstar_mae.csv` |
-| Table 3 — Economics forecast layer (L0) | `outputs/notebook_economics/complete_20seed_20260426/comparison/economics_compact_summary.csv` |
-| Table 4 — Economics L2 stratified k* | `outputs/notebook_economics/complete_20seed_20260426/comparison/economics_stratified_kstar_aggregated.csv` |
-| Table 5 — Energy forecast layer (L0) | `outputs/notebook_energy/complete_20seed_20260426/comparison/energy_compact_summary.csv` |
-| Table 6 — Energy L2 stratified k* | `outputs/notebook_energy/complete_20seed_20260426/comparison/energy_stratified_kstar_aggregated.csv` |
-| Figure: ω heatmap | `visualization/omega_heatmap.py` (called from notebooks) |
-| Figure: k* distribution | `visualization/kstar_distribution.py` (called from notebooks) |
-| Figure: stratified k* bars + scatter | Notebook cells in `02_economics_results.ipynb` / `03_energy_results.ipynb` (saved to `outputs/.../comparison_plots/`) |
+| Paper artefact | Paper-facing source | Reproducibility provenance |
+|---|---|---|
+| Table 1 — Synthetic main results | `outputs/paper_assets/complete_20seed_20260426/tables/synthetic_main_table.csv` | `notebooks/01_synthetic_complete.ipynb`; intermediate: `outputs/notebook_synthetic/complete_20seed_20260426/comparison/synthetic_multiseed_summary.csv` |
+| Table 2 — Synthetic significance (paired Wilcoxon) | `outputs/paper_assets/complete_20seed_20260426/tables/synthetic_significance_kstar_mae.csv`; companion task-loss table: `outputs/paper_assets/complete_20seed_20260426/tables/synthetic_significance_task_loss.csv` | `notebooks/01_synthetic_complete.ipynb`; intermediate: `outputs/notebook_synthetic/complete_20seed_20260426/comparison/synthetic_significance_kstar_mae.csv` |
+| Table 3 — Economics forecast layer (L0) | `outputs/paper_assets/complete_20seed_20260426/tables/realdata_forecast_table.csv` (`domain == economics`) | `notebooks/02_economics_complete.ipynb`; intermediate: `outputs/notebook_economics/complete_20seed_20260426/comparison/economics_comparison.csv` |
+| Table 4 — Economics L2 stratified k* | `outputs/paper_assets/complete_20seed_20260426/tables/economics_stratified_main_table.csv` | `notebooks/02_economics_complete.ipynb`; intermediate: `outputs/notebook_economics/complete_20seed_20260426/comparison/economics_stratified_kstar_aggregated.csv` |
+| Table 5 — Energy forecast layer (L0) | `outputs/paper_assets/complete_20seed_20260426/tables/realdata_forecast_table.csv` (`domain == energy`) | `notebooks/03_energy_complete.ipynb`; intermediate: `outputs/notebook_energy/complete_20seed_20260426/comparison/energy_comparison.csv` |
+| Table 6 — Energy L2 stratified k* | `outputs/paper_assets/complete_20seed_20260426/tables/energy_stratified_main_table.csv` | `notebooks/03_energy_complete.ipynb`; intermediate: `outputs/notebook_energy/complete_20seed_20260426/comparison/energy_stratified_kstar_aggregated.csv` |
+| Real-data forecast significance | `outputs/paper_assets/complete_20seed_20260426/tables/real_r2_wilcoxon.csv`; domain-specific tables: `economics_significance_test_r2.csv`, `energy_significance_test_r2.csv` | Built by `evaluation/paper_assets.py` from the economics and energy comparison frames |
+| Baseline, ablation and verdict summaries | `outputs/paper_assets/complete_20seed_20260426/tables/baseline_compact_table.csv`, `ablation_degeneracy_table.csv`, `verdict_matrix.csv` | Built by `evaluation/paper_assets.py` from all locked comparison outputs |
+| Proxy-shuffle negative control | `outputs/paper_assets/complete_20seed_20260426/tables/proxy_shuffle_compact_table.csv` | `notebooks/04_proxy_shuffle_negative_control.ipynb`; source tree: `outputs/negative_controls/proxy_shuffle_20seed_20260511/` |
+| Mechanism result logs | `outputs/paper_assets/complete_20seed_20260426/tables/economics_mechanism_result_log.csv`, `energy_mechanism_result_log.csv` | Domain notebooks plus `evaluation.economics_comparison` / `evaluation.energy_comparison` |
+| Final paper figures | `outputs/paper_assets/complete_20seed_20260426/figures/` and `outputs/paper_assets/complete_20seed_20260426/compact_figures/` | `notebooks/05_visualization_reporting.ipynb`, `evaluation/paper_assets.py`, and `visualization/paper_figures.py` / `visualization/compact_paper_figures.py` |
+| Diagnostic ω heatmap and k* distribution utilities | `visualization/omega_heatmap.py`, `visualization/kstar_distribution.py` | Reusable visualization modules for diagnostic notebook/reporting variants |
 
 Each `summary.json` produced by a runner records GPU/CUDA (here: CPU), Python and PyTorch versions, wall-clock time and the exact seed (see [experiments/_runtime_meta.py](experiments/_runtime_meta.py)).
 
@@ -145,20 +154,74 @@ Each `summary.json` produced by a runner records GPU/CUDA (here: CPU), Python an
 ## 7. Repository layout
 
 ```
-config/             CMDLConfig dataclass with synthetic / economics / energy presets
-data/               Domain loaders, download scripts, raw + cleaned snapshots, .meta.json
-model/              ac_encoder.py, lag_gate.py, backbone.py, loss.py, cmdl_model.py
-baselines/          lstm_baseline.py, grouped_ardl.py, panel_ols.py
-experiments/        run_*.py per domain + run_complete_20seed_suite.py orchestrator
-evaluation/         metrics.py, significance.py, realdata_diagnostics.py,
-                    stratified_kstar.py, *_comparison.py
-visualization/      omega_heatmap.py, kstar_distribution.py
-notebooks/          01_synthetic_verify.ipynb, 02_economics_results.ipynb,
-                    03_energy_results.ipynb
-outputs/            notebook_{synthetic,economics,energy}/complete_20seed_20260426/
-                       cmdl/  plain_lstm/  grouped_ardl/  ablation/
-                       comparison/  comparison_plots/
-tests/              Pytest suites for loaders, baselines, ablations, comparisons
+CMDL/
+├─ config/
+│  └─ cmdl_config.py
+├─ data/
+│  ├─ economics/
+│  ├─ energy/
+│  ├─ Informal/
+│  └─ synthetic/
+├─ model/
+│  ├─ ac_encoder.py
+│  ├─ backbone.py
+│  ├─ cmdl_model.py
+│  ├─ lag_gate.py
+│  └─ loss.py
+├─ baselines/
+│  ├─ ganet_baseline.py
+│  ├─ grouped_ardl.py
+│  ├─ lstm_baseline.py
+│  ├─ panel_ols.py
+│  └─ tft_baseline.py
+├─ experiments/
+│  ├─ run_complete_20seed_suite.py
+│  ├─ run_synthetic.py / run_economics.py / run_energy.py
+│  ├─ run_*_lstm_baseline.py / run_*_tft_baseline.py / run_*_ganet_baseline.py
+│  ├─ run_*_grouped_ardl.py / run_*_ablation.py
+│  ├─ run_proxy_shuffle_negative_control.py
+│  └─ run_stratified_kstar.py
+├─ evaluation/
+│  ├─ metrics.py
+│  ├─ significance.py
+│  ├─ synthetic_comparison.py / economics_comparison.py / energy_comparison.py
+│  ├─ realdata_diagnostics.py
+│  ├─ stratified_kstar.py
+│  ├─ paper_assets.py
+│  └─ verdict_matrix.py
+├─ visualization/
+│  ├─ paper_figures.py
+│  ├─ compact_paper_figures.py
+│  ├─ omega_heatmap.py
+│  ├─ kstar_distribution.py
+│  └─ ...
+├─ notebooks/
+│  ├─ 01_synthetic_complete.ipynb
+│  ├─ 02_economics_complete.ipynb
+│  ├─ 03_energy_complete.ipynb
+│  ├─ 04_proxy_shuffle_negative_control.ipynb
+│  └─ 05_visualization_reporting.ipynb
+├─ outputs/
+│  ├─ notebook_synthetic/complete_20seed_20260426/
+│  │  ├─ cmdl/  plain_lstm/  tft/  ganet/  ablation/
+│  │  └─ comparison/  comparison_plots/
+│  ├─ notebook_economics/complete_20seed_20260426/
+│  │  ├─ cmdl/  plain_lstm/  tft/  ganet/  grouped_ardl/  ablation/
+│  │  └─ comparison/  comparison_plots/
+│  ├─ notebook_energy/complete_20seed_20260426/
+│  │  ├─ cmdl/  plain_lstm/  tft/  ganet/  grouped_ardl/  ablation/
+│  │  └─ comparison/  comparison_plots/
+│  ├─ paper_assets/complete_20seed_20260426/
+│  │  ├─ tables/
+│  │  ├─ figures/
+│  │  └─ compact_figures/
+│  └─ negative_controls/proxy_shuffle_20seed_20260511/
+│     └─ comparison/
+├─ tests/
+│  └─ test_*.py
+├─ environment.yml
+├─ requirements.txt
+└─ readme.md
 ```
 
 
