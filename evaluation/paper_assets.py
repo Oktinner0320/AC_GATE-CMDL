@@ -40,12 +40,12 @@ from visualization.paper_figures import (
 
 
 STRATIFIER_DISPLAY_LABELS = {
-    "hc_mean_train": "Human capital (training-window mean)",
-    "log_gdp_per_worker_train": "GDP per worker (training-window mean, log)",
-    "log_capital_per_worker_train": "Capital per worker (training-window mean, log)",
-    "rule_of_law_train": "Rule of law (training-window mean)",
-    "government_effectiveness_train": "Government effectiveness (training-window mean)",
-    "log_gdp_per_capita_train": "GDP per capita (training-window mean, log)",
+    "hc_mean_train": "Human capital (pre-test historical mean)",
+    "log_gdp_per_worker_train": "GDP per worker (pre-test historical mean, log)",
+    "log_capital_per_worker_train": "Capital per worker (pre-test historical mean, log)",
+    "rule_of_law_train": "Rule of law (pre-test historical mean)",
+    "government_effectiveness_train": "Government effectiveness (pre-test historical mean)",
+    "log_gdp_per_capita_train": "GDP per capita (pre-test historical mean, log)",
 }
 
 DOMAIN_DISPLAY_LABELS = {

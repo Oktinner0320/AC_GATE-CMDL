@@ -41,9 +41,9 @@
       "aggregation": "20-seed mean",
       "n_seeds": 20,
       "stratifier": "hc_mean_train",
-      "x_label": "Human capital (training-window mean)",
+      "x_label": "Human capital (pre-test historical mean)",
       "y_label": "Mean learned effective lag across 20 seeds",
-      "title": "Economics: Human capital (training-window mean)",
+      "title": "Economics: Human capital (pre-test historical mean)",
       "point_color": "#66ccff"
     },
     "energy": {
@@ -51,9 +51,9 @@
       "aggregation": "20-seed mean",
       "n_seeds": 20,
       "stratifier": "rule_of_law_train",
-      "x_label": "Rule of law (training-window mean)",
+      "x_label": "Rule of law (pre-test historical mean)",
       "y_label": "Mean learned effective lag across 20 seeds",
-      "title": "Energy: Rule of law (training-window mean)",
+      "title": "Energy: Rule of law (pre-test historical mean)",
       "point_color": "#cc55ee"
     }
   }
