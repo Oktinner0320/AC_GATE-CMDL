@@ -3,7 +3,7 @@
 > A testable framework for **entity-conditioned heterogeneous lag discovery** in panel time series.
 
 This repository contains the reference implementation, baselines, real-data pipelines, ablations and 20-seed locked outputs.
-
+The paper URL of AC-GATE is [https://doi.org/10.48550/arXiv.2605.21542](https://doi.org/10.48550/arXiv.2605.21542).
 ---
 
 ## 1. What this repository provides
@@ -283,10 +283,4 @@ The two lambda symbols play different roles: $\lambda$ in the first equation is 
 
 Optional $\omega$-entropy and $z$-anchor penalties, but they are set to zero in the locked 20-seed runs, so the effective objective used for the paper reduces to the form above.
 
----
-
-## 9. License & disclosure
-
-- License: [LICENSE](LICENSE) (MIT, anonymised authorship for review).
-- Generative-AI usage statement: [GenAI_Usage_Disclosure.md](GenAI_Usage_Disclosure.md).
 
